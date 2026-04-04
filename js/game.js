@@ -33,11 +33,12 @@ const GS = {
 };
 
 function resetGame() {
-  GS.floor       = 1;
-  GS.battleCount = 0;
+  GS.floor        = 1;
+  GS.battleCount  = 0;
   GS.totalBattles = 0;
-  GS.totalGold   = 0;
-  GS.enemy       = null;
+  GS.totalGold    = 0;
+  GS.enemy        = null;
+  GS.firstTurn    = true;   // ゲーム開始直後は必ず戦闘
 
   GS.player = {
     hp: 100, maxHp: 100,
@@ -121,8 +122,6 @@ function mulberry32(a) {
 // ============================================================
 //  FLOOR SELECT
 // ============================================================
-let rouletteTimer = null;
-
 function initFloorSelect() {
   showScene('floor');
   renderFloorSelect();
@@ -141,27 +140,22 @@ function renderFloorSelect() {
   document.getElementById('equip-weapon').textContent         = `武器: ${p.weapon ? p.weapon.name : 'なし'}`;
   document.getElementById('equip-armor').textContent          = `防具: ${p.armor ? p.armor.name : 'なし'}`;
 
-  // 進むボタンが残っていれば削除
+  // 前回の進むボタンを削除・カードをリセット
   const oldBtn = document.getElementById('floor-proceed-btn');
   if (oldBtn) oldBtn.remove();
-
-  // カードをリセット
   ['option-battle', 'option-event', 'option-stairs'].forEach(id => {
     const el = document.getElementById(id);
-    el.classList.remove('card-selected', 'card-dim', 'card-cycling');
+    el.classList.remove('card-selected', 'card-dim');
     el.style.display = '';
   });
-
-  // 固定テキストに戻す
   document.getElementById('option-battle').querySelector('.card-title').textContent = '戦　闘';
   document.getElementById('option-battle').querySelector('.card-desc').textContent  = '敵と戦いゴールドを得る';
 
   const descArea = document.getElementById('floor-description');
-  descArea.textContent = '';
   descArea.style.color = '';
 
   if (GS.floor === 4) {
-    // ボス階層：選択なし、確認ボタンだけ表示
+    // ボス階層：選択なし
     document.getElementById('option-event').style.display  = 'none';
     document.getElementById('option-stairs').style.display = 'none';
     document.getElementById('option-battle').querySelector('.card-title').textContent = 'ボス戦';
@@ -170,75 +164,26 @@ function renderFloorSelect() {
     descArea.textContent = '！ ここがダンジョンの最深部だ。龍神が待ち構えている。';
     descArea.style.color = '#ff8888';
     addProceedBtn(() => initBattle());
-  } else {
-    startRoulette();
-  }
-}
-
-// ---- ルーレット演出 ----
-function startRoulette() {
-  if (rouletteTimer) { clearTimeout(rouletteTimer); rouletteTimer = null; }
-
-  const cardIds   = ['option-battle', 'option-event', 'option-stairs'];
-  const optNames  = ['battle', 'event', 'stairs'];
-  const labels    = ['戦　闘', 'イベント', '階　段'];
-  const finalIdx  = Math.floor(Math.random() * 3);
-
-  // スピン回数：3周 + finalIdx で必ず finalIdx に止まる
-  const spinCount  = 3;
-  const totalSteps = spinCount * 3 + finalIdx + 1;
-
-  // 全カードを暗くする
-  cardIds.forEach(id => {
-    document.getElementById(id).classList.add('card-dim');
-    document.getElementById(id).classList.remove('card-cycling', 'card-selected');
-  });
-
-  let step = 0;
-
-  function doStep() {
-    const idx = step % 3;
-
-    // 前のカードのハイライトを外す
-    cardIds.forEach(id => document.getElementById(id).classList.remove('card-cycling'));
-    document.getElementById(cardIds[idx]).classList.remove('card-dim');
-    document.getElementById(cardIds[idx]).classList.add('card-cycling');
-
-    step++;
-
-    if (step >= totalSteps) {
-      // 止まった → 確定演出へ
-      rouletteTimer = setTimeout(() => landOnOption(finalIdx, cardIds, optNames, labels), 180);
-      return;
-    }
-
-    // 残りステップ数に応じて速度を落とす
-    const remaining = totalSteps - step;
-    const delay = remaining > 6 ? 75 : remaining > 3 ? 140 : remaining > 1 ? 260 : 380;
-    rouletteTimer = setTimeout(doStep, delay);
+    return;
   }
 
-  doStep();
-}
+  // ランダム選択（ゲーム開始直後は必ず戦闘）
+  const cardIds  = ['option-battle', 'option-event', 'option-stairs'];
+  const optNames = ['battle', 'event', 'stairs'];
+  const labels   = ['戦　闘', 'イベント', '階　段'];
+  const idx      = GS.firstTurn ? 0 : Math.floor(Math.random() * 3);
+  GS.firstTurn   = false;
 
-function landOnOption(finalIdx, cardIds, optNames, labels) {
-  // 選ばれたカード以外を暗く、選ばれたカードをハイライト
+  // 選ばれたカードをハイライト、他を暗く
   cardIds.forEach((id, i) => {
-    const el = document.getElementById(id);
-    el.classList.remove('card-cycling');
-    if (i === finalIdx) {
-      el.classList.remove('card-dim');
-      el.classList.add('card-selected');
-    } else {
-      el.classList.add('card-dim');
-    }
+    document.getElementById(id).classList.toggle('card-selected', i === idx);
+    document.getElementById(id).classList.toggle('card-dim',      i !== idx);
   });
 
-  const descArea = document.getElementById('floor-description');
-  descArea.textContent = `▶ 「${labels[finalIdx]}」 が選ばれた！`;
+  descArea.textContent = `▶ 「${labels[idx]}」 が選ばれた！`;
   descArea.style.color = '#ffdd55';
 
-  const optName = optNames[finalIdx];
+  const optName = optNames[idx];
   addProceedBtn(() => {
     if (optName === 'battle') initBattle();
     else if (optName === 'event') showScene('event');
@@ -248,8 +193,8 @@ function landOnOption(finalIdx, cardIds, optNames, labels) {
 
 function addProceedBtn(handler) {
   const btn = document.createElement('button');
-  btn.id        = 'floor-proceed-btn';
-  btn.className = 'pixel-btn';
+  btn.id          = 'floor-proceed-btn';
+  btn.className   = 'pixel-btn';
   btn.textContent = '進　む';
   btn.style.cssText = 'display:block; margin: 14px auto 0;';
   btn.onclick = () => { btn.remove(); handler(); };
