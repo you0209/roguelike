@@ -120,85 +120,21 @@ function mulberry32(a) {
 }
 
 // ============================================================
-//  FLOOR SELECT
+//  FLOOR SELECT  — 画面を挟まず即座に次のシーンへ
 // ============================================================
 function initFloorSelect() {
-  showScene('floor');
-  renderFloorSelect();
-}
-
-function renderFloorSelect() {
-  const p = GS.player;
-
-  document.getElementById('floor-indicator').textContent      = `第${GS.floor}階層`;
-  document.getElementById('battle-count-display').textContent = `戦闘回数: ${GS.battleCount}回`;
-  document.getElementById('gold-display').textContent         = `G: ${p.gold}`;
-  document.getElementById('player-hp-text').textContent       = `${p.hp}/${p.maxHp}`;
-  document.getElementById('player-mp-text').textContent       = `${p.mp}/${p.maxMp}`;
-  document.getElementById('player-hp-bar').style.width        = pct(p.hp, p.maxHp);
-  document.getElementById('player-mp-bar').style.width        = pct(p.mp, p.maxMp);
-  document.getElementById('equip-weapon').textContent         = `武器: ${p.weapon ? p.weapon.name : 'なし'}`;
-  document.getElementById('equip-armor').textContent          = `防具: ${p.armor ? p.armor.name : 'なし'}`;
-
-  // 前回の進むボタンを削除・カードをリセット
-  const oldBtn = document.getElementById('floor-proceed-btn');
-  if (oldBtn) oldBtn.remove();
-  ['option-battle', 'option-event', 'option-stairs'].forEach(id => {
-    const el = document.getElementById(id);
-    el.classList.remove('card-selected', 'card-dim');
-    el.style.display = '';
-  });
-  document.getElementById('option-battle').querySelector('.card-title').textContent = '戦　闘';
-  document.getElementById('option-battle').querySelector('.card-desc').textContent  = '敵と戦いゴールドを得る';
-
-  const descArea = document.getElementById('floor-description');
-  descArea.style.color = '';
-
   if (GS.floor === 4) {
-    // ボス階層：選択なし
-    document.getElementById('option-event').style.display  = 'none';
-    document.getElementById('option-stairs').style.display = 'none';
-    document.getElementById('option-battle').querySelector('.card-title').textContent = 'ボス戦';
-    document.getElementById('option-battle').querySelector('.card-desc').textContent  = '龍神に挑む！';
-    document.getElementById('option-battle').classList.add('card-selected');
-    descArea.textContent = '！ ここがダンジョンの最深部だ。龍神が待ち構えている。';
-    descArea.style.color = '#ff8888';
-    addProceedBtn(() => initBattle());
+    initBattle();
     return;
   }
 
-  // ランダム選択（ゲーム開始直後は必ず戦闘）
-  const cardIds  = ['option-battle', 'option-event', 'option-stairs'];
-  const optNames = ['battle', 'event', 'stairs'];
-  const labels   = ['戦　闘', 'イベント', '階　段'];
-  const idx      = GS.firstTurn ? 0 : Math.floor(Math.random() * 3);
-  GS.firstTurn   = false;
+  const options = ['battle', 'event', 'stairs'];
+  const chosen  = GS.firstTurn ? 'battle' : options[Math.floor(Math.random() * 3)];
+  GS.firstTurn  = false;
 
-  // 選ばれたカードをハイライト、他を暗く
-  cardIds.forEach((id, i) => {
-    document.getElementById(id).classList.toggle('card-selected', i === idx);
-    document.getElementById(id).classList.toggle('card-dim',      i !== idx);
-  });
-
-  descArea.textContent = `▶ 「${labels[idx]}」 が選ばれた！`;
-  descArea.style.color = '#ffdd55';
-
-  const optName = optNames[idx];
-  addProceedBtn(() => {
-    if (optName === 'battle') initBattle();
-    else if (optName === 'event') showScene('event');
-    else if (optName === 'stairs') descendFloor();
-  });
-}
-
-function addProceedBtn(handler) {
-  const btn = document.createElement('button');
-  btn.id          = 'floor-proceed-btn';
-  btn.className   = 'pixel-btn';
-  btn.textContent = '進　む';
-  btn.style.cssText = 'display:block; margin: 14px auto 0;';
-  btn.onclick = () => { btn.remove(); handler(); };
-  document.querySelector('.floor-options').after(btn);
+  if (chosen === 'battle')  initBattle();
+  else if (chosen === 'event')  showScene('event');
+  else if (chosen === 'stairs') descendFloor();
 }
 
 // ============================================================
