@@ -171,6 +171,15 @@ body {
 .card-title { font-size: 17px; color: #ccccee; margin-bottom: 6px; letter-spacing: 2px; }
 .card-desc  { font-size: 11px; color: #666688; line-height: 1.5; }
 
+/* ルーレット状態 */
+.card-dim      { opacity: 0.28 !important; transform: none !important; box-shadow: none !important; }
+.card-cycling  { opacity: 1 !important; border-color: #9999cc !important;
+                 background: #1e1e40 !important; transform: translateY(-2px) !important;
+                 box-shadow: 0 0 12px rgba(150,150,220,0.5) !important; }
+.card-selected { opacity: 1 !important; border-color: #ffcc44 !important;
+                 transform: translateY(-7px) !important;
+                 box-shadow: 0 0 26px rgba(255,200,50,0.55) !important; }
+
 /* ===========================
    BATTLE SCREEN
    =========================== */
