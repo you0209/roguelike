@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>DUNGEON QUEST — チーム作業分担表</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Hiragino Kaku Gothic ProN', 'Meiryo', sans-serif;
+      font-size: 13px;
+      line-height: 1.7;
+      color: #1a1a2e;
+      background: #fff;
+      padding: 36px 48px;
+    }
+
+    /* ---- Header ---- */
+    .doc-header {
+      border-bottom: 3px solid #1a1a2e;
+      padding-bottom: 12px;
+      margin-bottom: 28px;
+    }
+    .doc-header h1 {
+      font-size: 22px;
+      letter-spacing: 0.05em;
+    }
+    .doc-header .subtitle {
+      font-size: 13px;
+      color: #555;
+      margin-top: 4px;
+    }
+
+    /* ---- Section ---- */
+    h2 {
+      font-size: 15px;
+      border-left: 5px solid #3355aa;
+      padding-left: 10px;
+      margin: 28px 0 12px;
+    }
+    h3 {
+      font-size: 13px;
+      margin: 18px 0 6px;
+      color: #222;
+    }
+
+    /* ---- Tables ---- */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 16px;
+      font-size: 12.5px;
+    }
+    th {
+      background: #1a1a2e;
+      color: #fff;
+      padding: 7px 10px;
+      text-align: left;
+      font-weight: bold;
+    }
+    td {
+      padding: 6px 10px;
+      border-bottom: 1px solid #ddd;
+      vertical-align: top;
+    }
+    tr:nth-child(even) td { background: #f5f7ff; }
+
+    /* ---- Member badges ---- */
+    .badge {
+      display: inline-block;
+      padding: 2px 10px;
+      border-radius: 3px;
+      font-size: 12px;
+      font-weight: bold;
+      white-space: nowrap;
+    }
+    .badge-a  { background: #ddeeff; color: #1155aa; border: 1px solid #99bbdd; }
+    .badge-b  { background: #ddffd8; color: #226622; border: 1px solid #99cc88; }
+    .badge-c  { background: #fff0cc; color: #885500; border: 1px solid #ddaa44; }
+    .badge-all { background: #f0f0f0; color: #444; border: 1px solid #bbb; }
+
+    /* ---- File cards ---- */
+    .file-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+    .file-card {
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      padding: 12px 14px;
+    }
+    .file-card .filename {
+      font-family: 'Courier New', monospace;
+      font-size: 12px;
+      font-weight: bold;
+      color: #1a1a2e;
+      margin-bottom: 4px;
+    }
+    .file-card .file-desc {
+      font-size: 12px;
+      color: #444;
+    }
+    .file-card.owner-a { border-left: 4px solid #3377cc; }
+    .file-card.owner-b { border-left: 4px solid #33aa44; }
+    .file-card.owner-c { border-left: 4px solid #ddaa00; }
+    .file-card.owner-all { border-left: 4px solid #888; }
+
+    /* ---- Notes ---- */
+    .note {
+      background: #fffbe6;
+      border: 1px solid #f0c040;
+      border-radius: 4px;
+      padding: 10px 14px;
+      font-size: 12px;
+      color: #555;
+      margin-top: 12px;
+    }
+
+    /* ---- Footer ---- */
+    .doc-footer {
+      margin-top: 36px;
+      border-top: 1px solid #ccc;
+      padding-top: 10px;
+      font-size: 11px;
+      color: #888;
+      text-align: right;
+    }
+
+    @media print {
+      body { padding: 20px 30px; }
+      .file-grid { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="doc-header">
+    <h1>DUNGEON QUEST — チーム作業分担表</h1>
+    <div class="subtitle">作成日: 2026-04-04　　リポジトリ: https://github.com/you0209/roguelike</div>
+  </div>
+
+  <!-- ========== 担当一覧 ========== -->
+  <h2>1. 担当一覧</h2>
+  <table>
+    <tr>
+      <th style="width:100px">担当</th>
+      <th>主な作業領域</th>
+      <th>編集ファイル</th>
+    </tr>
+    <tr>
+      <td><span class="badge badge-a">担当 A</span></td>
+      <td>ショップ・武器/防具（レリック）システム</td>
+      <td><code>js/shop.js</code>　<code>data/relics.js</code></td>
+    </tr>
+    <tr>
+      <td><span class="badge badge-b">担当 B</span></td>
+      <td>バトルロジック・敵・アイテム</td>
+      <td><code>js/battle.js</code>　<code>data/enemies.js</code>　<code>data/items.js</code></td>
+    </tr>
+    <tr>
+      <td><span class="badge badge-c">担当 C</span></td>
+      <td>イベントシステム・スキル</td>
+      <td><code>js/events.js</code>　<code>data/skills.js</code></td>
+    </tr>
+    <tr>
+      <td><span class="badge badge-all">共　通</span></td>
+      <td>ゲームコア・HTML・CSS</td>
+      <td><code>js/game.js</code>　<code>index.html</code>　<code>css/style.css</code></td>
+    </tr>
+  </table>
+
+  <!-- ========== ファイル詳細 ========== -->
+  <h2>2. ファイルと担当の詳細</h2>
+
+  <div class="file-grid">
+
+    <div class="file-card owner-a">
+      <div class="filename">js/shop.js <span class="badge badge-a" style="float:right">担当 A</span></div>
+      <div class="file-desc">
+        ショップ全般の処理。タブ切り替え・購入済み判定・購入処理（武器/防具/スキル/アイテムで処理が異なる）を担当。
+        <br><br>主な関数: <code>initShop()</code> / <code>renderShop()</code> / <code>isOwned()</code> / <code>doBuy()</code>
+      </div>
+    </div>
+
+    <div class="file-card owner-a">
+      <div class="filename">data/relics.js <span class="badge badge-a" style="float:right">担当 A</span></div>
+      <div class="file-desc">
+        武器4種・防具4種のデータ定義。攻撃/防御ボーナス・MPボーナス・価格を管理。
+        <br><strong>今後：レリックシステムへの改変予定。</strong>
+        <br><br>主な定数: <code>WEAPONS</code> / <code>ARMORS</code>
+      </div>
+    </div>
+
+    <div class="file-card owner-b">
+      <div class="filename">js/battle.js <span class="badge badge-b" style="float:right">担当 B</span></div>
+      <div class="file-desc">
+        バトル全般。敵のスポーン・プレイヤー行動・敵ターン・勝敗判定・ダメージ計算・Canvasスプライト描画（11種）を含む最大ファイル。
+        <br><br>主な関数: <code>spawnEnemy()</code> / <code>doAttack()</code> / <code>doEnemyTurn()</code> / <code>drawDragon()</code> 等
+      </div>
+    </div>
+
+    <div class="file-card owner-b">
+      <div class="filename">data/enemies.js <span class="badge badge-b" style="float:right">担当 B</span></div>
+      <div class="file-desc">
+        10種の敵データ（スライム〜ドラゴン）と階層別出現テーブルを管理。HP・攻撃・防御・報酬ゴールド・ボススキルなど。
+        <br><br>主な定数: <code>ENEMIES</code> / <code>FLOOR_ENEMIES</code>
+      </div>
+    </div>
+
+    <div class="file-card owner-b">
+      <div class="filename">data/items.js <span class="badge badge-b" style="float:right">担当 B</span></div>
+      <div class="file-desc">
+        6種の消耗品定義。<code>type</code> フィールドでバトル中の使用効果が変わる。
+        <br>ポーション / ハイポーション / エーテル / 爆弾 / 毒の小瓶 / 蘇生草
+        <br><br>主な定数: <code>ITEMS</code>
+      </div>
+    </div>
+
+    <div class="file-card owner-c">
+      <div class="filename">js/events.js <span class="badge badge-c" style="float:right">担当 C</span></div>
+      <div class="file-desc">
+        イベントデータと処理を追加していくファイル。現在はプレースホルダー。
+        <code>EVENTS</code> 配列にイベントオブジェクトを追加する。
+        <br><br>主な変数: <code>EVENTS</code>（配列）　主な関数: <code>initEvent()</code>
+      </div>
+    </div>
+
+    <div class="file-card owner-c">
+      <div class="filename">data/skills.js <span class="badge badge-c" style="float:right">担当 C</span></div>
+      <div class="file-desc">
+        6種のスキル定義とショップ販売スキル一覧。MPコスト・タイプ（物理/魔法/回復/バフ）・威力を管理。
+        <br><br>主な定数: <code>SKILLS</code> / <code>SHOP_SKILLS</code>
+      </div>
+    </div>
+
+    <div class="file-card owner-all">
+      <div class="filename">js/game.js <span class="badge badge-all" style="float:right">共　通</span></div>
+      <div class="file-desc">
+        ゲームのコア。全ファイルから参照する <code>GS</code> オブジェクト・シーン管理・フロア進行・スコア計算・ユーティリティ関数を担当。
+        <br><br>主な要素: <code>GS</code> / <code>showScene()</code> / <code>initFloorSelect()</code> / <code>pct()</code>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ========== タスク一覧 ========== -->
+  <h2>3. 今後のタスク</h2>
+  <table>
+    <tr>
+      <th style="width:100px">担当</th>
+      <th>タスク</th>
+      <th style="width:80px">状態</th>
+    </tr>
+    <tr>
+      <td><span class="badge badge-a">担当 A</span></td>
+      <td>レリックシステムへの改変（武器/防具 → レリック）</td>
+      <td>未着手</td>
+    </tr>
+    <tr>
+      <td><span class="badge badge-a">担当 A</span></td>
+      <td>ショップUIの改善・バランス調整</td>
+      <td>未着手</td>
+    </tr>
+    <tr>
+      <td><span class="badge badge-b">担当 B</span></td>
+      <td>敵の追加・ステータスバランス調整</td>
+      <td>未着手</td>
+    </tr>
+    <tr>
+      <td><span class="badge badge-b">担当 B</span></td>
+      <td>アイテムの追加・バランス調整</td>
+      <td>未着手</td>
+    </tr>
+    <tr>
+      <td><span class="badge badge-b">担当 B</span></td>
+      <td>戦闘報酬の見直し（ゴールド以外の報酬検討）</td>
+      <td>未着手</td>
+    </tr>
+    <tr>
+      <td><span class="badge badge-c">担当 C</span></td>
+      <td>イベントの実装（宝箱・選択肢・回復・呪いなど）</td>
+      <td>未着手</td>
+    </tr>
+    <tr>
+      <td><span class="badge badge-c">担当 C</span></td>
+      <td>スキルツリー的な新要素の設計・実装</td>
+      <td>未着手</td>
+    </tr>
+    <tr>
+      <td><span class="badge badge-all">共　通</span></td>
+      <td>「階段」選択時のステータス確認UIの追加</td>
+      <td>未着手</td>
+    </tr>
+    <tr>
+      <td><span class="badge badge-all">共　通</span></td>
+      <td>すばやさパラメータの削除（仕様変更）</td>
+      <td>未着手</td>
+    </tr>
+  </table>
+
+  <div class="note">
+    ⚠ 共通ファイル（<code>js/game.js</code> / <code>index.html</code> / <code>css/style.css</code>）を変更する場合は、事前にチームへ連絡してコンフリクトを防いでください。
+  </div>
+
+  <!-- ========== ブランチ戦略 ========== -->
+  <h2>4. ブランチ戦略（推奨）</h2>
+  <table>
+    <tr>
+      <th style="width:200px">ブランチ名（例）</th>
+      <th>用途</th>
+    </tr>
+    <tr>
+      <td><code>main</code></td>
+      <td>常に動作する安定版。直接コミットしない</td>
+    </tr>
+    <tr>
+      <td><code>feature/shop-relic</code></td>
+      <td>担当A：レリックシステム開発用</td>
+    </tr>
+    <tr>
+      <td><code>feature/battle-balance</code></td>
+      <td>担当B：バトル・敵調整用</td>
+    </tr>
+    <tr>
+      <td><code>feature/events</code></td>
+      <td>担当C：イベントシステム実装用</td>
+    </tr>
+  </table>
+
+  <div class="doc-footer">
+    DUNGEON QUEST — Team Assignment Document　v0.5.0
+  </div>
+
+</body>
+</html>
