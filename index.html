@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DUNGEON QUEST</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div id="game-container">
+
+    <!-- ========== TITLE ========== -->
+    <div id="scene-title" class="scene">
+      <div class="title-bg">
+        <h1 class="game-title">DUNGEON QUEST</h1>
+        <p class="game-subtitle">〜 ダンジョンの奥に潜む龍を倒せ 〜</p>
+        <canvas id="title-canvas" width="640" height="120"></canvas>
+        <button id="btn-start" class="pixel-btn">は じ め る</button>
+        <p class="title-hint">ローグライク × JRPG</p>
+      </div>
+    </div>
+
+    <!-- ========== FLOOR SELECT ========== -->
+    <div id="scene-floor" class="scene hidden">
+      <div class="floor-header">
+        <span id="floor-indicator">第１階層</span>
+        <span id="battle-count-display">戦闘回数: 0</span>
+        <span id="gold-display" class="gold-text">G: 0</span>
+      </div>
+      <div class="player-status-bar">
+        <div class="status-item">
+          <span class="label">HP</span>
+          <div class="bar-wrap"><div id="player-hp-bar" class="bar hp-bar"></div></div>
+          <span id="player-hp-text">100/100</span>
+        </div>
+        <div class="status-item">
+          <span class="label">MP</span>
+          <div class="bar-wrap"><div id="player-mp-bar" class="bar mp-bar"></div></div>
+          <span id="player-mp-text">50/50</span>
+        </div>
+        <div class="equip-info">
+          <span id="equip-weapon">武器: なし</span>
+          <span id="equip-armor">防具: なし</span>
+        </div>
+      </div>
+      <div class="floor-desc-area">
+        <p id="floor-description">敵を倒してゴールドを集めろ。階段を選べば次の階層へ進める。</p>
+      </div>
+      <div class="floor-options">
+        <div id="option-battle" class="floor-card card-battle">
+          <div class="card-icon">⚔</div>
+          <div class="card-title">戦　闘</div>
+          <div class="card-desc">敵と戦いゴールドを得る</div>
+        </div>
+        <div id="option-event" class="floor-card card-event">
+          <div class="card-icon">？</div>
+          <div class="card-title">イベント</div>
+          <div class="card-desc">何かが起こるかもしれない</div>
+        </div>
+        <div id="option-stairs" class="floor-card card-stairs">
+          <div class="card-icon">▼</div>
+          <div class="card-title">階　段</div>
+          <div class="card-desc">次の階層へ進む（HP全回復）</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== BATTLE ========== -->
+    <div id="scene-battle" class="scene hidden">
+      <div class="battle-header">
+        <span id="battle-floor-info">第１階層</span>
+        <span id="battle-gold" class="gold-text">G: 0</span>
+      </div>
+      <div class="battle-arena-wrap">
+        <canvas id="battle-canvas" width="460" height="200"></canvas>
+        <div class="battle-status-panel">
+          <div class="enemy-status-box">
+            <div id="enemy-name" class="status-name enemy-name-text">スライム</div>
+            <div class="status-item">
+              <span class="label">HP</span>
+              <div class="bar-wrap"><div id="enemy-hp-bar" class="bar hp-bar"></div></div>
+              <span id="enemy-hp-text">30/30</span>
+            </div>
+            <div id="enemy-status-icon" class="status-icon"></div>
+          </div>
+          <div class="divider"></div>
+          <div class="player-status-box">
+            <div class="status-name">勇　者</div>
+            <div class="status-item">
+              <span class="label">HP</span>
+              <div class="bar-wrap"><div id="battle-player-hp-bar" class="bar hp-bar"></div></div>
+              <span id="battle-player-hp-text">100/100</span>
+            </div>
+            <div class="status-item">
+              <span class="label">MP</span>
+              <div class="bar-wrap"><div id="battle-player-mp-bar" class="bar mp-bar"></div></div>
+              <span id="battle-player-mp-text">50/50</span>
+            </div>
+            <div id="player-status-icon" class="status-icon"></div>
+          </div>
+        </div>
+      </div>
+      <div id="battle-log" class="battle-log"></div>
+      <div id="battle-commands" class="battle-commands">
+        <div class="command-grid">
+          <button id="cmd-attack" class="cmd-btn">⚔ 攻　撃</button>
+          <button id="cmd-skill"  class="cmd-btn">✦ スキル</button>
+          <button id="cmd-defend" class="cmd-btn">🛡 防　御</button>
+          <button id="cmd-item"   class="cmd-btn">🎒 アイテム</button>
+        </div>
+      </div>
+      <div id="skill-menu"  class="sub-menu hidden"></div>
+      <div id="item-menu"   class="sub-menu hidden"></div>
+    </div>
+
+    <!-- ========== EVENT ========== -->
+    <div id="scene-event" class="scene hidden">
+      <div class="center-wrap">
+        <h2 class="event-title">！　イベント発生　！</h2>
+        <div class="event-box">
+          <p>イベントが起きました</p>
+        </div>
+        <button id="btn-event-continue" class="pixel-btn">進　む</button>
+      </div>
+    </div>
+
+    <!-- ========== SHOP ========== -->
+    <div id="scene-shop" class="scene hidden">
+      <div class="shop-header">
+        <span class="shop-title-text">★ ショップ ★</span>
+        <span id="shop-gold" class="gold-text">所持: 0G</span>
+      </div>
+      <div class="shop-tabs">
+        <button class="tab-btn active" data-tab="weapons">武　器</button>
+        <button class="tab-btn" data-tab="armors">防　具</button>
+        <button class="tab-btn" data-tab="skills">スキル</button>
+        <button class="tab-btn" data-tab="items">アイテム</button>
+      </div>
+      <div id="shop-items" class="shop-items"></div>
+      <button id="btn-shop-leave" class="pixel-btn shop-leave-btn">店を出る</button>
+    </div>
+
+    <!-- ========== GAME OVER ========== -->
+    <div id="scene-gameover" class="scene hidden">
+      <div class="center-wrap">
+        <h2 class="gameover-title">GAME OVER</h2>
+        <div class="result-box">
+          <p id="go-floor">到達階層：第１階層</p>
+          <p id="go-battles">総戦闘回数：0回</p>
+          <p id="go-gold">獲得ゴールド：0G</p>
+          <p id="go-score" class="score-line">スコア：0</p>
+        </div>
+        <button id="btn-title" class="pixel-btn">タイトルへ</button>
+      </div>
+    </div>
+
+    <!-- ========== VICTORY ========== -->
+    <div id="scene-victory" class="scene hidden">
+      <div class="center-wrap">
+        <h2 class="victory-title">VICTORY!</h2>
+        <p class="victory-sub">ドラゴンを討伐しダンジョンを制覇した！</p>
+        <div class="result-box">
+          <p id="vc-battles">総戦闘回数：0回</p>
+          <p id="vc-gold">獲得ゴールド：0G</p>
+          <p id="vc-score" class="score-line">スコア：0</p>
+        </div>
+        <button id="btn-victory-title" class="pixel-btn">タイトルへ</button>
+      </div>
+    </div>
+
+  </div><!-- /game-container -->
+
+  <script src="js/data.js"></script>
+  <script src="js/game.js"></script>
+</body>
+</html>
