@@ -33,12 +33,13 @@ const GS = {
 };
 
 function resetGame() {
-  GS.floor        = 1;
-  GS.battleCount  = 0;
-  GS.totalBattles = 0;
-  GS.totalGold    = 0;
-  GS.enemy        = null;
-  GS.firstTurn    = true;   // ゲーム開始直後は必ず戦闘
+  GS.floor           = 1;
+  GS.battleCount     = 0;
+  GS.totalBattles    = 0;
+  GS.totalGold       = 0;
+  GS.enemy           = null;
+  GS.isFirstOfFloor  = true;   // 各階層の1回目は必ず戦闘
+  GS.lastOption      = null;   // 直前の選択肢（連続階段防止）
 
   GS.player = {
     hp: 100, maxHp: 100,
@@ -128,13 +129,25 @@ function initFloorSelect() {
     return;
   }
 
-  const options = ['battle', 'event', 'stairs'];
-  const chosen  = GS.firstTurn ? 'battle' : options[Math.floor(Math.random() * 3)];
-  GS.firstTurn  = false;
+  // 各階層の1回目は必ず戦闘
+  if (GS.isFirstOfFloor) {
+    GS.isFirstOfFloor = false;
+    GS.lastOption     = 'battle';
+    initBattle();
+    return;
+  }
+
+  // 直前が「階段」なら次の候補から除外（連続出現防止）
+  const pool = GS.lastOption === 'stairs'
+    ? ['battle', 'event']
+    : ['battle', 'event', 'stairs'];
+
+  const chosen  = pool[Math.floor(Math.random() * pool.length)];
+  GS.lastOption = chosen;
 
   if (chosen === 'battle')  initBattle();
   else if (chosen === 'event')  showScene('event');
-  else if (chosen === 'stairs') descendFloor();
+  else if (chosen === 'stairs') showScene('stairs');
 }
 
 // ============================================================
@@ -940,8 +953,9 @@ function calcScore() {
 // ============================================================
 function descendFloor() {
   GS.floor++;
-  GS.battleCount = 0;
-  // Full HP/MP restore
+  GS.battleCount    = 0;
+  GS.isFirstOfFloor = true;   // 新しい階層の1回目も必ず戦闘
+  GS.lastOption     = null;
   GS.player.hp = GS.player.maxHp;
   GS.player.mp = GS.player.maxMp;
   GS.player.poisoned = false;
@@ -972,6 +986,10 @@ document.addEventListener('DOMContentLoaded', () => {
     resetGame();
     initFloorSelect();
   };
+
+  // --- Stairs ---
+  document.getElementById('btn-stairs-down').onclick = () => descendFloor();
+  document.getElementById('btn-stairs-stay').onclick = () => initFloorSelect();
 
   // --- Event ---
   document.getElementById('btn-event-continue').onclick = () => initFloorSelect();

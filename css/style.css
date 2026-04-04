@@ -438,6 +438,16 @@ body {
 .result-box p { font-size: 15px; color: #aaaacc; margin: 7px 0; }
 .score-line { color: #dddd55 !important; font-size: 18px !important; margin-top: 12px !important; }
 
+/* ===== STAIRS SCENE ===== */
+#scene-stairs {
+  min-height: 520px;
+  background: #080814;
+  display: flex; align-items: center; justify-content: center;
+}
+.stairs-btns { display: flex; gap: 24px; justify-content: center; margin-top: 4px; }
+.btn-stay { border-color: #445544; color: #99bb99; }
+.btn-stay:hover { background: #182418; border-color: #6688aa; color: #bbddbb; }
+
 /* ===== SCROLLBAR ===== */
 ::-webkit-scrollbar { width: 6px; }
 ::-webkit-scrollbar-track { background: #0a0a14; }
