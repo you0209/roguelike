@@ -165,6 +165,11 @@ function spawnEnemy() {
 }
 
 function initBattle() {
+  // 前の戦闘で隠したコマンドグリッドと進むボタンをリセット
+  document.querySelector('.command-grid').style.display = '';
+  const oldBtn = document.getElementById('battle-proceed-btn');
+  if (oldBtn) oldBtn.remove();
+
   GS.enemy   = spawnEnemy();
   battleLog  = [];
   playerTurn = true;
@@ -478,15 +483,16 @@ function doEnemyTurn() {
 }
 
 function showReturnBtn() {
-  const cmds = document.getElementById('battle-commands');
-  cmds.innerHTML = '';
+  // コマンドグリッドは残したまま隠す（次の戦闘で再利用するため）
+  document.querySelector('.command-grid').style.display = 'none';
+
   const btn = document.createElement('button');
-  btn.className   = 'pixel-btn';
-  btn.textContent = '戻　る';
-  btn.style.display = 'block';
-  btn.style.margin  = '12px auto';
+  btn.id            = 'battle-proceed-btn';
+  btn.className     = 'pixel-btn';
+  btn.textContent   = '進　む';
+  btn.style.cssText = 'display:block; margin: 12px auto;';
   btn.onclick = () => initFloorSelect();
-  cmds.appendChild(btn);
+  document.getElementById('battle-commands').appendChild(btn);
 }
 
 // ============================================================
