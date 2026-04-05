@@ -12,15 +12,16 @@ const GS = {
 
   player: null,
   enemy:  null,
+  shopLineup: { relics: [], items: [] },
 
   get atkTotal() {
     let v = GS.player.attack;
-    if (GS.player.weapon) v += GS.player.weapon.attackBonus;
+    for (const r of GS.player.relics) v += (r.attackBonus || 0);
     return v;
   },
   get defTotal() {
     let v = GS.player.defense;
-    if (GS.player.armor)   v += GS.player.armor.defenseBonus;
+    for (const r of GS.player.relics) v += (r.defenseBonus || 0);
     if (GS.player.buffDef) v += 22;
     return v;
   }
@@ -40,7 +41,7 @@ function resetGame() {
     mp:  50, maxMp:  50,
     attack: 15, defense: 10,
     gold: 30,
-    weapon: null, armor: null,
+    relics: [],
     skills: ['slash'],
     inventory: [],
     buffDef: false,
