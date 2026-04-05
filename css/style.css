@@ -316,6 +316,15 @@ body {
   color: #aaaacc;
   letter-spacing: 1px;
 }
+.event-choices {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  margin-top: 8px;
+}
+.event-choice-btn { min-width: 220px; }
+.event-choice-btn:disabled { opacity: 0.4; cursor: not-allowed; }
 
 /* ===========================
    SHOP SCREEN
