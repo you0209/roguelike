@@ -13,13 +13,18 @@ let flash      = { enemy: 0, player: 0 };
 
 // ---- spawn scaled enemy ----
 function spawnEnemy() {
+  if (GS.forcedEnemy) {
+    const e = GS.forcedEnemy;
+    GS.forcedEnemy = null;
+    return e;
+  }
   const keys = FLOOR_ENEMIES[GS.floor];
   const key  = keys[Math.floor(Math.random() * keys.length)];
   const base = ENEMIES[key];
   const s    = 1 + GS.battleCount * 0.12;
   const as   = 1 + GS.battleCount * 0.06;
 
-  return {
+  const enemy = {
     ...base,
     hp:      Math.floor(base.maxHp * s),
     maxHp:   Math.floor(base.maxHp * s),
@@ -27,6 +32,15 @@ function spawnEnemy() {
     defense: Math.floor(base.defense * (1 + GS.battleCount * 0.04)),
     poisoned: false, poisonDmg: 0
   };
+
+  if (GS.player.nextEnemyPowered) {
+    enemy.hp      = Math.floor(enemy.hp * 1.3);
+    enemy.maxHp   = Math.floor(enemy.maxHp * 1.3);
+    enemy.attack  = Math.floor(enemy.attack * 1.3);
+    enemy.goldReward = Math.floor(enemy.goldReward * 2);
+    GS.player.nextEnemyPowered = false;
+  }
+  return enemy;
 }
 
 function initBattle() {
@@ -41,6 +55,12 @@ function initBattle() {
   GS.player.buffDef     = false;
   GS.player.isDefending = false;
   flash = { enemy: 0, player: 0 };
+
+  // N回バフのカウントダウン
+  const _p = GS.player;
+  if (_p.atkBuffRemain > 0) { _p.atkBuffRemain--; if (_p.atkBuffRemain === 0) _p.atkBuffMult = 1; }
+  if (_p.defBuffRemain > 0) { _p.defBuffRemain--; if (_p.defBuffRemain === 0) _p.defBuffMult = 1; }
+  if (_p.mpFreeRemain  > 0) { _p.mpFreeRemain--;  if (_p.mpFreeRemain  === 0) _p.mpFree = false; }
 
   showScene('battle');
 
@@ -148,8 +168,9 @@ function doSkill(id) {
   const p  = GS.player;
   const e  = GS.enemy;
 
-  if (p.mp < sk.mpCost) { addLog('MPが足りない！', 'log-system'); enableCmds(); return; }
-  p.mp -= sk.mpCost;
+  const mpCost = p.mpFree ? 0 : sk.mpCost;
+  if (p.mp < mpCost) { addLog('MPが足りない！', 'log-system'); enableCmds(); return; }
+  p.mp -= mpCost;
 
   if (sk.type === 'physical') {
     const dmg = calcPhysDmg(GS.atkTotal, e.defense, sk.power);
@@ -246,7 +267,7 @@ function checkWin() {
   if (GS.enemy.hp > 0) return false;
   battleOver = true;
 
-  const gold = GS.enemy.goldReward;
+  const gold = Math.floor(GS.enemy.goldReward * (GS.player.goldDouble ? 2 : 1));
   GS.player.gold += gold;
   GS.totalGold   += gold;
   GS.battleCount++;
@@ -279,6 +300,18 @@ function checkLose() {
   return true;
 }
 
+function applyDmgToPlayer(dmg, logMsg) {
+  if (GS.player.goldShield && dmg > 0) {
+    const absorbed = Math.min(GS.player.gold, dmg);
+    GS.player.gold -= absorbed;
+    dmg -= absorbed;
+    if (absorbed > 0) addLog(`ゴールドがダメージを肩代わり！ (-${absorbed}G)`, 'log-special');
+  }
+  GS.player.hp -= dmg;
+  addLog(logMsg.replace('{dmg}', dmg), 'log-damage');
+  flash.player = 10;
+}
+
 function doEnemyTurn() {
   if (battleOver) return;
   playerTurn = false;
@@ -297,33 +330,26 @@ function doEnemyTurn() {
     action = e.bossSkills[Math.floor(Math.random() * e.bossSkills.length)];
   }
 
-  let dmg = 0;
   if (action === 'dragonBreath') {
-    dmg = Math.max(1, Math.floor(e.attack * 1.6 - p.defense * 0.2));
+    let dmg = Math.max(1, Math.floor(e.attack * 1.6 - p.defense * 0.2));
     dmg = p.isDefending ? Math.floor(dmg * 0.35) : dmg;
-    p.hp -= dmg;
-    addLog(`${e.name}のドラゴンブレス！　勇者に ${dmg} ダメージ！`, 'log-damage');
-    flash.player = 10;
+    applyDmgToPlayer(dmg, `${e.name}のドラゴンブレス！　勇者に {dmg} ダメージ！`);
   } else if (action === 'tailSwipe') {
-    dmg = Math.max(1, Math.floor(e.attack * 1.3 - p.defense * 0.4));
+    let dmg = Math.max(1, Math.floor(e.attack * 1.3 - p.defense * 0.4));
     dmg = p.isDefending ? Math.floor(dmg * 0.35) : dmg;
-    p.hp -= dmg;
-    addLog(`${e.name}の尻尾攻撃！　勇者に ${dmg} ダメージ！`, 'log-damage');
-    flash.player = 10;
+    applyDmgToPlayer(dmg, `${e.name}の尻尾攻撃！　勇者に {dmg} ダメージ！`);
   } else if (action === 'dragonRoar') {
     addLog(`${e.name}の咆哮！　勇者は怯んだ！`, 'log-special');
     p.roarDebuff = true;
   } else {
-    dmg = Math.max(1, Math.floor(e.attack - GS.defTotal * 0.55));
+    let dmg = Math.max(1, Math.floor(e.attack - GS.defTotal * 0.55));
     if (p.isDefending) dmg = Math.floor(dmg * 0.25);
-    p.hp -= dmg;
-    addLog(
+    applyDmgToPlayer(
+      dmg,
       p.isDefending
-        ? `${e.name}の攻撃！　防御した！　勇者に ${dmg} ダメージ。`
-        : `${e.name}の攻撃！　勇者に ${dmg} ダメージ！`,
-      'log-damage'
+        ? `${e.name}の攻撃！　防御した！　勇者に {dmg} ダメージ。`
+        : `${e.name}の攻撃！　勇者に {dmg} ダメージ！`
     );
-    flash.player = 10;
   }
 
   p.isDefending = false;

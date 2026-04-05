@@ -17,13 +17,18 @@ const GS = {
   get atkTotal() {
     let v = GS.player.attack;
     for (const r of GS.player.relics) v += (r.attackBonus || 0);
-    return v;
+    v *= GS.player.floorAtkMult;
+    v *= GS.player.atkBuffMult;
+    if (GS.player.goldPowerActive) v *= GS.player.goldPowerMult;
+    return Math.floor(v);
   },
   get defTotal() {
     let v = GS.player.defense;
     for (const r of GS.player.relics) v += (r.defenseBonus || 0);
     if (GS.player.buffDef) v += 22;
-    return v;
+    v *= GS.player.floorDefMult;
+    v *= GS.player.defBuffMult;
+    return Math.floor(v);
   }
 };
 
@@ -35,6 +40,8 @@ function resetGame() {
   GS.enemy          = null;
   GS.isFirstOfFloor = true;
   GS.lastOption     = null;
+  GS.floorEventsUsed = new Set();
+  GS.forcedEnemy    = null;
 
   GS.player = {
     hp: 100, maxHp: 100,
@@ -46,7 +53,16 @@ function resetGame() {
     inventory: [],
     buffDef: false,
     isDefending: false,
-    hasRevival: false
+    hasRevival: false,
+    // イベントバフ
+    atkBuffMult: 1, atkBuffRemain: 0,
+    defBuffMult: 1, defBuffRemain: 0,
+    floorAtkMult: 1, floorDefMult: 1,
+    goldDouble: false,
+    mpFree: false, mpFreeRemain: 0,
+    goldShield: false,
+    nextEnemyPowered: false,
+    goldPowerActive: false, goldPowerMult: 1
   };
 }
 
@@ -126,21 +142,29 @@ function initFloorSelect() {
   GS.lastOption = chosen;
 
   if (chosen === 'battle')       initBattle();
-  else if (chosen === 'event')   showScene('event');
+  else if (chosen === 'event')   initEvent();
   else if (chosen === 'stairs')  showScene('stairs');
 }
 
 // ============================================================
 //  FLOOR TRANSITION
 // ============================================================
-function descendFloor() {
+function descendFloor(skipShop = false) {
   GS.floor++;
   GS.battleCount    = 0;
   GS.isFirstOfFloor = true;
   GS.lastOption     = null;
-  GS.player.hp = GS.player.maxHp;
-  GS.player.mp = GS.player.maxMp;
-  initShop();
+  GS.floorEventsUsed = new Set();
+  const p = GS.player;
+  p.floorAtkMult = 1; p.floorDefMult = 1;
+  p.goldDouble = false; p.goldShield = false;
+  p.goldPowerActive = false; p.goldPowerMult = 1;
+  if (!skipShop) {
+    p.hp = p.maxHp; p.mp = p.maxMp;
+    initShop();
+  } else {
+    initFloorSelect();
+  }
 }
 
 // ============================================================
@@ -195,8 +219,7 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('btn-stairs-down').onclick = () => descendFloor();
   document.getElementById('btn-stairs-stay').onclick = () => initFloorSelect();
 
-  // Event
-  document.getElementById('btn-event-continue').onclick = () => initFloorSelect();
+  // Event: choices are rendered dynamically by initEvent()
 
   // Battle commands
   document.getElementById('cmd-attack').onclick = () => doAttack();
