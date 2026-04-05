@@ -66,7 +66,7 @@ function initBattle() {
 
   const e = GS.enemy;
   document.getElementById('battle-floor-info').textContent =
-    GS.floor === 4 ? '💀 ボス戦！' : `第${GS.floor}階層`;
+    GS.floor === 7 ? '💀 ボス戦！' : `第${GS.floor}階層`;
   document.getElementById('battle-gold').textContent = `G: ${GS.player.gold}`;
   document.getElementById('enemy-name').textContent  = e.name + (e.isBoss ? ' 👑' : '');
 
@@ -461,7 +461,7 @@ function drawEnemy(ctx, e, cx, cy, fl, frame) {
   const bob    = Math.sin(frame * 0.05 + 1) * 1.2;
   const by     = cy + bob;
 
-  const sr = { dragon: 46, troll: 28, orc: 24, wolf: 26 }[sprite] || 20;
+  const sr = { dragon: 46, troll: 28, orc: 24, wolf: 26, golem: 32, demon: 32, chimera: 38, wyvern: 36 }[sprite] || 20;
   ctx.fillStyle = 'rgba(0,0,0,0.35)';
   ctx.beginPath(); ctx.ellipse(cx, cy + 22, sr, 5, 0, 0, Math.PI * 2); ctx.fill();
 
@@ -476,7 +476,16 @@ function drawEnemy(ctx, e, cx, cy, fl, frame) {
     case 'troll':    drawTroll(ctx, cx, by, c, e.color); break;
     case 'mage':     drawMage(ctx, cx, by, c, e.color, frame); break;
     case 'knight':   drawDarkKnight(ctx, cx, by, c, e.color); break;
-    case 'dragon':   drawDragon(ctx, cx, by, c, e.color, frame); break;
+    case 'dragon':      drawDragon(ctx, cx, by, c, e.color, frame); break;
+    case 'golem':       drawGolem(ctx, cx, by, c, e.color); break;
+    case 'vampire':     drawVampire(ctx, cx, by, c, e.color); break;
+    case 'lizardman':   drawLizardman(ctx, cx, by, c, e.color); break;
+    case 'demon':       drawDemon(ctx, cx, by, c, e.color, frame); break;
+    case 'medusa':      drawMedusa(ctx, cx, by, c, e.color, frame); break;
+    case 'wyvern':      drawWyvern(ctx, cx, by, c, e.color, frame); break;
+    case 'deathKnight': drawDeathKnight2(ctx, cx, by, c, e.color); break;
+    case 'archMage':    drawArchMage(ctx, cx, by, c, e.color, frame); break;
+    case 'chimera':     drawChimera(ctx, cx, by, c, e.color, frame); break;
     default: px(ctx, cx-18, by-36, 36, 44, c(e.color || '#888'));
   }
 }
@@ -668,4 +677,351 @@ function drawDragon(ctx, cx, cy, c, col, frame) {
     for (let j=0; j<3; j++) {
       ctx.beginPath(); ctx.arc(cx-18+i*16, cy-30+j*17, 5, 0, Math.PI*2); ctx.fill();
     }
+}
+
+// ============================================================
+//  FLOOR 4 SPRITES
+// ============================================================
+function drawGolem(ctx, cx, cy, c, col) {
+  // legs
+  px(ctx, cx-20, cy+2,  18, 22, c(col));
+  px(ctx, cx+2,  cy+2,  18, 22, c(col));
+  // torso
+  px(ctx, cx-28, cy-50, 56, 52, c(col));
+  // arms
+  px(ctx, cx-44, cy-48, 16, 44, c(col));
+  px(ctx, cx+28, cy-48, 16, 44, c(col));
+  // head
+  px(ctx, cx-22, cy-76, 44, 30, c(col));
+  // crack lines
+  px(ctx, cx-4,  cy-44,  4, 28, c('#667788'));
+  px(ctx, cx-14, cy-28, 12,  3, c('#667788'));
+  px(ctx, cx+6,  cy-58,  8,  3, c('#667788'));
+  // glowing eyes
+  px(ctx, cx-14, cy-64,  8,  8, c('#ffaa00'));
+  px(ctx, cx+6,  cy-64,  8,  8, c('#ffaa00'));
+  px(ctx, cx-12, cy-62,  5,  5, c('#ffdd44'));
+  px(ctx, cx+8,  cy-62,  5,  5, c('#ffdd44'));
+  // stone texture dots
+  for (let i=0; i<3; i++) px(ctx, cx-20+i*16, cy-40, 6, 6, c('#777788'));
+}
+
+function drawVampire(ctx, cx, cy, c, col) {
+  // cape outer
+  ctx.fillStyle = c(col);
+  ctx.beginPath();
+  ctx.moveTo(cx-8, cy-52); ctx.lineTo(cx-32, cy+24);
+  ctx.lineTo(cx-16, cy+24); ctx.lineTo(cx-6, cy-20); ctx.fill();
+  ctx.beginPath();
+  ctx.moveTo(cx+8, cy-52); ctx.lineTo(cx+32, cy+24);
+  ctx.lineTo(cx+16, cy+24); ctx.lineTo(cx+6, cy-20); ctx.fill();
+  // cape inner (red lining)
+  ctx.fillStyle = c('#880011');
+  ctx.beginPath();
+  ctx.moveTo(cx-6, cy-20); ctx.lineTo(cx-20, cy+24);
+  ctx.lineTo(cx+20, cy+24); ctx.lineTo(cx+6, cy-20); ctx.fill();
+  // body
+  px(ctx, cx-10, cy-20, 20, 44, c('#220022'));
+  // head - pale face
+  px(ctx, cx-10, cy-52, 20, 24, c('#ffddcc'));
+  // slicked hair
+  px(ctx, cx-12, cy-60, 24, 14, c('#111111'));
+  px(ctx, cx-14, cy-52,  6, 10, c('#111111'));
+  px(ctx, cx+8,  cy-52,  6, 10, c('#111111'));
+  // glowing red eyes
+  px(ctx, cx-7, cy-46, 5, 4, c('#ff0000'));
+  px(ctx, cx+2, cy-46, 5, 4, c('#ff0000'));
+  // fangs
+  px(ctx, cx-4, cy-34, 3, 5, c('#ffffff'));
+  px(ctx, cx+1, cy-34, 3, 5, c('#ffffff'));
+  // hands
+  px(ctx, cx-22, cy-16, 8, 18, c('#ffddcc'));
+  px(ctx, cx+14, cy-16, 8, 18, c('#ffddcc'));
+}
+
+function drawLizardman(ctx, cx, cy, c, col) {
+  // tail
+  ctx.fillStyle = c(col);
+  ctx.beginPath();
+  ctx.moveTo(cx-8, cy+2); ctx.lineTo(cx-44, cy+16);
+  ctx.lineTo(cx-30, cy+24); ctx.lineTo(cx-4, cy+10); ctx.fill();
+  // legs
+  px(ctx, cx-14, cy+2,  12, 22, c(col));
+  px(ctx, cx+2,  cy+2,  12, 22, c(col));
+  px(ctx, cx-18, cy+20, 16,  8, c('#224422'));
+  px(ctx, cx+2,  cy+20, 16,  8, c('#224422'));
+  // torso + scale pattern
+  px(ctx, cx-14, cy-32, 28, 34, c(col));
+  for (let i=0; i<3; i++) px(ctx, cx-10+i*8, cy-26, 6, 6, c('#2a5525'));
+  for (let i=0; i<2; i++) px(ctx, cx-6+i*8,  cy-16, 6, 6, c('#2a5525'));
+  // arms
+  px(ctx, cx-24, cy-30, 10, 22, c(col));
+  px(ctx, cx+14, cy-30, 10, 22, c(col));
+  // head
+  px(ctx, cx-12, cy-54, 24, 24, c(col));
+  px(ctx, cx-18, cy-46, 10, 12, c(col));
+  px(ctx, cx+8,  cy-46, 10, 12, c(col));
+  px(ctx, cx-16, cy-38, 32,  8, c('#224422'));
+  // eyes
+  px(ctx, cx-9,  cy-50, 6, 6, c('#ffdd00'));
+  px(ctx, cx+3,  cy-50, 6, 6, c('#ffdd00'));
+  px(ctx, cx-7,  cy-48, 4, 4, c('#000000'));
+  px(ctx, cx+5,  cy-48, 4, 4, c('#000000'));
+  // head spines
+  for (let i=0; i<4; i++) px(ctx, cx-8+i*6, cy-62, 4, 10, c('#228833'));
+  // spear
+  px(ctx, cx+20, cy-60, 4, 70, c('#886644'));
+  px(ctx, cx+18, cy-68, 10, 12, c('#aabbcc'));
+}
+
+// ============================================================
+//  FLOOR 5 SPRITES
+// ============================================================
+function drawDemon(ctx, cx, cy, c, col, frame) {
+  const wb = Math.sin(frame * 0.08) * 5;
+  // wings
+  ctx.fillStyle = c('#550011');
+  ctx.beginPath();
+  ctx.moveTo(cx-10, cy-40); ctx.lineTo(cx-70, cy-70+wb);
+  ctx.lineTo(cx-50, cy-10); ctx.lineTo(cx-18, cy-10); ctx.fill();
+  ctx.beginPath();
+  ctx.moveTo(cx+10, cy-40); ctx.lineTo(cx+70, cy-70+wb);
+  ctx.lineTo(cx+50, cy-10); ctx.lineTo(cx+18, cy-10); ctx.fill();
+  // legs
+  px(ctx, cx-18, cy+2,  14, 24, c(col));
+  px(ctx, cx+4,  cy+2,  14, 24, c(col));
+  px(ctx, cx-20, cy+22, 16, 10, c('#331100'));
+  px(ctx, cx+4,  cy+22, 16, 10, c('#331100'));
+  // torso - muscular
+  px(ctx, cx-20, cy-44, 40, 46, c(col));
+  px(ctx, cx-4,  cy-38,  4, 20, c('#aa1133'));
+  px(ctx, cx+2,  cy-38,  4, 20, c('#aa1133'));
+  // arms
+  px(ctx, cx-34, cy-42, 14, 36, c(col));
+  px(ctx, cx+20, cy-42, 14, 36, c(col));
+  // claws
+  for (let i=0; i<3; i++) px(ctx, cx-36+i*5, cy-8, 4, 8, c('#331100'));
+  for (let i=0; i<3; i++) px(ctx, cx+20+i*5, cy-8, 4, 8, c('#331100'));
+  // head
+  px(ctx, cx-16, cy-72, 32, 30, c(col));
+  // horns
+  ctx.fillStyle = c('#331100');
+  ctx.beginPath(); ctx.moveTo(cx-12, cy-70); ctx.lineTo(cx-22, cy-100); ctx.lineTo(cx-4, cy-70); ctx.fill();
+  ctx.beginPath(); ctx.moveTo(cx+4,  cy-70); ctx.lineTo(cx+22, cy-100); ctx.lineTo(cx+12, cy-70); ctx.fill();
+  // glowing eyes
+  px(ctx, cx-11, cy-62, 8, 7, c('#ff4400'));
+  px(ctx, cx+3,  cy-62, 8, 7, c('#ff4400'));
+  px(ctx, cx-9,  cy-60, 5, 4, c('#ffaa00'));
+  px(ctx, cx+5,  cy-60, 5, 4, c('#ffaa00'));
+  // teeth
+  px(ctx, cx-8, cy-48, 16, 6, c('#330000'));
+  for (let i=0; i<4; i++) px(ctx, cx-7+i*4, cy-46, 3, 5, c('#ffffff'));
+}
+
+function drawMedusa(ctx, cx, cy, c, col, frame) {
+  const sway = Math.sin(frame * 0.07) * 2;
+  // snake lower body
+  ctx.fillStyle = c(col);
+  ctx.beginPath();
+  ctx.moveTo(cx-12, cy+2);
+  ctx.quadraticCurveTo(cx-30, cy+20, cx-10+sway, cy+40);
+  ctx.quadraticCurveTo(cx+20, cy+50, cx+30, cy+30);
+  ctx.quadraticCurveTo(cx+20, cy+10, cx+12, cy+2);
+  ctx.fill();
+  // scale pattern on tail
+  for (let i=0; i<4; i++) px(ctx, cx-6, cy+6+i*8, 12, 5, c('#224433'));
+  // torso
+  px(ctx, cx-14, cy-30, 28, 32, c('#cc9977'));
+  px(ctx, cx-16, cy-18, 32, 14, c('#225544'));
+  // arms
+  px(ctx, cx-26, cy-28, 12, 24, c('#cc9977'));
+  px(ctx, cx+14, cy-28, 12, 24, c('#cc9977'));
+  // head
+  px(ctx, cx-12, cy-52, 24, 26, c('#cc9977'));
+  // snake hair
+  for (let i=0; i<5; i++) {
+    const sx  = cx - 16 + i * 8;
+    const sw  = Math.sin(frame * 0.1 + i) * 3;
+    px(ctx, sx+sw, cy-72, 5, 22, c('#228844'));
+    px(ctx, sx+sw-2, cy-76, 4, 6, c('#33aa55'));
+    px(ctx, sx+sw,   cy-74, 2, 3, c('#ff3300'));
+  }
+  // petrifying gold eyes
+  px(ctx, cx-8, cy-46, 6, 5, c('#ffcc00'));
+  px(ctx, cx+2, cy-46, 6, 5, c('#ffcc00'));
+  px(ctx, cx-6, cy-44, 3, 3, c('#886600'));
+  px(ctx, cx+4, cy-44, 3, 3, c('#886600'));
+  // mouth
+  px(ctx, cx-6, cy-36, 12, 3, c('#994455'));
+}
+
+function drawWyvern(ctx, cx, cy, c, col, frame) {
+  const wb = Math.sin(frame * 0.09) * 7;
+  // wings outer
+  ctx.fillStyle = c('#334422');
+  ctx.beginPath();
+  ctx.moveTo(cx-8, cy-30); ctx.lineTo(cx-75, cy-60+wb);
+  ctx.lineTo(cx-55, cy-4); ctx.lineTo(cx-16, cy-4); ctx.fill();
+  ctx.beginPath();
+  ctx.moveTo(cx+8, cy-30); ctx.lineTo(cx+75, cy-60+wb);
+  ctx.lineTo(cx+55, cy-4); ctx.lineTo(cx+16, cy-4); ctx.fill();
+  // wings inner membrane
+  ctx.fillStyle = c(col);
+  ctx.beginPath();
+  ctx.moveTo(cx-8, cy-30); ctx.lineTo(cx-60, cy-52+wb);
+  ctx.lineTo(cx-44, cy-4); ctx.lineTo(cx-14, cy-4); ctx.fill();
+  ctx.beginPath();
+  ctx.moveTo(cx+8, cy-30); ctx.lineTo(cx+60, cy-52+wb);
+  ctx.lineTo(cx+44, cy-4); ctx.lineTo(cx+14, cy-4); ctx.fill();
+  // body
+  px(ctx, cx-18, cy-38, 36, 46, c(col));
+  // hind legs
+  px(ctx, cx-16, cy+8,  12, 20, c(col));
+  px(ctx, cx+4,  cy+8,  12, 20, c(col));
+  px(ctx, cx-20, cy+24, 14,  8, c('#334422'));
+  px(ctx, cx+6,  cy+24, 14,  8, c('#334422'));
+  // neck + head
+  px(ctx, cx-8, cy-60, 16, 24, c(col));
+  px(ctx, cx-14, cy-80, 28, 24, c(col));
+  px(ctx, cx+8,  cy-72, 18, 10, c(col));
+  px(ctx, cx+22, cy-68,  8,  4, c('#ff2200'));
+  // eyes
+  px(ctx, cx-8, cy-74, 6, 6, c('#ff8800'));
+  px(ctx, cx+4, cy-74, 6, 6, c('#ff8800'));
+  // back spines
+  for (let i=0; i<4; i++) px(ctx, cx-4+i*5, cy-44, 4, 10, c('#334422'));
+  // tail
+  ctx.fillStyle = c(col);
+  ctx.beginPath();
+  ctx.moveTo(cx-18, cy+10); ctx.lineTo(cx-60, cy+30); ctx.lineTo(cx-50, cy+14); ctx.fill();
+}
+
+// ============================================================
+//  FLOOR 6 SPRITES
+// ============================================================
+function drawDeathKnight2(ctx, cx, cy, c, col) {
+  // legs - heavy dark armor
+  px(ctx, cx-18, cy+2,  16, 24, c('#111122'));
+  px(ctx, cx+2,  cy+2,  16, 24, c('#111122'));
+  px(ctx, cx-20, cy+22, 20,  6, c('#222233'));
+  px(ctx, cx+0,  cy+22, 20,  6, c('#222233'));
+  // torso
+  px(ctx, cx-22, cy-44, 44, 46, c('#111122'));
+  px(ctx, cx-18, cy-40, 36, 10, c('#1a1a33'));
+  px(ctx, cx-18, cy-24, 36, 10, c('#1a1a33'));
+  px(ctx, cx-16, cy-8,  32, 10, c('#1a1a33'));
+  // shoulder pads
+  px(ctx, cx-34, cy-44, 14, 18, c('#222244'));
+  px(ctx, cx+20, cy-44, 14, 18, c('#222244'));
+  // arms
+  px(ctx, cx-32, cy-28, 12, 32, c('#111122'));
+  px(ctx, cx+20, cy-28, 12, 32, c('#111122'));
+  // helm
+  px(ctx, cx-16, cy-70, 32, 28, c('#111122'));
+  px(ctx, cx-18, cy-68, 36,  8, c('#1a1a33'));
+  // helm horns
+  ctx.fillStyle = c('#222244');
+  ctx.beginPath(); ctx.moveTo(cx-14, cy-68); ctx.lineTo(cx-22, cy-94); ctx.lineTo(cx-6, cy-68); ctx.fill();
+  ctx.beginPath(); ctx.moveTo(cx+6,  cy-68); ctx.lineTo(cx+22, cy-94); ctx.lineTo(cx+14, cy-68); ctx.fill();
+  // glowing green eyes
+  px(ctx, cx-10, cy-60,  8, 6, c('#00ff88'));
+  px(ctx, cx+2,  cy-60,  8, 6, c('#00ff88'));
+  px(ctx, cx-8,  cy-58,  5, 3, c('#88ffcc'));
+  px(ctx, cx+4,  cy-58,  5, 3, c('#88ffcc'));
+  // dark cape
+  ctx.fillStyle = c('#220033');
+  ctx.beginPath();
+  ctx.moveTo(cx-20, cy-40); ctx.lineTo(cx-30, cy+28); ctx.lineTo(cx-14, cy+28); ctx.fill();
+  // great sword
+  px(ctx, cx+22, cy-84,  8, 100, c('#334455'));
+  px(ctx, cx+14, cy-72, 24,   8, c('#445566'));
+  px(ctx, cx+24, cy-96,  6,  14, c('#aabbcc'));
+}
+
+function drawArchMage(ctx, cx, cy, c, col, frame) {
+  const o1 = Math.sin(frame * 0.08)     * 10;
+  const o2 = Math.sin(frame * 0.08 + 2) * 10;
+  const o3 = Math.sin(frame * 0.08 + 4) * 10;
+  // staff
+  px(ctx, cx+14, cy-80, 5, 100, c('#886644'));
+  px(ctx, cx+6,  cy-86, 20, 10, c('#997755'));
+  // floating orbs
+  ctx.fillStyle = c('#ff44ff');
+  ctx.beginPath(); ctx.arc(cx-28, cy-50+o1, 9, 0, Math.PI*2); ctx.fill();
+  ctx.fillStyle = c('#44aaff');
+  ctx.beginPath(); ctx.arc(cx+32, cy-40+o2, 9, 0, Math.PI*2); ctx.fill();
+  ctx.fillStyle = c('#ffaa00');
+  ctx.beginPath(); ctx.arc(cx-4,  cy-82+o3, 9, 0, Math.PI*2); ctx.fill();
+  // orb centers
+  ctx.fillStyle = c('#ffffff');
+  ctx.beginPath(); ctx.arc(cx-28, cy-50+o1, 4, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.arc(cx+32, cy-40+o2, 4, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.arc(cx-4,  cy-82+o3, 4, 0, Math.PI*2); ctx.fill();
+  // robe
+  ctx.fillStyle = c(col);
+  ctx.beginPath();
+  ctx.moveTo(cx-16, cy-48); ctx.lineTo(cx-28, cy+28);
+  ctx.lineTo(cx+28, cy+28); ctx.lineTo(cx+16, cy-48); ctx.fill();
+  px(ctx, cx-28, cy+20, 56, 6, c('#aa8822'));
+  px(ctx, cx-16, cy-48, 32, 6, c('#aa8822'));
+  px(ctx, cx-10, cy-48, 20, 76, c('#442277'));
+  // arms
+  px(ctx, cx-26, cy-44, 10, 28, c(col));
+  px(ctx, cx+16, cy-44, 10, 28, c(col));
+  // head
+  px(ctx, cx-11, cy-68, 22, 24, c('#ffddbb'));
+  // pointed hat
+  ctx.fillStyle = c(col);
+  ctx.beginPath();
+  ctx.moveTo(cx, cy-100); ctx.lineTo(cx-18, cy-68); ctx.lineTo(cx+18, cy-68); ctx.fill();
+  px(ctx, cx-20, cy-72, 40, 8, c('#aa8822'));
+  // beard
+  ctx.fillStyle = c('#dddddd');
+  ctx.beginPath();
+  ctx.moveTo(cx-8, cy-52); ctx.lineTo(cx-12, cy-20);
+  ctx.lineTo(cx+12, cy-20); ctx.lineTo(cx+8, cy-52); ctx.fill();
+  // eyes
+  px(ctx, cx-7, cy-60, 5, 5, c('#cc44ff'));
+  px(ctx, cx+2, cy-60, 5, 5, c('#cc44ff'));
+}
+
+function drawChimera(ctx, cx, cy, c, col, frame) {
+  const ts = Math.sin(frame * 0.1) * 8;
+  // snake tail
+  ctx.fillStyle = c('#557733');
+  ctx.beginPath();
+  ctx.moveTo(cx-28, cy+10); ctx.lineTo(cx-70, cy-10+ts);
+  ctx.lineTo(cx-62, cy+4);  ctx.lineTo(cx-26, cy+20); ctx.fill();
+  px(ctx, cx-76, cy-14+ts, 14, 8, c('#557733'));
+  px(ctx, cx-74, cy-12+ts,  4, 3, c('#ff2200'));
+  // main body
+  px(ctx, cx-30, cy-28, 58, 42, c(col));
+  // four legs
+  px(ctx, cx-28, cy+14, 14, 22, c(col));
+  px(ctx, cx-12, cy+14, 14, 22, c(col));
+  px(ctx, cx+4,  cy+14, 14, 22, c(col));
+  px(ctx, cx+18, cy+14, 14, 22, c(col));
+  // paws
+  px(ctx, cx-32, cy+32, 18, 8, c('#774411'));
+  px(ctx, cx-14, cy+32, 18, 8, c('#774411'));
+  px(ctx, cx+2,  cy+32, 18, 8, c('#774411'));
+  px(ctx, cx+18, cy+32, 18, 8, c('#774411'));
+  // lion mane
+  ctx.fillStyle = c('#553311');
+  ctx.beginPath(); ctx.arc(cx+22, cy-38, 28, 0, Math.PI*2); ctx.fill();
+  // lion head (front)
+  px(ctx, cx+8,  cy-58, 30, 28, c(col));
+  px(ctx, cx+12, cy-52,  7,  6, c('#ffaa00'));
+  px(ctx, cx+24, cy-52,  7,  6, c('#ffaa00'));
+  px(ctx, cx+14, cy-50,  4,  4, c('#000000'));
+  px(ctx, cx+26, cy-50,  4,  4, c('#000000'));
+  px(ctx, cx+14, cy-38, 18,  5, c('#553311'));
+  for (let i=0; i<3; i++) px(ctx, cx+14+i*5, cy-36, 4, 6, c('#ffffff'));
+  // goat head (back, smaller)
+  px(ctx, cx-22, cy-56, 18, 20, c('#aabbaa'));
+  ctx.fillStyle = c('#888877');
+  ctx.beginPath(); ctx.moveTo(cx-20, cy-56); ctx.lineTo(cx-28, cy-74); ctx.lineTo(cx-16, cy-56); ctx.fill();
+  ctx.beginPath(); ctx.moveTo(cx-10, cy-56); ctx.lineTo(cx-6,  cy-74); ctx.lineTo(cx-4,  cy-56); ctx.fill();
+  px(ctx, cx-20, cy-50, 5, 4, c('#ffee00'));
+  px(ctx, cx-10, cy-50, 5, 4, c('#ffee00'));
 }

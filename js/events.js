@@ -482,6 +482,57 @@ const FLOOR_EVENTS = {
         };
       }
     }
+  ],
+
+  // ==================== 4 階層 ====================
+  4: [
+    {
+      id: 'f4_placeholder',
+      oncePerFloor: false,
+      getContent() {
+        return {
+          title: '！　イベント発生　！',
+          desc: 'イベントが起きました。',
+          choices: [
+            { text: '進　む', disabled: false, effect() { return ''; } }
+          ]
+        };
+      }
+    }
+  ],
+
+  // ==================== 5 階層 ====================
+  5: [
+    {
+      id: 'f5_placeholder',
+      oncePerFloor: false,
+      getContent() {
+        return {
+          title: '！　イベント発生　！',
+          desc: 'イベントが起きました。',
+          choices: [
+            { text: '進　む', disabled: false, effect() { return ''; } }
+          ]
+        };
+      }
+    }
+  ],
+
+  // ==================== 6 階層 ====================
+  6: [
+    {
+      id: 'f6_placeholder',
+      oncePerFloor: false,
+      getContent() {
+        return {
+          title: '！　イベント発生　！',
+          desc: 'イベントが起きました。',
+          choices: [
+            { text: '進　む', disabled: false, effect() { return ''; } }
+          ]
+        };
+      }
+    }
   ]
 };
 

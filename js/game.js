@@ -128,7 +128,7 @@ function mulberry32(a) {
 //  FLOOR SELECT  ― ランダムで即座に次シーンへ
 // ============================================================
 function initFloorSelect() {
-  if (GS.floor === 4) { initBattle(); return; }
+  if (GS.floor === 7) { initBattle(); return; }
 
   if (GS.isFirstOfFloor) {
     GS.isFirstOfFloor = false;
