@@ -138,7 +138,7 @@ function initFloorSelect() {
     return;
   }
 
-  const pool   = GS.lastOption === 'stairs' ? ['battle', 'event'] : ['battle', 'event', 'stairs'];
+  const pool   = GS.lastOption === 'stairs' ? ['battle', 'battle', 'battle', 'event'] : ['battle', 'battle', 'battle', 'event', 'stairs'];
   const chosen = pool[Math.floor(Math.random() * pool.length)];
   GS.lastOption = chosen;
 
