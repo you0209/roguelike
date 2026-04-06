@@ -14,6 +14,11 @@ function generateLineup() {
   }));
   GS.shopLineup.relics = pickWeighted(relicPool, 5);
 
+  // スキル: 均等抽選で4〜5個
+  const skillCount = Math.random() < 0.5 ? 4 : 5;
+  const skillPool  = Object.entries(SHOP_SKILLS).map(([id, d]) => ({ id, ...d, cat: 'skill' }));
+  GS.shopLineup.skills = pickRandom(skillPool, skillCount);
+
   // アイテム: 均等抽選で3個
   const itemPool = Object.entries(ITEMS).map(([id, d]) => ({ id, ...d, cat: 'item' }));
   GS.shopLineup.items = pickRandom(itemPool, 3);
@@ -56,15 +61,16 @@ function initShop() {
   renderShop();
 }
 
+
 // ---- 描画 ----
 function renderShop() {
   const cont = document.getElementById('shop-items');
   cont.innerHTML = '';
   document.getElementById('shop-gold').textContent = `所持: ${GS.player.gold}G`;
 
-  const entries = shopTab === 'relics'
-    ? GS.shopLineup.relics
-    : GS.shopLineup.items;
+  const entries = shopTab === 'relics'  ? GS.shopLineup.relics
+               : shopTab === 'skills'  ? GS.shopLineup.skills
+               : GS.shopLineup.items;
 
   entries.forEach(item => {
     const owned  = isOwned(item);
@@ -95,6 +101,7 @@ function renderShop() {
 // ---- 所持判定 ----
 function isOwned(item) {
   if (item.cat === 'relic') return GS.player.relics.some(r => r.id === item.id);
+  if (item.cat === 'skill') return GS.player.skills.includes(item.id);
   return false; // アイテムは重複購入可能
 }
 
@@ -111,6 +118,8 @@ function doBuy(item) {
       GS.player.maxMp += item.mpBonus;
       GS.player.mp    += item.mpBonus;
     }
+  } else if (item.cat === 'skill') {
+    GS.player.skills.push(item.id);
   } else if (item.cat === 'item') {
     const ex = GS.player.inventory.find(e => e.id === item.id);
     if (ex) ex.count++; else GS.player.inventory.push({ id: item.id, count: 1 });

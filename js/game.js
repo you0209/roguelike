@@ -12,7 +12,7 @@ const GS = {
 
   player: null,
   enemy:  null,
-  shopLineup: { relics: [], items: [] },
+  shopLineup: { relics: [], skills: [], items: [] },
 
   get atkTotal() {
     let v = GS.player.attack;
