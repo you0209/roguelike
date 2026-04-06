@@ -45,7 +45,8 @@ function resetGame() {
     inventory: [],
     buffDef: false,
     isDefending: false,
-    hasRevival: false
+    hasRevival: false,
+    critRate: 0.1
   };
 }
 
