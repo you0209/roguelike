@@ -62,7 +62,8 @@ function resetGame() {
     mpFree: false, mpFreeRemain: 0,
     goldShield: false,
     nextEnemyPowered: false,
-    goldPowerActive: false, goldPowerMult: 1
+    goldPowerActive: false, goldPowerMult: 1,
+    critRate: 0.1
   };
 }
 

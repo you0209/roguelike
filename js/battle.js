@@ -121,9 +121,13 @@ function doAttack() {
   if (!playerTurn || battleOver) return;
   disableCmds();
 
-  const dmg = calcPhysDmg(GS.atkTotal, GS.enemy.defense, 1.0);
+  const isCrit = Math.random() < GS.player.critRate;
+  const dmg = calcPhysDmg(GS.atkTotal, GS.enemy.defense, isCrit ? 1.5 : 1.0);
   GS.enemy.hp -= dmg;
-  addLog(`勇者の攻撃！　${GS.enemy.name}に ${dmg} ダメージ！`, 'log-damage');
+  const msg = isCrit
+    ? `会心の一撃！　${GS.enemy.name}に ${dmg} ダメージ！`
+    : `勇者の攻撃！　${GS.enemy.name}に ${dmg} ダメージ！`;
+  addLog(msg, isCrit ? 'log-special' : 'log-damage');
   flash.enemy = 10;
   updateBattleUI();
   afterPlayerAction();
@@ -173,9 +177,14 @@ function doSkill(id) {
   p.mp -= mpCost;
 
   if (sk.type === 'physical') {
-    const dmg = calcPhysDmg(GS.atkTotal, e.defense, sk.power);
+    const isCrit = Math.random() < GS.player.critRate;
+    const power  = isCrit ? sk.power * 1.5 : sk.power;
+    const dmg    = calcPhysDmg(GS.atkTotal, e.defense, power);
     e.hp -= dmg;
-    addLog(`${sk.name}！　${e.name}に ${dmg} ダメージ！`, 'log-damage');
+    const msg = isCrit
+      ? `会心の${sk.name}！　${e.name}に ${dmg} ダメージ！`
+      : `${sk.name}！　${e.name}に ${dmg} ダメージ！`;
+    addLog(msg, isCrit ? 'log-special' : 'log-damage');
     flash.enemy = 10;
   } else if (sk.type === 'magic') {
     const dmg = calcMagicDmg(GS.atkTotal, sk.power);
