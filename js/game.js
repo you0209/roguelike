@@ -19,7 +19,16 @@ const GS = {
     for (const r of GS.player.relics) v += (r.attackBonus || 0);
     v *= GS.player.floorAtkMult;
     v *= GS.player.atkBuffMult;
-    if (GS.player.goldPowerActive) v *= GS.player.goldPowerMult;
+    if (GS.player.goldPowerActive) {
+      // 動的計算：現時点のゴールド量に基づく（25Gにつき×1.1、最大×2）
+      const stacks = Math.min(Math.floor(GS.player.gold / 25), 10);
+      v *= Math.min(2, Math.pow(1.1, stacks));
+    }
+    if (GS.player.hpLowAtkActive) {
+      // HPが低いほど攻撃力が上昇（最大×2）
+      const hpRatio = GS.player.hp / GS.player.maxHp;
+      v *= (1 + (1 - hpRatio));
+    }
     return Math.floor(v);
   },
   get defTotal() {
@@ -63,8 +72,17 @@ function resetGame() {
     goldShield: false,
     nextEnemyPowered: false,
     goldPowerActive: false, goldPowerMult: 1,
-    critRate: 0.1
+    critRate: 0.1,
+    critBuffRemain: 0,
+    damageTakenMult: 1,
+    turnDmg: 0,
+    skillPowerMult: 1,
+    skillDisabled: false,
+    mpCostMult: 1,
+    hpLowAtkActive: false,
+    challengeBattle: false
   };
+  GS._challengeVictory = false;
 }
 
 // ============================================================
@@ -160,6 +178,13 @@ function descendFloor(skipShop = false) {
   p.floorAtkMult = 1; p.floorDefMult = 1;
   p.goldDouble = false; p.goldShield = false;
   p.goldPowerActive = false; p.goldPowerMult = 1;
+  p.damageTakenMult = 1;
+  p.turnDmg = 0;
+  p.skillPowerMult = 1;
+  p.skillDisabled = false;
+  p.mpCostMult = 1;
+  p.hpLowAtkActive = false;
+  p.challengeBattle = false;
   if (!skipShop) {
     p.hp = p.maxHp; p.mp = p.maxMp;
     initShop();

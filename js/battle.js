@@ -40,6 +40,12 @@ function spawnEnemy() {
     enemy.goldReward = Math.floor(enemy.goldReward * 2);
     GS.player.nextEnemyPowered = false;
   }
+  if (GS.player.challengeBattle) {
+    enemy.attack  = Math.floor(enemy.attack  * 1.5);
+    enemy.defense = Math.floor(enemy.defense * 1.5);
+    GS.player.challengeBattle = false;
+    GS._challengeVictory = true;
+  }
   return enemy;
 }
 
@@ -56,11 +62,7 @@ function initBattle() {
   GS.player.isDefending = false;
   flash = { enemy: 0, player: 0 };
 
-  // N回バフのカウントダウン
-  const _p = GS.player;
-  if (_p.atkBuffRemain > 0) { _p.atkBuffRemain--; if (_p.atkBuffRemain === 0) _p.atkBuffMult = 1; }
-  if (_p.defBuffRemain > 0) { _p.defBuffRemain--; if (_p.defBuffRemain === 0) _p.defBuffMult = 1; }
-  if (_p.mpFreeRemain  > 0) { _p.mpFreeRemain--;  if (_p.mpFreeRemain  === 0) _p.mpFree = false; }
+  // バフカウントダウンは戦闘終了時（checkWin）に行う
 
   showScene('battle');
 
@@ -152,11 +154,17 @@ function openSkillMenu() {
 
   menu.appendChild(makeMenuBtn('← 戻る', false, () => menu.classList.add('hidden'), 'back-btn'));
 
+  if (GS.player.skillDisabled) {
+    menu.appendChild(makeMenuBtn('スキルが使用できない！（呪い中）', true, null));
+    return;
+  }
+
   GS.player.skills.forEach(id => {
     const sk = SKILLS[id];
     if (!sk) return;
-    const noMp  = GS.player.mp < sk.mpCost;
-    const label = `${sk.name}  [${sk.mpCost}MP]  ${sk.desc}`;
+    const actualCost = GS.player.mpFree ? 0 : Math.ceil(sk.mpCost * (GS.player.mpCostMult || 1));
+    const noMp  = GS.player.mp < actualCost;
+    const label = `${sk.name}  [${actualCost}MP]  ${sk.desc}`;
     menu.appendChild(makeMenuBtn(label, noMp, () => {
       menu.classList.add('hidden');
       doSkill(id);
@@ -172,13 +180,13 @@ function doSkill(id) {
   const p  = GS.player;
   const e  = GS.enemy;
 
-  const mpCost = p.mpFree ? 0 : sk.mpCost;
+  const mpCost = p.mpFree ? 0 : Math.ceil(sk.mpCost * (p.mpCostMult || 1));
   if (p.mp < mpCost) { addLog('MPが足りない！', 'log-system'); enableCmds(); return; }
   p.mp -= mpCost;
 
   if (sk.type === 'physical') {
     const isCrit = Math.random() < GS.player.critRate;
-    const power  = isCrit ? sk.power * 1.5 : sk.power;
+    const power  = (isCrit ? sk.power * 1.5 : sk.power) * (p.skillPowerMult || 1);
     const dmg    = calcPhysDmg(GS.atkTotal, e.defense, power);
     e.hp -= dmg;
     const msg = isCrit
@@ -187,12 +195,12 @@ function doSkill(id) {
     addLog(msg, isCrit ? 'log-special' : 'log-damage');
     flash.enemy = 10;
   } else if (sk.type === 'magic') {
-    const dmg = calcMagicDmg(GS.atkTotal, sk.power);
+    const dmg = calcMagicDmg(GS.atkTotal, sk.power * (p.skillPowerMult || 1));
     e.hp -= dmg;
     addLog(`${sk.name}！　魔法で ${e.name}に ${dmg} ダメージ！`, 'log-special');
     flash.enemy = 10;
   } else if (sk.type === 'heal') {
-    const healed = Math.min(sk.healAmount, p.maxHp - p.hp);
+    const healed = Math.min(Math.floor(sk.healAmount * (p.skillPowerMult || 1)), p.maxHp - p.hp);
     p.hp += healed;
     addLog(`${sk.name}！　HPが ${healed} 回復した。`, 'log-heal');
   } else if (sk.type === 'buff_def') {
@@ -283,6 +291,22 @@ function checkWin() {
   GS.totalBattles++;
 
   addLog(`${GS.enemy.name}を倒した！　${gold}G を得た！`, 'log-special');
+
+  // バフカウントダウン（戦闘終了時）
+  const _p = GS.player;
+  if (_p.atkBuffRemain  > 0) { _p.atkBuffRemain--;  if (_p.atkBuffRemain  === 0) _p.atkBuffMult = 1; }
+  if (_p.defBuffRemain  > 0) { _p.defBuffRemain--;  if (_p.defBuffRemain  === 0) _p.defBuffMult = 1; }
+  if (_p.mpFreeRemain   > 0) { _p.mpFreeRemain--;   if (_p.mpFreeRemain   === 0) _p.mpFree = false; }
+  if (_p.critBuffRemain > 0) { _p.critBuffRemain--;  if (_p.critBuffRemain === 0) _p.critRate = 0.1; }
+
+  // 6層挑戦戦闘の勝利ボーナス
+  if (GS._challengeVictory) {
+    GS._challengeVictory = false;
+    _p.attack  = Math.floor(_p.attack  * 1.3);
+    _p.defense = Math.floor(_p.defense * 1.3);
+    addLog('強敵を撃破！　自身のステータスが上昇した！', 'log-special');
+  }
+
   disableCmds();
 
   if (GS.enemy.isBoss) {
@@ -310,6 +334,7 @@ function checkLose() {
 }
 
 function applyDmgToPlayer(dmg, logMsg) {
+  dmg = Math.ceil(dmg * GS.player.damageTakenMult);
   if (GS.player.goldShield && dmg > 0) {
     const absorbed = Math.min(GS.player.gold, dmg);
     GS.player.gold -= absorbed;
@@ -327,6 +352,13 @@ function doEnemyTurn() {
 
   const e = GS.enemy;
   const p = GS.player;
+
+  // 毎ターン追加ダメージ（5層血の鎧効果）
+  if (p.turnDmg > 0) {
+    applyDmgToPlayer(p.turnDmg, `呪いの炎！　勇者に {dmg} ダメージ！`);
+    updateBattleUI();
+    if (checkLose()) return;
+  }
 
   if (e.poisoned) {
     e.hp -= e.poisonDmg;
