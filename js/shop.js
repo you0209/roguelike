@@ -7,12 +7,27 @@ let shopTab = 'relics';
 
 // ---- ランダムラインナップ生成 ----
 function generateLineup() {
-  // レリック: tier重み付き抽選で5個
   const relicPool = Object.entries(RELICS).map(([id, d]) => ({
     id, ...d, cat: 'relic',
     weight: ({ 1: 3, 2: 2, 3: 1 })[d.tier] ?? 1
   }));
-  GS.shopLineup.relics = pickWeighted(relicPool, 5);
+
+  // 確定枠: 単純ATKアップ系1個・単純DEFアップ系1個
+  const atkGuaranteed = relicPool.filter(r =>
+    !r.passive && r.attackBonus > 0 && r.defenseBonus === 0 && r.hpBonus >= 0 && r.mpBonus === 0
+  );
+  const defGuaranteed = relicPool.filter(r =>
+    !r.passive && r.defenseBonus > 0 && r.attackBonus === 0 && r.hpBonus >= 0 && r.mpBonus === 0
+  );
+  const guaranteed = [
+    ...pickWeighted(atkGuaranteed, 1),
+    ...pickWeighted(defGuaranteed, 1)
+  ];
+
+  // ランダム枠: 確定枠を除いた残りからtier重み付きで6個
+  const guaranteedIds = new Set(guaranteed.map(r => r.id));
+  const randomPool = relicPool.filter(r => !guaranteedIds.has(r.id));
+  GS.shopLineup.relics = [...guaranteed, ...pickWeighted(randomPool, 6)];
 
   // スキル: 均等抽選で4〜5個
   const skillCount = Math.random() < 0.5 ? 4 : 5;
