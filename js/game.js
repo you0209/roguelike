@@ -9,6 +9,7 @@ const GS = {
   battleCount:  0,
   totalBattles: 0,
   totalGold:    0,
+  debugMode: false,
 
   player: null,
   enemy:  null,
@@ -83,6 +84,15 @@ function resetGame() {
     challengeBattle: false
   };
   GS._challengeVictory = false;
+
+  if (GS.debugMode) {
+    const p = GS.player;
+    p.hp = 9999; p.maxHp = 9999;
+    p.mp = 999;  p.maxMp = 999;
+    p.attack = 200; p.defense = 100;
+    p.gold = 9999;
+    p.skills = Object.keys(SKILLS);
+  }
 }
 
 // ============================================================
@@ -100,6 +110,7 @@ function showScene(name) {
 function initTitle() {
   showScene('title');
   drawTitleCanvas();
+  _updateDebugBadge();
 }
 
 function drawTitleCanvas() {
@@ -234,12 +245,35 @@ function makeMenuBtn(label, disabled, handler, extraCls = '') {
 }
 
 // ============================================================
+//  DEBUG HELPERS
+// ============================================================
+function _updateDebugBadge() {
+  let badge = document.getElementById('debug-badge');
+  if (!badge) {
+    badge = document.createElement('div');
+    badge.id = 'debug-badge';
+    badge.style.cssText = 'position:fixed;top:8px;right:8px;background:#f00;color:#fff;font-size:11px;padding:2px 8px;border-radius:4px;font-family:monospace;z-index:9999;pointer-events:none;';
+    document.body.appendChild(badge);
+  }
+  badge.textContent  = 'DEBUG MODE';
+  badge.style.display = GS.debugMode ? 'block' : 'none';
+}
+
+// ============================================================
 //  EVENT LISTENERS
 // ============================================================
 document.addEventListener('DOMContentLoaded', () => {
 
   // Title
   document.getElementById('btn-start').onclick = () => { resetGame(); initFloorSelect(); };
+
+  // Debug mode toggle: タイトル画面で D キー
+  document.addEventListener('keydown', e => {
+    if (GS.scene === 'title' && e.key === 'd') {
+      GS.debugMode = !GS.debugMode;
+      _updateDebugBadge();
+    }
+  });
 
   // Stairs
   document.getElementById('btn-stairs-down').onclick = () => descendFloor();
