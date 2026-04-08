@@ -112,7 +112,7 @@ function doBuy(item) {
     GS.player.relics.push({ ...item });
     if (item.hpBonus) {
       GS.player.maxHp += item.hpBonus;
-      GS.player.hp    += item.hpBonus;
+      GS.player.hp     = Math.max(1, Math.min(GS.player.hp + item.hpBonus, GS.player.maxHp));
     }
     if (item.mpBonus) {
       GS.player.maxMp += item.mpBonus;

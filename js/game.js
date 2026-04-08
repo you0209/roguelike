@@ -30,6 +30,16 @@ const GS = {
       const hpRatio = GS.player.hp / GS.player.maxHp;
       v *= (1 + (1 - hpRatio));
     }
+    // 貪欲の宝珠
+    if (GS.player.relics.some(r => r.passive === 'greedOrb')) v += GS.player.relics.length * 3;
+    // 経験の勲章
+    if (GS.player.relics.some(r => r.passive === 'expMedal')) v += GS.battleCount * 3;
+    // 沈黙の仮面ボーナス（前の戦闘でスキル未使用の場合）
+    if (GS.player.silenceMaskBonus) v += GS.player.silenceMaskBonus;
+    // 持久の旗（5ターン以上生存でATK+30）
+    if (GS.player.relics.some(r => r.passive === 'enduranceFlag') && GS.player.battleTurn >= 5) v += 30;
+    // 混沌の石（ATK）
+    if (GS.player.chaosAtkBonus) v += GS.player.chaosAtkBonus;
     return Math.floor(v);
   },
   get defTotal() {
@@ -38,6 +48,10 @@ const GS = {
     if (GS.player.buffDef) v += 22;
     v *= GS.player.floorDefMult;
     v *= GS.player.defBuffMult;
+    // 偶数の紋章（偶数ターンにDEF+15）
+    if (GS.player.relics.some(r => r.passive === 'evenCrest') && GS.player.battleTurn % 2 === 0 && GS.player.battleTurn > 0) v += 15;
+    // 混沌の石（DEF）
+    if (GS.player.chaosDefBonus) v += GS.player.chaosDefBonus;
     return Math.floor(v);
   }
 };
@@ -81,7 +95,14 @@ function resetGame() {
     skillDisabled: false,
     mpCostMult: 1,
     hpLowAtkActive: false,
-    challengeBattle: false
+    challengeBattle: false,
+    // レリックパッシブ用
+    battleTurn: 0,
+    revengeBladeReady: false,
+    usedSkillThisBattle: false,
+    silenceMaskBonus: 0,
+    chaosAtkBonus: 0,
+    chaosDefBonus: 0
   };
   GS._challengeVictory = false;
 
