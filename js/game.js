@@ -162,7 +162,13 @@ function initFloorSelect() {
 
   if (chosen === 'battle')       initBattle();
   else if (chosen === 'event')   initEvent();
-  else if (chosen === 'stairs')  showScene('stairs');
+  else if (chosen === 'stairs') {
+    const p = GS.player;
+    document.getElementById('stairs-hp').textContent   = `${p.hp}/${p.maxHp}`;
+    document.getElementById('stairs-mp').textContent   = `${p.mp}/${p.maxMp}`;
+    document.getElementById('stairs-gold').textContent = p.gold;
+    showScene('stairs');
+  }
 }
 
 // ============================================================

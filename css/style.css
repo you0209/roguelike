@@ -207,6 +207,7 @@ body {
 }
 .enemy-status-box, .player-status-box { }
 .divider { height: 1px; background: #1e1e38; margin: 4px 0; }
+.battle-status-panel .bar-wrap { width: 70px; }
 
 .status-name {
   font-size: 13px;
@@ -454,6 +455,14 @@ body {
   display: flex; align-items: center; justify-content: center;
 }
 .stairs-btns { display: flex; gap: 24px; justify-content: center; margin-top: 4px; }
+.stairs-status {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  font-size: 13px;
+  color: #aaaacc;
+  margin-bottom: 12px;
+}
 .btn-stay { border-color: #445544; color: #99bb99; }
 .btn-stay:hover { background: #182418; border-color: #6688aa; color: #bbddbb; }
 
