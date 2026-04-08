@@ -65,6 +65,11 @@ function initBattle() {
   GS.player.usedSkillThisBattle  = false;
   GS.player.chaosAtkBonus    = 0;
   GS.player.chaosDefBonus    = 0;
+  // 前の戦闘の混沌の石HP/MPボーナスをリセット
+  if (GS.player.chaosMaxHpBonus) { GS.player.maxHp -= GS.player.chaosMaxHpBonus; GS.player.chaosMaxHpBonus = 0; }
+  if (GS.player.chaosMaxMpBonus) { GS.player.maxMp -= GS.player.chaosMaxMpBonus; GS.player.chaosMaxMpBonus = 0; }
+  GS.player.hp = Math.min(GS.player.hp, GS.player.maxHp);
+  GS.player.mp = Math.min(GS.player.mp, GS.player.maxMp);
   flash = { enemy: 0, player: 0 };
 
   // バフカウントダウンは戦闘終了時（checkWin）に行う
@@ -86,8 +91,8 @@ function initBattle() {
     const p = GS.player;
     if      (roll === 0) { p.chaosAtkBonus = 20; }
     else if (roll === 1) { p.chaosDefBonus = 20; }
-    else if (roll === 2) { p.hp = Math.min(p.maxHp, p.hp + 20); }
-    else                 { p.mp = Math.min(p.maxMp, p.mp + 20); }
+    else if (roll === 2) { p.chaosMaxHpBonus = 20; p.maxHp += 20; p.hp += 20; }
+    else                 { p.chaosMaxMpBonus = 20; p.maxMp += 20; p.mp += 20; }
     addLog(`混沌の石が発動！　${labels[roll]}+20！`, 'log-special');
   }
 

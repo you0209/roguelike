@@ -102,7 +102,9 @@ function resetGame() {
     usedSkillThisBattle: false,
     silenceMaskBonus: 0,
     chaosAtkBonus: 0,
-    chaosDefBonus: 0
+    chaosDefBonus: 0,
+    chaosMaxHpBonus: 0,
+    chaosMaxMpBonus: 0
   };
   GS._challengeVictory = false;
 
