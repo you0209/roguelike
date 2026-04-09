@@ -89,7 +89,7 @@ function initBattle() {
   // 混沌の石
   if (GS.player.relics.some(r => r.passive === 'chaosStone')) {
     const roll = Math.floor(Math.random() * 3);
-    const labels = ['ATK+20', 'DEF+20', '会心率+20%'];
+    const labels = ['攻撃力+20', '防御力+20', '会心率+20%'];
     const p = GS.player;
     if      (roll === 0) { p.chaosAtkBonus  = 20;  }
     else if (roll === 1) { p.chaosDefBonus  = 20;  }
@@ -295,7 +295,7 @@ function doSkill(id) {
     if (p.relics.some(r => r.passive === 'magicCatalyst')) magicMult *= 1.2;
     if (p.relics.some(r => r.passive === 'demonEye'))      magicMult *= 1.5;
     if (p.relics.some(r => r.passive === 'hourglass') && p.battleTurn >= 3) magicMult *= 1.2;
-    const dmg = calcMagicDmg(GS.atkTotal, sk.power * magicMult);
+    const dmg = calcMagicDmg(GS.magicAtkTotal, sk.power * magicMult);
     e.hp -= dmg;
     addLog(`${sk.name}！　魔法で ${e.name}に ${dmg} ダメージ！`, 'log-special');
     flash.enemy = 10;
@@ -381,7 +381,7 @@ function doSkill(id) {
   } else if (sk.type === 'soul_burst') {
     const hpRatio = p.hp / p.maxHp;
     const power   = (sk.basePower + (sk.maxPower - sk.basePower) * (1 - hpRatio)) * (p.skillPowerMult || 1);
-    const dmg     = calcMagicDmg(GS.atkTotal, power);
+    const dmg     = calcMagicDmg(GS.magicAtkTotal, power);
     e.hp -= dmg;
     addLog(`${sk.name}！　魔法で ${e.name}に ${dmg} ダメージ！`, 'log-special');
     flash.enemy = 10;
@@ -459,11 +459,11 @@ function logTurnRelics(p) {
   if (p.relics.some(r => r.passive === 'oddCharm') && t % 2 === 1)
     addLog('奇数のお守り！　奇数ターンにつき攻撃力1.3倍！', 'log-special');
   if (p.relics.some(r => r.passive === 'evenCrest') && t % 2 === 0)
-    addLog('偶数の紋章！　偶数ターンにつきDEF+15！', 'log-special');
+    addLog('偶数の紋章！　偶数ターンにつき防御力+15！', 'log-special');
   if (p.relics.some(r => r.passive === 'hourglass') && t === 3)
     addLog('砂時計発動！　3ターン目以降、全攻撃1.2倍！', 'log-special');
   if (p.relics.some(r => r.passive === 'enduranceFlag') && t === 5)
-    addLog('持久の旗発動！　ATK+30！', 'log-special');
+    addLog('持久の旗発動！　攻撃力+30！', 'log-special');
 }
 
 function afterPlayerAction() {
@@ -491,11 +491,11 @@ function checkWin() {
   if (_p.mpFreeRemain   > 0) { _p.mpFreeRemain--;   if (_p.mpFreeRemain   === 0) _p.mpFree = false; }
   if (_p.critBuffRemain > 0) { _p.critBuffRemain--;  if (_p.critBuffRemain === 0) _p.critRate = 0.1; }
 
-  // 沈黙の仮面（スキル未使用で勝利→次の戦闘でATK+20）
+  // 沈黙の仮面（スキル未使用で勝利→次の戦闘で攻撃力+20）
   if (_p.relics.some(r => r.passive === 'silenceMask')) {
     if (!_p.usedSkillThisBattle) {
       _p.silenceMaskBonus = 20;
-      addLog('沈黙の仮面の力が宿った！　次の戦闘でATK+20！', 'log-special');
+      addLog('沈黙の仮面の力が宿った！　次の戦闘で攻撃力+20！', 'log-special');
     } else {
       _p.silenceMaskBonus = 0;
     }

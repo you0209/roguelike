@@ -36,9 +36,9 @@ const GS = {
     if (GS.player.relics.some(r => r.passive === 'expMedal')) v += GS.battleCount * 3;
     // 沈黙の仮面ボーナス（前の戦闘でスキル未使用の場合）
     if (GS.player.silenceMaskBonus) v += GS.player.silenceMaskBonus;
-    // 持久の旗（5ターン以上生存でATK+30）
+    // 持久の旗（5ターン以上生存で攻撃力+30）
     if (GS.player.relics.some(r => r.passive === 'enduranceFlag') && GS.player.battleTurn >= 5) v += 30;
-    // 混沌の石（ATK）
+    // 混沌の石（攻撃力）
     if (GS.player.chaosAtkBonus) v += GS.player.chaosAtkBonus;
     return Math.floor(v);
   },
@@ -48,10 +48,16 @@ const GS = {
     if (GS.player.buffDef) v += 22;
     v *= GS.player.floorDefMult;
     v *= GS.player.defBuffMult;
-    // 偶数の紋章（偶数ターンにDEF+15）
+    // 偶数の紋章（偶数ターンに防御力+15）
     if (GS.player.relics.some(r => r.passive === 'evenCrest') && GS.player.battleTurn % 2 === 0 && GS.player.battleTurn > 0) v += 15;
-    // 混沌の石（DEF）
+    // 混沌の石（防御力）
     if (GS.player.chaosDefBonus) v += GS.player.chaosDefBonus;
+    return Math.floor(v);
+  },
+  get magicAtkTotal() {
+    let v = GS.player.magicAttack;
+    for (const r of GS.player.relics) v += (r.magicAttackBonus || 0);
+    v *= GS.player.floorAtkMult;
     return Math.floor(v);
   }
 };
@@ -71,7 +77,7 @@ function resetGame() {
   GS.player = {
     hp: 100, maxHp: 100,
     mp:  50, maxMp:  50,
-    attack: 15, defense: 10,
+    attack: 15, defense: 10, magicAttack: 10,
     gold: 50,
     relics: [],
     skills: ['slash'],
@@ -116,7 +122,7 @@ function resetGame() {
     const p = GS.player;
     p.hp = 9999; p.maxHp = 9999;
     p.mp = 999;  p.maxMp = 999;
-    p.attack = 200; p.defense = 100;
+    p.attack = 200; p.defense = 100; p.magicAttack = 200;
     p.gold = 9999;
     p.skills = Object.keys(SKILLS);
   }
@@ -129,6 +135,9 @@ function showScene(name) {
   document.querySelectorAll('.scene').forEach(s => s.classList.add('hidden'));
   document.getElementById('scene-' + name).classList.remove('hidden');
   GS.scene = name;
+  const hideOn = ['title', 'gameover', 'victory'];
+  const floatBtn = document.getElementById('btn-status-float');
+  if (floatBtn) floatBtn.classList.toggle('hidden', hideOn.includes(name));
 }
 
 // ============================================================
@@ -285,6 +294,76 @@ function makeMenuBtn(label, disabled, handler, extraCls = '') {
 }
 
 // ============================================================
+//  STATUS MODAL
+// ============================================================
+let _statusTab = 'stats';
+
+function openStatusModal() {
+  if (!GS.player) return;
+  _statusTab = 'stats';
+  document.querySelectorAll('.modal-tab').forEach(b => {
+    b.classList.toggle('active', b.dataset.stab === _statusTab);
+  });
+  renderStatusTab(_statusTab);
+  document.getElementById('status-modal').classList.remove('hidden');
+}
+
+function closeStatusModal() {
+  document.getElementById('status-modal').classList.add('hidden');
+}
+
+function renderStatusTab(tab) {
+  const p    = GS.player;
+  const cont = document.getElementById('modal-content');
+  cont.innerHTML = '';
+
+  if (tab === 'stats') {
+    const rows = [
+      ['攻撃力（計算後）',    GS.atkTotal],
+      ['魔法攻撃力（計算後）', GS.magicAtkTotal],
+      ['防御力（計算後）',    GS.defTotal],
+      ['HP',           `${p.hp} / ${p.maxHp}`],
+      ['MP',           `${p.mp} / ${p.maxMp}`],
+      ['会心率',        `${Math.round(p.critRate * 100)}%`],
+      ['所持Gold',      `${p.gold} G`],
+    ];
+    rows.forEach(([label, val]) => {
+      const row = document.createElement('div');
+      row.className = 'stat-row';
+      row.innerHTML = `<span class="stat-label">${label}</span><span>${val}</span>`;
+      cont.appendChild(row);
+    });
+
+  } else if (tab === 'relics') {
+    if (p.relics.length === 0) {
+      const em = document.createElement('div');
+      em.className = 'modal-empty';
+      em.textContent = 'レリックなし';
+      cont.appendChild(em);
+      return;
+    }
+    p.relics.forEach(r => {
+      const card = document.createElement('div');
+      card.className = 'modal-card';
+      card.innerHTML = `<div class="modal-card-name">${r.name}<span class="modal-card-sub">Tier ${r.tier}</span></div>
+        <div class="modal-card-desc">${r.desc}</div>`;
+      cont.appendChild(card);
+    });
+
+  } else if (tab === 'skills') {
+    p.skills.forEach(id => {
+      const sk = SKILLS[id];
+      if (!sk) return;
+      const card = document.createElement('div');
+      card.className = 'modal-card';
+      card.innerHTML = `<div class="modal-card-name">${sk.name}<span class="modal-card-sub">${sk.mpCost} MP</span></div>
+        <div class="modal-card-desc">${sk.desc}</div>`;
+      cont.appendChild(card);
+    });
+  }
+}
+
+// ============================================================
 //  DEBUG HELPERS
 // ============================================================
 function _updateDebugBadge() {
@@ -339,6 +418,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Shop leave
   document.getElementById('btn-shop-leave').onclick = () => initFloorSelect();
+
+  // Status modal
+  document.getElementById('btn-status-close').onclick  = closeStatusModal;
+  document.getElementById('btn-status-float').onclick  = openStatusModal;
+  document.getElementById('status-modal').addEventListener('click', e => {
+    if (e.target === document.getElementById('status-modal')) closeStatusModal();
+  });
+  document.querySelectorAll('.modal-tab').forEach(btn => {
+    btn.onclick = () => {
+      _statusTab = btn.dataset.stab;
+      document.querySelectorAll('.modal-tab').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      renderStatusTab(_statusTab);
+    };
+  });
 
   // Game over / Victory
   document.getElementById('btn-title').onclick         = () => initTitle();

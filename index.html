@@ -187,7 +187,26 @@
       </div>
     </div>
 
+  <!-- ========== STATUS FLOAT BUTTON ========== -->
+  <button id="btn-status-float" class="status-float-btn hidden">📋</button>
+
   </div><!-- /game-container -->
+
+  <!-- ========== STATUS MODAL ========== -->
+  <div id="status-modal" class="modal-overlay hidden">
+    <div class="modal-box">
+      <div class="modal-header">
+        <span class="modal-title">📋 ステータス</span>
+        <button id="btn-status-close" class="modal-close-btn">✕</button>
+      </div>
+      <div class="modal-tabs">
+        <button class="modal-tab active" data-stab="stats">能力値</button>
+        <button class="modal-tab" data-stab="relics">レリック</button>
+        <button class="modal-tab" data-stab="skills">スキル</button>
+      </div>
+      <div id="modal-content" class="modal-content"></div>
+    </div>
+  </div>
 
   <script src="data/enemies.js"></script>
   <script src="data/skills.js"></script>

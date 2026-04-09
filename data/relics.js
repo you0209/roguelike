@@ -65,16 +65,16 @@ const RELICS = {
   // ── 単純ステータス増加（MP・魔法向け）──
   magicStaff: {
     name: '魔導の杖',
-    desc: '攻撃力+10',
+    desc: '魔法攻撃力+10',
     tier: 1,
-    attackBonus: 10, defenseBonus: 0, hpBonus: 0, mpBonus: 0,
+    attackBonus: 0, magicAttackBonus: 10, defenseBonus: 0, hpBonus: 0, mpBonus: 0,
     price: 50
   },
   magicCrystal: {
     name: '魔力の結晶',
-    desc: '攻撃力+22',
+    desc: '魔法攻撃力+22',
     tier: 2,
-    attackBonus: 22, defenseBonus: 0, hpBonus: 0, mpBonus: 0,
+    attackBonus: 0, magicAttackBonus: 22, defenseBonus: 0, hpBonus: 0, mpBonus: 0,
     price: 110
   },
   magicOrb: {
@@ -132,7 +132,7 @@ const RELICS = {
   },
   silenceMask: {
     name: '沈黙の仮面',
-    desc: 'スキルを使わずに勝利すると次の戦闘でATK+20',
+    desc: 'スキルを使わずに勝利すると次の戦闘で攻撃力+20',
     tier: 2,
     attackBonus: 0, defenseBonus: 0, hpBonus: 0, mpBonus: 0,
     price: 85, passive: 'silenceMask'
@@ -141,14 +141,14 @@ const RELICS = {
   // ── パッシブ：攻撃強化 ──
   greedOrb: {
     name: '貪欲の宝珠',
-    desc: '所持レリック1個ごとにATK+3',
+    desc: '所持レリック1個ごとに攻撃力+3',
     tier: 1,
     attackBonus: 0, defenseBonus: 0, hpBonus: 0, mpBonus: 0,
     price: 55, passive: 'greedOrb'
   },
   expMedal: {
     name: '経験の勲章',
-    desc: '同じ階層の戦闘回数×3のATKボーナス',
+    desc: '同じ階層の戦闘回数×3の攻撃力ボーナス',
     tier: 1,
     attackBonus: 0, defenseBonus: 0, hpBonus: 0, mpBonus: 0,
     price: 55, passive: 'expMedal'
@@ -199,7 +199,7 @@ const RELICS = {
   },
   enduranceFlag: {
     name: '持久の旗',
-    desc: '5ターン以上生き残った場合ATK+30（その戦闘中）',
+    desc: '5ターン以上生き残った場合攻撃力+30（その戦闘中）',
     tier: 2,
     attackBonus: 0, defenseBonus: 0, hpBonus: 0, mpBonus: 0,
     price: 100, passive: 'enduranceFlag'
@@ -231,7 +231,7 @@ const RELICS = {
   // ── パッシブ：ランダム ──
   chaosStone: {
     name: '混沌の石',
-    desc: '戦闘開始時にATK/DEF/HP/MPのいずれかランダムで+20',
+    desc: '戦闘開始時に攻撃力/防御力/会心率のいずれかランダムで+20',
     tier: 1,
     attackBonus: 0, defenseBonus: 0, hpBonus: 0, mpBonus: 0,
     price: 45, passive: 'chaosStone'
