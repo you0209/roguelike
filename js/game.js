@@ -9,6 +9,7 @@ const GS = {
   battleCount:  0,
   totalBattles: 0,
   totalGold:    0,
+  debugMode: false,
 
   player: null,
   enemy:  null,
@@ -29,6 +30,16 @@ const GS = {
       const hpRatio = GS.player.hp / GS.player.maxHp;
       v *= (1 + (1 - hpRatio));
     }
+    // 貪欲の宝珠
+    if (GS.player.relics.some(r => r.passive === 'greedOrb')) v += GS.player.relics.length * 3;
+    // 経験の勲章
+    if (GS.player.relics.some(r => r.passive === 'expMedal')) v += GS.battleCount * 3;
+    // 沈黙の仮面ボーナス（前の戦闘でスキル未使用の場合）
+    if (GS.player.silenceMaskBonus) v += GS.player.silenceMaskBonus;
+    // 持久の旗（5ターン以上生存でATK+30）
+    if (GS.player.relics.some(r => r.passive === 'enduranceFlag') && GS.player.battleTurn >= 5) v += 30;
+    // 混沌の石（ATK）
+    if (GS.player.chaosAtkBonus) v += GS.player.chaosAtkBonus;
     return Math.floor(v);
   },
   get defTotal() {
@@ -37,6 +48,10 @@ const GS = {
     if (GS.player.buffDef) v += 22;
     v *= GS.player.floorDefMult;
     v *= GS.player.defBuffMult;
+    // 偶数の紋章（偶数ターンにDEF+15）
+    if (GS.player.relics.some(r => r.passive === 'evenCrest') && GS.player.battleTurn % 2 === 0 && GS.player.battleTurn > 0) v += 15;
+    // 混沌の石（DEF）
+    if (GS.player.chaosDefBonus) v += GS.player.chaosDefBonus;
     return Math.floor(v);
   }
 };
@@ -80,9 +95,27 @@ function resetGame() {
     skillDisabled: false,
     mpCostMult: 1,
     hpLowAtkActive: false,
-    challengeBattle: false
+    challengeBattle: false,
+    // レリックパッシブ用
+    battleTurn: 0,
+    revengeBladeReady: false,
+    usedSkillThisBattle: false,
+    silenceMaskBonus: 0,
+    chaosAtkBonus: 0,
+    chaosDefBonus: 0,
+    chaosMaxHpBonus: 0,
+    chaosMaxMpBonus: 0
   };
   GS._challengeVictory = false;
+
+  if (GS.debugMode) {
+    const p = GS.player;
+    p.hp = 9999; p.maxHp = 9999;
+    p.mp = 999;  p.maxMp = 999;
+    p.attack = 200; p.defense = 100;
+    p.gold = 9999;
+    p.skills = Object.keys(SKILLS);
+  }
 }
 
 // ============================================================
@@ -100,6 +133,7 @@ function showScene(name) {
 function initTitle() {
   showScene('title');
   drawTitleCanvas();
+  _updateDebugBadge();
 }
 
 function drawTitleCanvas() {
@@ -240,12 +274,35 @@ function makeMenuBtn(label, disabled, handler, extraCls = '') {
 }
 
 // ============================================================
+//  DEBUG HELPERS
+// ============================================================
+function _updateDebugBadge() {
+  let badge = document.getElementById('debug-badge');
+  if (!badge) {
+    badge = document.createElement('div');
+    badge.id = 'debug-badge';
+    badge.style.cssText = 'position:fixed;top:8px;right:8px;background:#f00;color:#fff;font-size:11px;padding:2px 8px;border-radius:4px;font-family:monospace;z-index:9999;pointer-events:none;';
+    document.body.appendChild(badge);
+  }
+  badge.textContent  = 'DEBUG MODE';
+  badge.style.display = GS.debugMode ? 'block' : 'none';
+}
+
+// ============================================================
 //  EVENT LISTENERS
 // ============================================================
 document.addEventListener('DOMContentLoaded', () => {
 
   // Title
   document.getElementById('btn-start').onclick = () => { resetGame(); initFloorSelect(); };
+
+  // Debug mode toggle: タイトル画面で D キー
+  document.addEventListener('keydown', e => {
+    if (GS.scene === 'title' && e.key === 'd') {
+      GS.debugMode = !GS.debugMode;
+      _updateDebugBadge();
+    }
+  });
 
   // Stairs
   document.getElementById('btn-stairs-down').onclick = () => descendFloor();

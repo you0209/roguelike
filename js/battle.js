@@ -58,8 +58,18 @@ function initBattle() {
   battleLog  = [];
   playerTurn = true;
   battleOver = false;
-  GS.player.buffDef     = false;
-  GS.player.isDefending = false;
+  GS.player.buffDef          = false;
+  GS.player.isDefending      = false;
+  GS.player.battleTurn       = 0;
+  GS.player.revengeBladeReady    = false;
+  GS.player.usedSkillThisBattle  = false;
+  GS.player.chaosAtkBonus    = 0;
+  GS.player.chaosDefBonus    = 0;
+  // 前の戦闘の混沌の石HP/MPボーナスをリセット
+  if (GS.player.chaosMaxHpBonus) { GS.player.maxHp -= GS.player.chaosMaxHpBonus; GS.player.chaosMaxHpBonus = 0; }
+  if (GS.player.chaosMaxMpBonus) { GS.player.maxMp -= GS.player.chaosMaxMpBonus; GS.player.chaosMaxMpBonus = 0; }
+  GS.player.hp = Math.min(GS.player.hp, GS.player.maxHp);
+  GS.player.mp = Math.min(GS.player.mp, GS.player.maxMp);
   flash = { enemy: 0, player: 0 };
 
   // バフカウントダウンは戦闘終了時（checkWin）に行う
@@ -73,6 +83,19 @@ function initBattle() {
   document.getElementById('enemy-name').textContent  = e.name + (e.isBoss ? ' 👑' : '');
 
   addLog(`${e.name}が現れた！`, 'log-system');
+
+  // 混沌の石
+  if (GS.player.relics.some(r => r.passive === 'chaosStone')) {
+    const roll = Math.floor(Math.random() * 4);
+    const labels = ['ATK', 'DEF', 'HP', 'MP'];
+    const p = GS.player;
+    if      (roll === 0) { p.chaosAtkBonus = 20; }
+    else if (roll === 1) { p.chaosDefBonus = 20; }
+    else if (roll === 2) { p.chaosMaxHpBonus = 20; p.maxHp += 20; p.hp += 20; }
+    else                 { p.chaosMaxMpBonus = 20; p.maxMp += 20; p.mp += 20; }
+    addLog(`混沌の石が発動！　${labels[roll]}+20！`, 'log-special');
+  }
+
   updateBattleUI();
   enableCmds();
   startBattleAnim();
@@ -123,24 +146,64 @@ function doAttack() {
   if (!playerTurn || battleOver) return;
   disableCmds();
 
-  const isCrit = Math.random() < GS.player.critRate;
-  const dmg = calcPhysDmg(GS.atkTotal, GS.enemy.defense, isCrit ? 1.5 : 1.0);
-  GS.enemy.hp -= dmg;
-  const msg = isCrit
-    ? `会心の一撃！　${GS.enemy.name}に ${dmg} ダメージ！`
-    : `勇者の攻撃！　${GS.enemy.name}に ${dmg} ダメージ！`;
-  addLog(msg, isCrit ? 'log-special' : 'log-damage');
+  const p = GS.player;
+  const e = GS.enemy;
+  p.battleTurn++;
+
+  // 攻撃倍率の計算
+  let attackMult = 1;
+  if (p.revengeBladeReady) { attackMult *= 1.5; p.revengeBladeReady = false; }
+  if (p.relics.some(r => r.passive === 'oddCharm')   && p.battleTurn % 2 === 1) attackMult *= 1.3;
+  if (p.relics.some(r => r.passive === 'hourglass')  && p.battleTurn >= 3)      attackMult *= 1.2;
+  if (p.relics.some(r => r.passive === 'demonEye'))  attackMult *= 0.7;
+
+  const critRate = p.critRate + (p.relics.some(r => r.passive === 'luckyFoot') ? 0.15 : 0);
+  const isCrit   = Math.random() < critRate;
+  const power    = (isCrit ? 1.5 : 1.0) * attackMult;
+  const dmg      = calcPhysDmg(GS.atkTotal, e.defense, power);
+  e.hp -= dmg;
+
+  const critPart    = isCrit ? '会心の一撃！　' : '';
+  const revengePart = (attackMult >= 1.5 && p.relics.some(r => r.passive === 'revengeBlade')) ? '復讐の刃！　' : '';
+  addLog(`${revengePart}${critPart}勇者の攻撃！　${e.name}に ${dmg} ダメージ！`, isCrit ? 'log-special' : 'log-damage');
   flash.enemy = 10;
+
+  // 吸血の牙
+  if (p.relics.some(r => r.passive === 'lifeSteal')) {
+    const heal = Math.max(1, Math.floor(dmg * 0.15));
+    p.hp = Math.min(p.maxHp, p.hp + heal);
+    addLog(`吸血の牙！　${heal}HP吸収！`, 'log-heal');
+  }
+
+  // 連撃のリング（10%で2回目）
+  if (p.relics.some(r => r.passive === 'doubleHit') && Math.random() < 0.1) {
+    const dmg2 = calcPhysDmg(GS.atkTotal, e.defense, 1.0);
+    e.hp -= dmg2;
+    addLog(`連撃！　さらに ${dmg2} ダメージ！`, 'log-damage');
+    flash.enemy = 10;
+  }
+
   updateBattleUI();
   afterPlayerAction();
 }
 
 function doDefend() {
   if (!playerTurn || battleOver) return;
+
+  // 狂戦士の証
+  if (GS.player.relics.some(r => r.passive === 'berserker')) {
+    addLog('狂戦士の証の力で防御できない！', 'log-system');
+    enableCmds();
+    return;
+  }
   disableCmds();
 
+  GS.player.battleTurn++;
   GS.player.isDefending = true;
   GS.player.buffDef     = true;
+  if (GS.player.relics.some(r => r.passive === 'revengeBlade')) {
+    GS.player.revengeBladeReady = true;
+  }
   addLog('勇者は防御態勢をとった！　ダメージを大幅軽減。', 'log-system');
   updateBattleUI();
   afterPlayerAction();
@@ -154,15 +217,16 @@ function openSkillMenu() {
 
   menu.appendChild(makeMenuBtn('← 戻る', false, () => menu.classList.add('hidden'), 'back-btn'));
 
-  if (GS.player.skillDisabled) {
+  if (GS.player.skillDisabled || GS.player.relics.some(r => r.passive === 'cursedHelm')) {
     menu.appendChild(makeMenuBtn('スキルが使用できない！（呪い中）', true, null));
     return;
   }
 
+  const mpSaverBonus = GS.player.relics.some(r => r.passive === 'mpSaver') ? 2 : 0;
   GS.player.skills.forEach(id => {
     const sk = SKILLS[id];
     if (!sk) return;
-    const actualCost = GS.player.mpFree ? 0 : Math.ceil(sk.mpCost * (GS.player.mpCostMult || 1));
+    const actualCost = GS.player.mpFree ? 0 : Math.max(1, Math.ceil(sk.mpCost * (GS.player.mpCostMult || 1)) - mpSaverBonus);
     const noMp  = GS.player.mp < actualCost;
     const label = `${sk.name}  [${actualCost}MP]  ${sk.desc}`;
     menu.appendChild(makeMenuBtn(label, noMp, () => {
@@ -180,14 +244,22 @@ function doSkill(id) {
   const p  = GS.player;
   const e  = GS.enemy;
 
-  const mpCost = p.mpFree ? 0 : Math.ceil(sk.mpCost * (p.mpCostMult || 1));
+  p.battleTurn++;
+  p.usedSkillThisBattle = true;
+
+  const mpSaverBonus = p.relics.some(r => r.passive === 'mpSaver') ? 2 : 0;
+  const mpCost = p.mpFree ? 0 : Math.max(1, Math.ceil(sk.mpCost * (p.mpCostMult || 1)) - mpSaverBonus);
   if (p.mp < mpCost) { addLog('MPが足りない！', 'log-system'); enableCmds(); return; }
   p.mp -= mpCost;
 
   if (sk.type === 'physical') {
-    const isCrit = Math.random() < GS.player.critRate;
-    const power  = (isCrit ? sk.power * 1.5 : sk.power) * (p.skillPowerMult || 1);
-    const dmg    = calcPhysDmg(GS.atkTotal, e.defense, power);
+    const critRate = p.critRate + (p.relics.some(r => r.passive === 'luckyFoot') ? 0.15 : 0);
+    const isCrit   = Math.random() < critRate;
+    let physMult   = (isCrit ? sk.power * 1.5 : sk.power) * (p.skillPowerMult || 1);
+    if (p.relics.some(r => r.passive === 'oddCharm')  && p.battleTurn % 2 === 1) physMult *= 1.3;
+    if (p.relics.some(r => r.passive === 'hourglass') && p.battleTurn >= 3)      physMult *= 1.2;
+    if (p.relics.some(r => r.passive === 'demonEye')) physMult *= 0.7;
+    const dmg    = calcPhysDmg(GS.atkTotal, e.defense, physMult);
     e.hp -= dmg;
     const msg = isCrit
       ? `会心の${sk.name}！　${e.name}に ${dmg} ダメージ！`
@@ -195,7 +267,11 @@ function doSkill(id) {
     addLog(msg, isCrit ? 'log-special' : 'log-damage');
     flash.enemy = 10;
   } else if (sk.type === 'magic') {
-    const dmg = calcMagicDmg(GS.atkTotal, sk.power * (p.skillPowerMult || 1));
+    let magicMult = p.skillPowerMult || 1;
+    if (p.relics.some(r => r.passive === 'magicCatalyst')) magicMult *= 1.2;
+    if (p.relics.some(r => r.passive === 'demonEye'))      magicMult *= 1.5;
+    if (p.relics.some(r => r.passive === 'hourglass') && p.battleTurn >= 3) magicMult *= 1.2;
+    const dmg = calcMagicDmg(GS.atkTotal, sk.power * magicMult);
     e.hp -= dmg;
     addLog(`${sk.name}！　魔法で ${e.name}に ${dmg} ダメージ！`, 'log-special');
     flash.enemy = 10;
@@ -240,6 +316,7 @@ function doItem(idx, id) {
   if (!playerTurn || battleOver) return;
   disableCmds();
 
+  GS.player.battleTurn++;
   const it = ITEMS[id];
   const p  = GS.player;
   const e  = GS.enemy;
@@ -284,7 +361,8 @@ function checkWin() {
   if (GS.enemy.hp > 0) return false;
   battleOver = true;
 
-  const gold = Math.floor(GS.enemy.goldReward * (GS.player.goldDouble ? 2 : 1));
+  const merchantMult = GS.player.relics.some(r => r.passive === 'merchantRing') ? 1.2 : 1;
+  const gold = Math.floor(GS.enemy.goldReward * (GS.player.goldDouble ? 2 : 1) * merchantMult);
   GS.player.gold += gold;
   GS.totalGold   += gold;
   GS.battleCount++;
@@ -298,6 +376,16 @@ function checkWin() {
   if (_p.defBuffRemain  > 0) { _p.defBuffRemain--;  if (_p.defBuffRemain  === 0) _p.defBuffMult = 1; }
   if (_p.mpFreeRemain   > 0) { _p.mpFreeRemain--;   if (_p.mpFreeRemain   === 0) _p.mpFree = false; }
   if (_p.critBuffRemain > 0) { _p.critBuffRemain--;  if (_p.critBuffRemain === 0) _p.critRate = 0.1; }
+
+  // 沈黙の仮面（スキル未使用で勝利→次の戦闘でATK+20）
+  if (_p.relics.some(r => r.passive === 'silenceMask')) {
+    if (!_p.usedSkillThisBattle) {
+      _p.silenceMaskBonus = 20;
+      addLog('沈黙の仮面の力が宿った！　次の戦闘でATK+20！', 'log-special');
+    } else {
+      _p.silenceMaskBonus = 0;
+    }
+  }
 
   // 6層挑戦戦闘の勝利ボーナス
   if (GS._challengeVictory) {
