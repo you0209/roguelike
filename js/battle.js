@@ -307,17 +307,25 @@ function doSkill(id) {
     addLog(`${sk.name}！　防御力が大幅に上昇した！`, 'log-system');
 
   } else if (sk.type === 'physical_multi') {
-    let totalDmg = 0;
-    for (let i = 0; i < sk.hits; i++) {
+    function doHit(hitIndex) {
+      if (battleOver) return;
       const critRate = p.critRate + (p.relics.some(r => r.passive === 'luckyFoot') ? 0.15 : 0);
       const isCrit   = Math.random() < critRate;
       let power = (isCrit ? sk.power * 1.5 : sk.power) * (p.skillPowerMult || 1);
       if (p.relics.some(r => r.passive === 'demonEye')) power *= 0.7;
-      totalDmg += calcPhysDmg(GS.atkTotal, e.defense, power);
+      const dmg = calcPhysDmg(GS.atkTotal, e.defense, power);
+      e.hp -= dmg;
+      addLog(`${sk.name} ${hitIndex + 1}撃目！　${isCrit ? '会心！　' : ''}${e.name}に ${dmg} ダメージ！`, isCrit ? 'log-special' : 'log-damage');
+      flash.enemy = 10;
+      updateBattleUI();
+      if (hitIndex + 1 < sk.hits && e.hp > 0) {
+        setTimeout(() => doHit(hitIndex + 1), 350);
+      } else {
+        afterPlayerAction();
+      }
     }
-    e.hp -= totalDmg;
-    addLog(`${sk.name}！　${e.name}に ${totalDmg} ダメージ（${sk.hits}ヒット）！`, 'log-damage');
-    flash.enemy = 10;
+    doHit(0);
+    return;
 
   } else if (sk.type === 'physical_no_def') {
     const critRate = p.critRate + (p.relics.some(r => r.passive === 'luckyFoot') ? 0.15 : 0);
