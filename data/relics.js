@@ -208,9 +208,9 @@ const RELICS = {
   // ── パッシブ：デメリット付き ──
   cursedHelm: {
     name: '呪われた兜',
-    desc: '防御力+25 / スキル使用不可',
+    desc: '通常攻撃2連打 / スキル使用不可',
     tier: 2,
-    attackBonus: 0, defenseBonus: 25, hpBonus: 0, mpBonus: 0,
+    attackBonus: 0, defenseBonus: 0, hpBonus: 0, mpBonus: 0,
     price: 80, passive: 'cursedHelm'
   },
   berserkerProof: {
