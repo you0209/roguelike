@@ -7,19 +7,19 @@ const ENEMIES = {
   // ----- Floor 1 -----
   slime: {
     name: 'スライム', sprite: 'slime', color: '#4aaf4a',
-    hp: 35, maxHp: 35, mp: 0, maxMp: 0,
+    hp: 30, maxHp: 30, mp: 0, maxMp: 0,
     attack: 8, defense: 3,
     goldReward: 12, isBoss: false, bossSkills: []
   },
   bat: {
     name: 'コウモリ', sprite: 'bat', color: '#6644aa',
-    hp: 28, maxHp: 28, mp: 0, maxMp: 0,
+    hp: 24, maxHp: 24, mp: 0, maxMp: 0,
     attack: 11, defense: 2,
     goldReward: 14, isBoss: false, bossSkills: []
   },
   goblin: {
     name: 'ゴブリン', sprite: 'goblin', color: '#44aa44',
-    hp: 45, maxHp: 45, mp: 0, maxMp: 0,
+    hp: 40, maxHp: 40, mp: 0, maxMp: 0,
     attack: 13, defense: 5,
     goldReward: 18, isBoss: false, bossSkills: []
   },
@@ -27,20 +27,20 @@ const ENEMIES = {
   // ----- Floor 2 -----
   wolf: {
     name: 'ウルフ', sprite: 'wolf', color: '#8888aa',
-    hp: 60, maxHp: 60, mp: 0, maxMp: 0,
-    attack: 20, defense: 7,
+    hp: 52, maxHp: 52, mp: 0, maxMp: 0,
+    attack: 18, defense: 7,
     goldReward: 24, isBoss: false, bossSkills: []
   },
   orc: {
     name: 'オーク', sprite: 'orc', color: '#558855',
-    hp: 78, maxHp: 78, mp: 0, maxMp: 0,
-    attack: 22, defense: 12,
+    hp: 70, maxHp: 70, mp: 0, maxMp: 0,
+    attack: 20, defense: 12,
     goldReward: 28, isBoss: false, bossSkills: []
   },
   skeleton: {
     name: 'スケルトン', sprite: 'skeleton', color: '#ddddcc',
-    hp: 55, maxHp: 55, mp: 10, maxMp: 10,
-    attack: 18, defense: 8,
+    hp: 48, maxHp: 48, mp: 10, maxMp: 10,
+    attack: 16, defense: 8,
     goldReward: 26, isBoss: false, bossSkills: []
   },
 
