@@ -129,6 +129,9 @@ function showScene(name) {
   document.querySelectorAll('.scene').forEach(s => s.classList.add('hidden'));
   document.getElementById('scene-' + name).classList.remove('hidden');
   GS.scene = name;
+  const hideOn = ['title', 'gameover', 'victory'];
+  const floatBtn = document.getElementById('btn-status-float');
+  if (floatBtn) floatBtn.classList.toggle('hidden', hideOn.includes(name));
 }
 
 // ============================================================
@@ -410,8 +413,8 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('btn-shop-leave').onclick = () => initFloorSelect();
 
   // Status modal
-  document.getElementById('btn-status-close').onclick = closeStatusModal;
-  document.getElementById('cmd-status').onclick        = openStatusModal;
+  document.getElementById('btn-status-close').onclick  = closeStatusModal;
+  document.getElementById('btn-status-float').onclick  = openStatusModal;
   document.getElementById('status-modal').addEventListener('click', e => {
     if (e.target === document.getElementById('status-modal')) closeStatusModal();
   });

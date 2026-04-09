@@ -108,7 +108,6 @@
           <button id="cmd-defend" class="cmd-btn">🛡 防　御</button>
           <button id="cmd-item"   class="cmd-btn">🎒 アイテム</button>
         </div>
-        <button id="cmd-status" class="status-peek-btn">📋 ステータス確認</button>
       </div>
       <div id="skill-menu"  class="sub-menu hidden"></div>
       <div id="item-menu"   class="sub-menu hidden"></div>
@@ -131,7 +130,6 @@
           <button id="btn-stairs-down" class="pixel-btn">降　り　る</button>
           <button id="btn-stairs-stay" class="pixel-btn btn-stay">留　ま　る</button>
         </div>
-        <button class="status-peek-btn" onclick="openStatusModal()">📋 ステータス確認</button>
       </div>
     </div>
 
@@ -143,7 +141,6 @@
           <p id="event-description"></p>
         </div>
         <div id="event-choices" class="event-choices"></div>
-        <button class="status-peek-btn" onclick="openStatusModal()">📋 ステータス確認</button>
       </div>
     </div>
 
@@ -160,7 +157,6 @@
       </div>
       <div id="shop-items" class="shop-items"></div>
       <button id="btn-shop-leave" class="pixel-btn shop-leave-btn">店を出る</button>
-      <button class="status-peek-btn" onclick="openStatusModal()">📋 ステータス確認</button>
     </div>
 
     <!-- ========== GAME OVER ========== -->
@@ -192,6 +188,9 @@
     </div>
 
   </div><!-- /game-container -->
+
+  <!-- ========== STATUS FLOAT BUTTON ========== -->
+  <button id="btn-status-float" class="status-float-btn hidden">📋</button>
 
   <!-- ========== STATUS MODAL ========== -->
   <div id="status-modal" class="modal-overlay hidden">
