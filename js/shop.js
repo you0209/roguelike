@@ -7,10 +7,12 @@ let shopTab = 'relics';
 
 // ---- ランダムラインナップ生成 ----
 function generateLineup() {
-  const relicPool = Object.entries(RELICS).map(([id, d]) => ({
-    id, ...d, cat: 'relic',
-    weight: ({ 1: 3, 2: 2, 3: 1 })[d.tier] ?? 1
-  }));
+  const ownedRelicIds = new Set(GS.player.relics.map(r => r.id));
+  const ownedSkillIds = new Set(GS.player.skills);
+
+  const relicPool = Object.entries(RELICS)
+    .filter(([id]) => !ownedRelicIds.has(id))
+    .map(([id, d]) => ({ id, ...d, cat: 'relic', weight: ({ 1: 3, 2: 2, 3: 1 })[d.tier] ?? 1 }));
 
   // 確定枠: 単純ATKアップ系1個・単純DEFアップ系1個
   const atkGuaranteed = relicPool.filter(r =>
@@ -29,9 +31,11 @@ function generateLineup() {
   const randomPool = relicPool.filter(r => !guaranteedIds.has(r.id));
   GS.shopLineup.relics = [...guaranteed, ...pickWeighted(randomPool, 6)];
 
-  // スキル: 均等抽選で4〜5個
+  // スキル: 未習得のもののみ均等抽選で4〜5個
   const skillCount = Math.random() < 0.5 ? 4 : 5;
-  const skillPool  = Object.entries(SHOP_SKILLS).map(([id, d]) => ({ id, ...d, cat: 'skill' }));
+  const skillPool  = Object.entries(SHOP_SKILLS)
+    .filter(([id]) => !ownedSkillIds.has(id))
+    .map(([id, d]) => ({ id, ...d, cat: 'skill' }));
   GS.shopLineup.skills = pickRandom(skillPool, skillCount);
 
   // アイテム: 均等抽選で3個
