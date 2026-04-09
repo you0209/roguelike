@@ -66,6 +66,7 @@ function resetGame() {
   GS.lastOption     = null;
   GS.floorEventsUsed = new Set();
   GS.forcedEnemy    = null;
+  GS.stairsStep     = 0;
 
   GS.player = {
     hp: 100, maxHp: 100,
@@ -185,6 +186,7 @@ function mulberry32(a) {
 function initFloorSelect() {
   if (GS.floor === 7) { initBattle(); return; }
 
+  // 各フロア1戦目は必ず戦闘
   if (GS.isFirstOfFloor) {
     GS.isFirstOfFloor = false;
     GS.lastOption     = 'battle';
@@ -192,19 +194,24 @@ function initFloorSelect() {
     return;
   }
 
-  const pool   = GS.lastOption === 'stairs' ? ['battle', 'battle', 'battle', 'event'] : ['battle', 'battle', 'battle', 'event', 'stairs'];
-  const chosen = pool[Math.floor(Math.random() * pool.length)];
-  GS.lastOption = chosen;
-
-  if (chosen === 'battle')       initBattle();
-  else if (chosen === 'event')   initEvent();
-  else if (chosen === 'stairs') {
+  // 階段判定（stairsStep × 10%、最大100%）
+  if (Math.random() < Math.min(GS.stairsStep * 0.1, 1)) {
+    GS.stairsStep = 0;
+    GS.lastOption = 'stairs';
     const p = GS.player;
     document.getElementById('stairs-hp').textContent   = `${p.hp}/${p.maxHp}`;
     document.getElementById('stairs-mp').textContent   = `${p.mp}/${p.maxMp}`;
     document.getElementById('stairs-gold').textContent = p.gold;
     showScene('stairs');
+    return;
   }
+
+  // 階段なし → 戦闘75% / イベント25%、カウンター+1
+  GS.stairsStep++;
+  const chosen = Math.random() < 0.75 ? 'battle' : 'event';
+  GS.lastOption = chosen;
+  if (chosen === 'battle') initBattle();
+  else                     initEvent();
 }
 
 // ============================================================
@@ -216,6 +223,7 @@ function descendFloor(skipShop = false) {
   GS.isFirstOfFloor = true;
   GS.lastOption     = null;
   GS.floorEventsUsed = new Set();
+  GS.stairsStep     = 0;
   const p = GS.player;
   p.floorAtkMult = 1; p.floorDefMult = 1;
   p.goldDouble = false; p.goldShield = false;
