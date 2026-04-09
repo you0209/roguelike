@@ -66,9 +66,10 @@ function initBattle() {
   GS.player.counterActive        = false;
   GS.player.chaosAtkBonus    = 0;
   GS.player.chaosDefBonus    = 0;
-  // 前の戦闘の混沌の石HP/MPボーナスをリセット
-  if (GS.player.chaosMaxHpBonus) { GS.player.maxHp -= GS.player.chaosMaxHpBonus; GS.player.chaosMaxHpBonus = 0; }
-  if (GS.player.chaosMaxMpBonus) { GS.player.maxMp -= GS.player.chaosMaxMpBonus; GS.player.chaosMaxMpBonus = 0; }
+  // 前の戦闘の混沌の石HP/MP/CRITボーナスをリセット
+  if (GS.player.chaosMaxHpBonus)  { GS.player.maxHp    -= GS.player.chaosMaxHpBonus;  GS.player.chaosMaxHpBonus  = 0; }
+  if (GS.player.chaosMaxMpBonus)  { GS.player.maxMp    -= GS.player.chaosMaxMpBonus;  GS.player.chaosMaxMpBonus  = 0; }
+  if (GS.player.chaosCritBonus)   { GS.player.critRate -= GS.player.chaosCritBonus;   GS.player.chaosCritBonus   = 0; }
   GS.player.hp = Math.min(GS.player.hp, GS.player.maxHp);
   GS.player.mp = Math.min(GS.player.mp, GS.player.maxMp);
   flash = { enemy: 0, player: 0 };
@@ -87,14 +88,13 @@ function initBattle() {
 
   // 混沌の石
   if (GS.player.relics.some(r => r.passive === 'chaosStone')) {
-    const roll = Math.floor(Math.random() * 4);
-    const labels = ['ATK', 'DEF', 'HP', 'MP'];
+    const roll = Math.floor(Math.random() * 3);
+    const labels = ['ATK+20', 'DEF+20', '会心率+20%'];
     const p = GS.player;
-    if      (roll === 0) { p.chaosAtkBonus = 20; }
-    else if (roll === 1) { p.chaosDefBonus = 20; }
-    else if (roll === 2) { p.chaosMaxHpBonus = 20; p.maxHp += 20; p.hp += 20; }
-    else                 { p.chaosMaxMpBonus = 20; p.maxMp += 20; p.mp += 20; }
-    addLog(`混沌の石が発動！　${labels[roll]}+20！`, 'log-special');
+    if      (roll === 0) { p.chaosAtkBonus  = 20;  }
+    else if (roll === 1) { p.chaosDefBonus  = 20;  }
+    else                 { p.chaosCritBonus = 0.2; p.critRate += 0.2; }
+    addLog(`混沌の石が発動！　${labels[roll]}！`, 'log-special');
   }
 
   updateBattleUI();
@@ -150,6 +150,7 @@ function doAttack() {
   const p = GS.player;
   const e = GS.enemy;
   p.battleTurn++;
+  logTurnRelics(p);
 
   // 攻撃倍率の計算
   let attackMult = 1;
@@ -222,6 +223,7 @@ function doDefend() {
   disableCmds();
 
   GS.player.battleTurn++;
+  logTurnRelics(GS.player);
   GS.player.isDefending = true;
   GS.player.buffDef     = true;
   if (GS.player.relics.some(r => r.passive === 'revengeBlade')) {
@@ -269,6 +271,7 @@ function doSkill(id) {
 
   p.battleTurn++;
   p.usedSkillThisBattle = true;
+  logTurnRelics(p);
 
   const mpSaverBonus = p.relics.some(r => r.passive === 'mpSaver') ? 2 : 0;
   const mpCost = p.mpFree ? 0 : Math.max(1, Math.ceil(sk.mpCost * (p.mpCostMult || 1)) - mpSaverBonus);
@@ -307,17 +310,25 @@ function doSkill(id) {
     addLog(`${sk.name}！　防御力が大幅に上昇した！`, 'log-system');
 
   } else if (sk.type === 'physical_multi') {
-    let totalDmg = 0;
-    for (let i = 0; i < sk.hits; i++) {
+    function doHit(hitIndex) {
+      if (battleOver) return;
       const critRate = p.critRate + (p.relics.some(r => r.passive === 'luckyFoot') ? 0.15 : 0);
       const isCrit   = Math.random() < critRate;
       let power = (isCrit ? sk.power * 1.5 : sk.power) * (p.skillPowerMult || 1);
       if (p.relics.some(r => r.passive === 'demonEye')) power *= 0.7;
-      totalDmg += calcPhysDmg(GS.atkTotal, e.defense, power);
+      const dmg = calcPhysDmg(GS.atkTotal, e.defense, power);
+      e.hp -= dmg;
+      addLog(`${sk.name} ${hitIndex + 1}撃目！　${isCrit ? '会心！　' : ''}${e.name}に ${dmg} ダメージ！`, isCrit ? 'log-special' : 'log-damage');
+      flash.enemy = 10;
+      updateBattleUI();
+      if (hitIndex + 1 < sk.hits && e.hp > 0) {
+        setTimeout(() => doHit(hitIndex + 1), 350);
+      } else {
+        afterPlayerAction();
+      }
     }
-    e.hp -= totalDmg;
-    addLog(`${sk.name}！　${e.name}に ${totalDmg} ダメージ（${sk.hits}ヒット）！`, 'log-damage');
-    flash.enemy = 10;
+    doHit(0);
+    return;
 
   } else if (sk.type === 'physical_no_def') {
     const critRate = p.critRate + (p.relics.some(r => r.passive === 'luckyFoot') ? 0.15 : 0);
@@ -414,6 +425,7 @@ function doItem(idx, id) {
   const it = ITEMS[id];
   const p  = GS.player;
   const e  = GS.enemy;
+  logTurnRelics(p);
 
   p.inventory[idx].count--;
   if (p.inventory[idx].count <= 0) p.inventory.splice(idx, 1);
@@ -446,6 +458,15 @@ function doItem(idx, id) {
 // ============================================================
 //  BATTLE FLOW
 // ============================================================
+function logTurnRelics(p) {
+  if (p.relics.some(r => r.passive === 'oddCharm') && p.battleTurn % 2 === 1)
+    addLog('奇数のお守り！　奇数ターンにつき攻撃力1.3倍！', 'log-special');
+  if (p.relics.some(r => r.passive === 'hourglass') && p.battleTurn === 3)
+    addLog('砂時計発動！　3ターン目以降、全攻撃1.2倍！', 'log-special');
+  if (p.relics.some(r => r.passive === 'enduranceFlag') && p.battleTurn === 5)
+    addLog('持久の旗発動！　ATK+30！', 'log-special');
+}
+
 function afterPlayerAction() {
   if (checkWin()) return;
   setTimeout(() => doEnemyTurn(), 700);
@@ -575,6 +596,8 @@ function doEnemyTurn() {
       updateBattleUI();
       if (checkWin()) return;
     } else {
+      if (p.relics.some(r => r.passive === 'evenCrest') && p.battleTurn % 2 === 0 && p.battleTurn > 0)
+        addLog('偶数の紋章！　偶数ターンにつきDEF+15！', 'log-special');
       let dmg = Math.max(1, Math.floor(e.attack - GS.defTotal * 0.55));
       if (p.isDefending) dmg = Math.floor(dmg * 0.25);
       applyDmgToPlayer(

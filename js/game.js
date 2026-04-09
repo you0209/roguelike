@@ -106,6 +106,7 @@ function resetGame() {
     chaosDefBonus: 0,
     chaosMaxHpBonus: 0,
     chaosMaxMpBonus: 0,
+    chaosCritBonus: 0,
     counterActive: false,
     counterPower: 0
   };
