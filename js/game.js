@@ -36,9 +36,9 @@ const GS = {
     if (GS.player.relics.some(r => r.passive === 'expMedal')) v += GS.battleCount * 3;
     // 沈黙の仮面ボーナス（前の戦闘でスキル未使用の場合）
     if (GS.player.silenceMaskBonus) v += GS.player.silenceMaskBonus;
-    // 持久の旗（5ターン以上生存でATK+30）
+    // 持久の旗（5ターン以上生存で攻撃力+30）
     if (GS.player.relics.some(r => r.passive === 'enduranceFlag') && GS.player.battleTurn >= 5) v += 30;
-    // 混沌の石（ATK）
+    // 混沌の石（攻撃力）
     if (GS.player.chaosAtkBonus) v += GS.player.chaosAtkBonus;
     return Math.floor(v);
   },
@@ -48,10 +48,16 @@ const GS = {
     if (GS.player.buffDef) v += 22;
     v *= GS.player.floorDefMult;
     v *= GS.player.defBuffMult;
-    // 偶数の紋章（偶数ターンにDEF+15）
+    // 偶数の紋章（偶数ターンに防御力+15）
     if (GS.player.relics.some(r => r.passive === 'evenCrest') && GS.player.battleTurn % 2 === 0 && GS.player.battleTurn > 0) v += 15;
-    // 混沌の石（DEF）
+    // 混沌の石（防御力）
     if (GS.player.chaosDefBonus) v += GS.player.chaosDefBonus;
+    return Math.floor(v);
+  },
+  get magicAtkTotal() {
+    let v = GS.player.magicAttack;
+    for (const r of GS.player.relics) v += (r.magicAttackBonus || 0);
+    v *= GS.player.floorAtkMult;
     return Math.floor(v);
   }
 };
@@ -71,7 +77,7 @@ function resetGame() {
   GS.player = {
     hp: 100, maxHp: 100,
     mp:  50, maxMp:  50,
-    attack: 15, defense: 10,
+    attack: 15, defense: 10, magicAttack: 10,
     gold: 50,
     relics: [],
     skills: ['slash'],
@@ -116,7 +122,7 @@ function resetGame() {
     const p = GS.player;
     p.hp = 9999; p.maxHp = 9999;
     p.mp = 999;  p.maxMp = 999;
-    p.attack = 200; p.defense = 100;
+    p.attack = 200; p.defense = 100; p.magicAttack = 200;
     p.gold = 9999;
     p.skills = Object.keys(SKILLS);
   }
@@ -313,8 +319,9 @@ function renderStatusTab(tab) {
 
   if (tab === 'stats') {
     const rows = [
-      ['ATK（計算後）', GS.atkTotal],
-      ['DEF（計算後）', GS.defTotal],
+      ['攻撃力（計算後）',    GS.atkTotal],
+      ['魔法攻撃力（計算後）', GS.magicAtkTotal],
+      ['防御力（計算後）',    GS.defTotal],
       ['HP',           `${p.hp} / ${p.maxHp}`],
       ['MP',           `${p.mp} / ${p.maxMp}`],
       ['会心率',        `${Math.round(p.critRate * 100)}%`],
