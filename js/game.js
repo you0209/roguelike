@@ -71,7 +71,7 @@ function resetGame() {
     hp: 100, maxHp: 100,
     mp:  50, maxMp:  50,
     attack: 15, defense: 10,
-    gold: 30,
+    gold: 50,
     relics: [],
     skills: ['slash'],
     inventory: [],
@@ -104,7 +104,9 @@ function resetGame() {
     chaosAtkBonus: 0,
     chaosDefBonus: 0,
     chaosMaxHpBonus: 0,
-    chaosMaxMpBonus: 0
+    chaosMaxMpBonus: 0,
+    counterActive: false,
+    counterPower: 0
   };
   GS._challengeVictory = false;
 

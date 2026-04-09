@@ -63,6 +63,7 @@ function initBattle() {
   GS.player.battleTurn       = 0;
   GS.player.revengeBladeReady    = false;
   GS.player.usedSkillThisBattle  = false;
+  GS.player.counterActive        = false;
   GS.player.chaosAtkBonus    = 0;
   GS.player.chaosDefBonus    = 0;
   // 前の戦闘の混沌の石HP/MPボーナスをリセット
@@ -282,6 +283,77 @@ function doSkill(id) {
   } else if (sk.type === 'buff_def') {
     p.buffDef = true;
     addLog(`${sk.name}！　防御力が大幅に上昇した！`, 'log-system');
+
+  } else if (sk.type === 'physical_multi') {
+    let totalDmg = 0;
+    for (let i = 0; i < sk.hits; i++) {
+      const critRate = p.critRate + (p.relics.some(r => r.passive === 'luckyFoot') ? 0.15 : 0);
+      const isCrit   = Math.random() < critRate;
+      let power = (isCrit ? sk.power * 1.5 : sk.power) * (p.skillPowerMult || 1);
+      if (p.relics.some(r => r.passive === 'demonEye')) power *= 0.7;
+      totalDmg += calcPhysDmg(GS.atkTotal, e.defense, power);
+    }
+    e.hp -= totalDmg;
+    addLog(`${sk.name}！　${e.name}に ${totalDmg} ダメージ（${sk.hits}ヒット）！`, 'log-damage');
+    flash.enemy = 10;
+
+  } else if (sk.type === 'physical_no_def') {
+    const critRate = p.critRate + (p.relics.some(r => r.passive === 'luckyFoot') ? 0.15 : 0);
+    const isCrit   = Math.random() < critRate;
+    let power = (isCrit ? sk.power * 1.5 : sk.power) * (p.skillPowerMult || 1);
+    const dmg = calcPhysDmg(GS.atkTotal, 0, power);
+    e.hp -= dmg;
+    addLog(`${sk.name}！　防御を無視して ${e.name}に ${dmg} ダメージ！`, isCrit ? 'log-special' : 'log-damage');
+    flash.enemy = 10;
+
+  } else if (sk.type === 'physical_sacrifice') {
+    const critRate = p.critRate + (p.relics.some(r => r.passive === 'luckyFoot') ? 0.15 : 0);
+    const isCrit   = Math.random() < critRate;
+    let power = (isCrit ? sk.power * 1.5 : sk.power) * (p.skillPowerMult || 1);
+    if (p.relics.some(r => r.passive === 'demonEye')) power *= 0.7;
+    const dmg = calcPhysDmg(GS.atkTotal, e.defense, power);
+    e.hp -= dmg;
+    p.hp = Math.max(1, p.hp - sk.selfDmg);
+    addLog(`${sk.name}！　${e.name}に ${dmg} ダメージ！　自分も ${sk.selfDmg} ダメージ。`, isCrit ? 'log-special' : 'log-damage');
+    flash.enemy = 10;
+
+  } else if (sk.type === 'physical_high_crit') {
+    const critRate = Math.min(1, p.critRate + (sk.critBonus || 0) + (p.relics.some(r => r.passive === 'luckyFoot') ? 0.15 : 0));
+    const isCrit   = Math.random() < critRate;
+    let power = (isCrit ? sk.power * 1.5 : sk.power) * (p.skillPowerMult || 1);
+    if (p.relics.some(r => r.passive === 'demonEye')) power *= 0.7;
+    const dmg = calcPhysDmg(GS.atkTotal, e.defense, power);
+    e.hp -= dmg;
+    addLog(isCrit ? `会心の${sk.name}！　${e.name}に ${dmg} ダメージ！` : `${sk.name}！　${e.name}に ${dmg} ダメージ！`, isCrit ? 'log-special' : 'log-damage');
+    flash.enemy = 10;
+
+  } else if (sk.type === 'counter') {
+    p.counterActive = true;
+    p.counterPower  = sk.power * (p.skillPowerMult || 1);
+    addLog(`${sk.name}！　次の攻撃を見切る構えをとった！`, 'log-system');
+
+  } else if (sk.type === 'fixed') {
+    const dmg = Math.floor(sk.value * (p.skillPowerMult || 1));
+    e.hp -= dmg;
+    addLog(`${sk.name}！　${e.name}に ${dmg} 固定ダメージ！`, 'log-damage');
+    flash.enemy = 10;
+
+  } else if (sk.type === 'last_resort') {
+    const remainMp   = p.mp;
+    const totalMp    = mpCost + remainMp;
+    p.mp = 0;
+    const dmg = Math.floor(totalMp * sk.mpMultiplier * (p.skillPowerMult || 1));
+    e.hp -= dmg;
+    addLog(`${sk.name}！　MP${totalMp}を全消費！　${e.name}に ${dmg} ダメージ！`, 'log-special');
+    flash.enemy = 10;
+
+  } else if (sk.type === 'soul_burst') {
+    const hpRatio = p.hp / p.maxHp;
+    const power   = (sk.basePower + (sk.maxPower - sk.basePower) * (1 - hpRatio)) * (p.skillPowerMult || 1);
+    const dmg     = calcMagicDmg(GS.atkTotal, power);
+    e.hp -= dmg;
+    addLog(`${sk.name}！　魔法で ${e.name}に ${dmg} ダメージ！`, 'log-special');
+    flash.enemy = 10;
   }
 
   updateBattleUI();
@@ -471,14 +543,25 @@ function doEnemyTurn() {
     addLog(`${e.name}の咆哮！　勇者は怯んだ！`, 'log-special');
     p.roarDebuff = true;
   } else {
-    let dmg = Math.max(1, Math.floor(e.attack - GS.defTotal * 0.55));
-    if (p.isDefending) dmg = Math.floor(dmg * 0.25);
-    applyDmgToPlayer(
-      dmg,
-      p.isDefending
-        ? `${e.name}の攻撃！　防御した！　勇者に {dmg} ダメージ。`
-        : `${e.name}の攻撃！　勇者に {dmg} ダメージ！`
-    );
+    // 見切り発動チェック（通常攻撃のみ有効）
+    if (p.counterActive) {
+      p.counterActive = false;
+      const counterDmg = calcPhysDmg(GS.atkTotal, e.defense, p.counterPower);
+      e.hp -= counterDmg;
+      addLog(`見切り！　${e.name}の攻撃を躱し ${counterDmg} の反撃ダメージ！`, 'log-special');
+      flash.enemy = 10;
+      updateBattleUI();
+      if (checkWin()) return;
+    } else {
+      let dmg = Math.max(1, Math.floor(e.attack - GS.defTotal * 0.55));
+      if (p.isDefending) dmg = Math.floor(dmg * 0.25);
+      applyDmgToPlayer(
+        dmg,
+        p.isDefending
+          ? `${e.name}の攻撃！　防御した！　勇者に {dmg} ダメージ。`
+          : `${e.name}の攻撃！　勇者に {dmg} ダメージ！`
+      );
+    }
   }
 
   p.isDefending = false;
