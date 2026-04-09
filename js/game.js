@@ -104,7 +104,9 @@ function resetGame() {
     chaosAtkBonus: 0,
     chaosDefBonus: 0,
     chaosMaxHpBonus: 0,
-    chaosMaxMpBonus: 0
+    chaosMaxMpBonus: 0,
+    counterActive: false,
+    counterPower: 0
   };
   GS._challengeVictory = false;
 
