@@ -285,6 +285,75 @@ function makeMenuBtn(label, disabled, handler, extraCls = '') {
 }
 
 // ============================================================
+//  STATUS MODAL
+// ============================================================
+let _statusTab = 'stats';
+
+function openStatusModal() {
+  if (!GS.player) return;
+  _statusTab = 'stats';
+  document.querySelectorAll('.modal-tab').forEach(b => {
+    b.classList.toggle('active', b.dataset.stab === _statusTab);
+  });
+  renderStatusTab(_statusTab);
+  document.getElementById('status-modal').classList.remove('hidden');
+}
+
+function closeStatusModal() {
+  document.getElementById('status-modal').classList.add('hidden');
+}
+
+function renderStatusTab(tab) {
+  const p    = GS.player;
+  const cont = document.getElementById('modal-content');
+  cont.innerHTML = '';
+
+  if (tab === 'stats') {
+    const rows = [
+      ['ATK（計算後）', GS.atkTotal],
+      ['DEF（計算後）', GS.defTotal],
+      ['HP',           `${p.hp} / ${p.maxHp}`],
+      ['MP',           `${p.mp} / ${p.maxMp}`],
+      ['会心率',        `${Math.round(p.critRate * 100)}%`],
+      ['所持Gold',      `${p.gold} G`],
+    ];
+    rows.forEach(([label, val]) => {
+      const row = document.createElement('div');
+      row.className = 'stat-row';
+      row.innerHTML = `<span class="stat-label">${label}</span><span>${val}</span>`;
+      cont.appendChild(row);
+    });
+
+  } else if (tab === 'relics') {
+    if (p.relics.length === 0) {
+      const em = document.createElement('div');
+      em.className = 'modal-empty';
+      em.textContent = 'レリックなし';
+      cont.appendChild(em);
+      return;
+    }
+    p.relics.forEach(r => {
+      const card = document.createElement('div');
+      card.className = 'modal-card';
+      card.innerHTML = `<div class="modal-card-name">${r.name}<span class="modal-card-sub">Tier ${r.tier}</span></div>
+        <div class="modal-card-desc">${r.desc}</div>`;
+      cont.appendChild(card);
+    });
+
+  } else if (tab === 'skills') {
+    p.skills.forEach(id => {
+      const sk = SKILLS[id];
+      if (!sk) return;
+      const card = document.createElement('div');
+      card.className = 'modal-card';
+      card.innerHTML = `<div class="modal-card-name">${sk.name}<span class="modal-card-sub">${sk.mpCost} MP</span></div>
+        <div class="modal-card-desc">${sk.desc}</div>`;
+      cont.appendChild(card);
+    });
+  }
+}
+
+// ============================================================
 //  DEBUG HELPERS
 // ============================================================
 function _updateDebugBadge() {
@@ -339,6 +408,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Shop leave
   document.getElementById('btn-shop-leave').onclick = () => initFloorSelect();
+
+  // Status modal
+  document.getElementById('btn-status-close').onclick = closeStatusModal;
+  document.getElementById('cmd-status').onclick        = openStatusModal;
+  document.getElementById('status-modal').addEventListener('click', e => {
+    if (e.target === document.getElementById('status-modal')) closeStatusModal();
+  });
+  document.querySelectorAll('.modal-tab').forEach(btn => {
+    btn.onclick = () => {
+      _statusTab = btn.dataset.stab;
+      document.querySelectorAll('.modal-tab').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      renderStatusTab(_statusTab);
+    };
+  });
 
   // Game over / Victory
   document.getElementById('btn-title').onclick         = () => initTitle();
