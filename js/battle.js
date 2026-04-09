@@ -169,22 +169,44 @@ function doAttack() {
   addLog(`${revengePart}${critPart}勇者の攻撃！　${e.name}に ${dmg} ダメージ！`, isCrit ? 'log-special' : 'log-damage');
   flash.enemy = 10;
 
-  // 吸血の牙
+  // 吸血の牙（1打目）
   if (p.relics.some(r => r.passive === 'lifeSteal')) {
     const heal = Math.max(1, Math.floor(dmg * 0.15));
     p.hp = Math.min(p.maxHp, p.hp + heal);
     addLog(`吸血の牙！　${heal}HP吸収！`, 'log-heal');
   }
 
-  // 連撃のリング（10%で2回目）
-  if (p.relics.some(r => r.passive === 'doubleHit') && Math.random() < 0.1) {
-    const dmg2 = calcPhysDmg(GS.atkTotal, e.defense, 1.0);
-    e.hp -= dmg2;
-    addLog(`連撃！　さらに ${dmg2} ダメージ！`, 'log-damage');
-    flash.enemy = 10;
+  updateBattleUI();
+
+  // 2打目チェック（呪われた兜：確定 / 連撃のリング：10%）
+  const hasCursedHelm = p.relics.some(r => r.passive === 'cursedHelm');
+  const hasDoubleHit  = p.relics.some(r => r.passive === 'doubleHit') && Math.random() < 0.1;
+
+  if ((hasCursedHelm || hasDoubleHit) && e.hp > 0 && !battleOver) {
+    setTimeout(() => {
+      if (battleOver) return;
+      const critRate2 = p.critRate + (p.relics.some(r => r.passive === 'luckyFoot') ? 0.15 : 0);
+      const isCrit2   = Math.random() < critRate2;
+      let power2      = isCrit2 ? 1.5 : 1.0;
+      if (p.relics.some(r => r.passive === 'oddCharm')  && p.battleTurn % 2 === 1) power2 *= 1.3;
+      if (p.relics.some(r => r.passive === 'hourglass') && p.battleTurn >= 3)      power2 *= 1.2;
+      if (p.relics.some(r => r.passive === 'demonEye')) power2 *= 0.7;
+      const dmg2   = calcPhysDmg(GS.atkTotal, e.defense, power2);
+      e.hp -= dmg2;
+      const prefix = hasCursedHelm ? '呪われた兜の連撃！　' : '連撃！　';
+      addLog(`${prefix}${isCrit2 ? '会心！　' : ''}${e.name}に ${dmg2} ダメージ！`, isCrit2 ? 'log-special' : 'log-damage');
+      flash.enemy = 10;
+      if (p.relics.some(r => r.passive === 'lifeSteal')) {
+        const heal2 = Math.max(1, Math.floor(dmg2 * 0.15));
+        p.hp = Math.min(p.maxHp, p.hp + heal2);
+        addLog(`吸血の牙！　${heal2}HP吸収！`, 'log-heal');
+      }
+      updateBattleUI();
+      afterPlayerAction();
+    }, 350);
+    return;
   }
 
-  updateBattleUI();
   afterPlayerAction();
 }
 
