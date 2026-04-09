@@ -30,7 +30,8 @@ function spawnEnemy() {
     maxHp:   Math.floor(base.maxHp * s),
     attack:  Math.floor(base.attack * as),
     defense: Math.floor(base.defense * (1 + GS.battleCount * 0.04)),
-    poisoned: false, poisonDmg: 0
+    poisoned: false, poisonDmg: 0,
+    chargedSkill: null, isDefending: false
   };
 
   if (GS.player.nextEnemyPowered) {
@@ -119,7 +120,9 @@ function updateBattleUI() {
   document.getElementById('player-status-icon').textContent =
     p.isDefending ? '🛡 防御中' : p.buffDef ? '🛡 防御UP' : '';
   document.getElementById('enemy-status-icon').textContent =
-    e.poisoned ? '☠ 毒' : '';
+    e.chargedSkill ? `⚠ ${e.chargedSkill.name}溜め中` :
+    e.isDefending  ? '🛡 防御中' :
+    e.poisoned     ? '☠ 毒' : '';
 }
 
 function addLog(msg, cls = '') {
@@ -162,7 +165,12 @@ function doAttack() {
   const critRate = p.critRate + (p.relics.some(r => r.passive === 'luckyFoot') ? 0.15 : 0);
   const isCrit   = Math.random() < critRate;
   const power    = (isCrit ? 1.5 : 1.0) * attackMult;
-  const dmg      = calcPhysDmg(GS.atkTotal, e.defense, power);
+  let dmg        = calcPhysDmg(GS.atkTotal, e.defense, power);
+  if (e.isDefending) {
+    dmg = Math.floor(dmg * 0.5);
+    e.isDefending = false;
+    addLog(`${e.name}は防御した！　ダメージ半減！`, 'log-system');
+  }
   e.hp -= dmg;
 
   const critPart    = isCrit ? '会心の一撃！　' : '';
@@ -283,7 +291,8 @@ function doSkill(id) {
     if (p.relics.some(r => r.passive === 'oddCharm')  && p.battleTurn % 2 === 1) physMult *= 1.3;
     if (p.relics.some(r => r.passive === 'hourglass') && p.battleTurn >= 3)      physMult *= 1.2;
     if (p.relics.some(r => r.passive === 'demonEye')) physMult *= 0.7;
-    const dmg    = calcPhysDmg(GS.atkTotal, e.defense, physMult);
+    let dmg = calcPhysDmg(GS.atkTotal, e.defense, physMult);
+    if (e.isDefending) { dmg = Math.floor(dmg * 0.5); e.isDefending = false; addLog(`${e.name}は防御した！　ダメージ半減！`, 'log-system'); }
     e.hp -= dmg;
     const msg = isCrit
       ? `会心の${sk.name}！　${e.name}に ${dmg} ダメージ！`
@@ -295,7 +304,8 @@ function doSkill(id) {
     if (p.relics.some(r => r.passive === 'magicCatalyst')) magicMult *= 1.2;
     if (p.relics.some(r => r.passive === 'demonEye'))      magicMult *= 1.5;
     if (p.relics.some(r => r.passive === 'hourglass') && p.battleTurn >= 3) magicMult *= 1.2;
-    const dmg = calcMagicDmg(GS.magicAtkTotal, sk.power * magicMult);
+    let dmg = calcMagicDmg(GS.magicAtkTotal, sk.power * magicMult);
+    if (e.isDefending) { dmg = Math.floor(dmg * 0.5); e.isDefending = false; addLog(`${e.name}は防御した！　ダメージ半減！`, 'log-system'); }
     e.hp -= dmg;
     addLog(`${sk.name}！　魔法で ${e.name}に ${dmg} ダメージ！`, 'log-special');
     flash.enemy = 10;
@@ -314,7 +324,8 @@ function doSkill(id) {
       const isCrit   = Math.random() < critRate;
       let power = (isCrit ? sk.power * 1.5 : sk.power) * (p.skillPowerMult || 1);
       if (p.relics.some(r => r.passive === 'demonEye')) power *= 0.7;
-      const dmg = calcPhysDmg(GS.atkTotal, e.defense, power);
+      let dmg = calcPhysDmg(GS.atkTotal, e.defense, power);
+      if (hitIndex === 0 && e.isDefending) { dmg = Math.floor(dmg * 0.5); e.isDefending = false; addLog(`${e.name}は防御した！　ダメージ半減！`, 'log-system'); }
       e.hp -= dmg;
       addLog(`${sk.name} ${hitIndex + 1}撃目！　${isCrit ? '会心！　' : ''}${e.name}に ${dmg} ダメージ！`, isCrit ? 'log-special' : 'log-damage');
       flash.enemy = 10;
@@ -342,7 +353,8 @@ function doSkill(id) {
     const isCrit   = Math.random() < critRate;
     let power = (isCrit ? sk.power * 1.5 : sk.power) * (p.skillPowerMult || 1);
     if (p.relics.some(r => r.passive === 'demonEye')) power *= 0.7;
-    const dmg = calcPhysDmg(GS.atkTotal, e.defense, power);
+    let dmg = calcPhysDmg(GS.atkTotal, e.defense, power);
+    if (e.isDefending) { dmg = Math.floor(dmg * 0.5); e.isDefending = false; addLog(`${e.name}は防御した！　ダメージ半減！`, 'log-system'); }
     e.hp -= dmg;
     p.hp = Math.max(1, p.hp - sk.selfDmg);
     addLog(`${sk.name}！　${e.name}に ${dmg} ダメージ！　自分も ${sk.selfDmg} ダメージ。`, isCrit ? 'log-special' : 'log-damage');
@@ -353,7 +365,8 @@ function doSkill(id) {
     const isCrit   = Math.random() < critRate;
     let power = (isCrit ? sk.power * 1.5 : sk.power) * (p.skillPowerMult || 1);
     if (p.relics.some(r => r.passive === 'demonEye')) power *= 0.7;
-    const dmg = calcPhysDmg(GS.atkTotal, e.defense, power);
+    let dmg = calcPhysDmg(GS.atkTotal, e.defense, power);
+    if (e.isDefending) { dmg = Math.floor(dmg * 0.5); e.isDefending = false; addLog(`${e.name}は防御した！　ダメージ半減！`, 'log-system'); }
     e.hp -= dmg;
     addLog(isCrit ? `会心の${sk.name}！　${e.name}に ${dmg} ダメージ！` : `${sk.name}！　${e.name}に ${dmg} ダメージ！`, isCrit ? 'log-special' : 'log-damage');
     flash.enemy = 10;
@@ -381,7 +394,8 @@ function doSkill(id) {
   } else if (sk.type === 'soul_burst') {
     const hpRatio = p.hp / p.maxHp;
     const power   = (sk.basePower + (sk.maxPower - sk.basePower) * (1 - hpRatio)) * (p.skillPowerMult || 1);
-    const dmg     = calcMagicDmg(GS.magicAtkTotal, power);
+    let dmg       = calcMagicDmg(GS.magicAtkTotal, power);
+    if (e.isDefending) { dmg = Math.floor(dmg * 0.5); e.isDefending = false; addLog(`${e.name}は防御した！　ダメージ半減！`, 'log-system'); }
     e.hp -= dmg;
     addLog(`${sk.name}！　魔法で ${e.name}に ${dmg} ダメージ！`, 'log-special');
     flash.enemy = 10;
@@ -548,6 +562,38 @@ function applyDmgToPlayer(dmg, logMsg) {
   flash.player = 10;
 }
 
+// ---- 敵行動ヘルパー ----
+function selectEnemyAction(e) {
+  if (!e.actions || e.actions.length === 0) return { type: 'attack' };
+  const r = Math.random();
+  let cum = 0;
+  for (const a of e.actions) {
+    cum += a.prob;
+    if (r < cum) return a;
+  }
+  return e.actions[e.actions.length - 1];
+}
+
+function executeEnemySkill(skill) {
+  const e = GS.enemy;
+  const p = GS.player;
+  let dmg;
+  if (skill.dmgType === 'fixed') {
+    dmg = skill.power;
+  } else {
+    // physical: e.attack * power - defTotal * 0.4 (with randomness)
+    const base = e.attack * skill.power - GS.defTotal * 0.4;
+    dmg = Math.max(1, Math.floor(Math.max(1, base) * (0.9 + Math.random() * 0.2)));
+    if (p.isDefending) dmg = Math.floor(dmg * 0.35);
+  }
+  applyDmgToPlayer(dmg, `${e.name}の${skill.name}！　勇者に {dmg} ダメージ！`);
+  if (skill.lifesteal) {
+    const healed = Math.floor(dmg * 0.3);
+    e.hp = Math.min(e.maxHp, e.hp + healed);
+    addLog(`${e.name}はHPを ${healed} 吸収した！`, 'log-system');
+  }
+}
+
 function doEnemyTurn() {
   if (battleOver) return;
   playerTurn = false;
@@ -568,20 +614,76 @@ function doEnemyTurn() {
     if (checkWin()) return;
   }
 
-  let action = 'attack';
-  if (e.isBoss && e.bossSkills.length > 0 && Math.random() < 0.38) {
-    action = e.bossSkills[Math.floor(Math.random() * e.bossSkills.length)];
+  // チャージ済みスキル発動
+  if (e.chargedSkill) {
+    const sk = e.chargedSkill;
+    e.chargedSkill = null;
+    addLog(`${e.name}の${sk.name}！`, 'log-special');
+    executeEnemySkill(sk);
+    p.isDefending = false;
+    p.buffDef     = false;
+    updateBattleUI();
+    setTimeout(() => {
+      playerTurn = true;
+      if (!checkLose() && !battleOver) {
+        logTurnRelics(p);
+        enableCmds();
+      }
+    }, 500);
+    return;
   }
 
-  if (action === 'dragonBreath') {
+  // 行動選択（actions がある敵 = 4層以降）
+  const selectedAction = selectEnemyAction(e);
+
+  if (selectedAction.type === 'skill') {
+    // チャージ開始（次のターンに発動）
+    e.chargedSkill = selectedAction;
+    addLog(`${e.name}：${selectedAction.warning}`, 'log-system');
+    p.isDefending = false;
+    p.buffDef     = false;
+    updateBattleUI();
+    setTimeout(() => {
+      playerTurn = true;
+      if (!battleOver) {
+        logTurnRelics(p);
+        enableCmds();
+      }
+    }, 500);
+    return;
+  }
+
+  if (selectedAction.type === 'defend') {
+    e.isDefending = true;
+    addLog(`${e.name}は防御態勢をとった！`, 'log-system');
+    p.isDefending = false;
+    p.buffDef     = false;
+    updateBattleUI();
+    setTimeout(() => {
+      playerTurn = true;
+      if (!battleOver) {
+        logTurnRelics(p);
+        enableCmds();
+      }
+    }, 500);
+    return;
+  }
+
+  // 通常攻撃（ボス特殊技も含む既存ロジック）
+  let bossAction = 'attack';
+  if (e.isBoss && e.bossSkills.length > 0 && Math.random() < 0.38) {
+    bossAction = e.bossSkills[Math.floor(Math.random() * e.bossSkills.length)];
+  }
+
+  if (bossAction === 'dragonBreath') {
     let dmg = Math.max(1, Math.floor(e.attack * 1.6 - p.defense * 0.2));
     dmg = p.isDefending ? Math.floor(dmg * 0.35) : dmg;
     applyDmgToPlayer(dmg, `${e.name}のドラゴンブレス！　勇者に {dmg} ダメージ！`);
-  } else if (action === 'tailSwipe') {
+  } else if (bossAction === 'tailSwipe') {
     let dmg = Math.max(1, Math.floor(e.attack * 1.3 - p.defense * 0.4));
     dmg = p.isDefending ? Math.floor(dmg * 0.35) : dmg;
     applyDmgToPlayer(dmg, `${e.name}の尻尾攻撃！　勇者に {dmg} ダメージ！`);
-  } else if (action === 'dragonRoar') {
+  } else if (bossAction === 'dragonRoar') {
     addLog(`${e.name}の咆哮！　勇者は怯んだ！`, 'log-special');
     p.roarDebuff = true;
   } else {
