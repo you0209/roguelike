@@ -98,6 +98,7 @@ function initBattle() {
   }
 
   updateBattleUI();
+  logTurnRelics(GS.player);
   enableCmds();
   startBattleAnim();
 }
@@ -150,7 +151,6 @@ function doAttack() {
   const p = GS.player;
   const e = GS.enemy;
   p.battleTurn++;
-  logTurnRelics(p);
 
   // 攻撃倍率の計算
   let attackMult = 1;
@@ -223,7 +223,6 @@ function doDefend() {
   disableCmds();
 
   GS.player.battleTurn++;
-  logTurnRelics(GS.player);
   GS.player.isDefending = true;
   GS.player.buffDef     = true;
   if (GS.player.relics.some(r => r.passive === 'revengeBlade')) {
@@ -271,7 +270,6 @@ function doSkill(id) {
 
   p.battleTurn++;
   p.usedSkillThisBattle = true;
-  logTurnRelics(p);
 
   const mpSaverBonus = p.relics.some(r => r.passive === 'mpSaver') ? 2 : 0;
   const mpCost = p.mpFree ? 0 : Math.max(1, Math.ceil(sk.mpCost * (p.mpCostMult || 1)) - mpSaverBonus);
@@ -425,8 +423,6 @@ function doItem(idx, id) {
   const it = ITEMS[id];
   const p  = GS.player;
   const e  = GS.enemy;
-  logTurnRelics(p);
-
   p.inventory[idx].count--;
   if (p.inventory[idx].count <= 0) p.inventory.splice(idx, 1);
 
@@ -459,11 +455,14 @@ function doItem(idx, id) {
 //  BATTLE FLOW
 // ============================================================
 function logTurnRelics(p) {
-  if (p.relics.some(r => r.passive === 'oddCharm') && p.battleTurn % 2 === 1)
+  const t = p.battleTurn + 1; // これから始まるターン番号
+  if (p.relics.some(r => r.passive === 'oddCharm') && t % 2 === 1)
     addLog('奇数のお守り！　奇数ターンにつき攻撃力1.3倍！', 'log-special');
-  if (p.relics.some(r => r.passive === 'hourglass') && p.battleTurn === 3)
+  if (p.relics.some(r => r.passive === 'evenCrest') && t % 2 === 0)
+    addLog('偶数の紋章！　偶数ターンにつきDEF+15！', 'log-special');
+  if (p.relics.some(r => r.passive === 'hourglass') && t === 3)
     addLog('砂時計発動！　3ターン目以降、全攻撃1.2倍！', 'log-special');
-  if (p.relics.some(r => r.passive === 'enduranceFlag') && p.battleTurn === 5)
+  if (p.relics.some(r => r.passive === 'enduranceFlag') && t === 5)
     addLog('持久の旗発動！　ATK+30！', 'log-special');
 }
 
@@ -596,8 +595,6 @@ function doEnemyTurn() {
       updateBattleUI();
       if (checkWin()) return;
     } else {
-      if (p.relics.some(r => r.passive === 'evenCrest') && p.battleTurn % 2 === 0 && p.battleTurn > 0)
-        addLog('偶数の紋章！　偶数ターンにつきDEF+15！', 'log-special');
       let dmg = Math.max(1, Math.floor(e.attack - GS.defTotal * 0.55));
       if (p.isDefending) dmg = Math.floor(dmg * 0.25);
       applyDmgToPlayer(
@@ -615,7 +612,10 @@ function doEnemyTurn() {
 
   setTimeout(() => {
     playerTurn = true;
-    if (!checkLose() && !battleOver) enableCmds();
+    if (!checkLose() && !battleOver) {
+      logTurnRelics(p);
+      enableCmds();
+    }
   }, 500);
 }
 
