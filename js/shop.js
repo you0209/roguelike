@@ -81,6 +81,13 @@ function initShop() {
 }
 
 
+// ---- gemEye 割引価格 ----
+function effectivePrice(item) {
+  if (item.cat === 'relic' && GS.player.relics.some(r => r.passive === 'gemEye'))
+    return Math.floor(item.price * 0.85);
+  return item.price;
+}
+
 // ---- 描画 ----
 function renderShop() {
   const cont = document.getElementById('shop-items');
@@ -93,12 +100,17 @@ function renderShop() {
 
   entries.forEach(item => {
     const owned  = isOwned(item);
-    const afford = GS.player.gold >= item.price;
+    const price  = effectivePrice(item);
+    const afford = GS.player.gold >= price;
 
     let btnLabel, btnDisabled;
     if (owned)        { btnLabel = '所持済'; btnDisabled = true; }
     else if (!afford) { btnLabel = 'G不足';  btnDisabled = true; }
     else              { btnLabel = '購　入'; btnDisabled = false; }
+
+    const priceDisplay = price < item.price
+      ? `<span style="color:#ffcc66">${price}G</span>`
+      : `${price}G`;
 
     const row = document.createElement('div');
     row.className = 'shop-item' + (owned ? ' owned' : '');
@@ -107,7 +119,7 @@ function renderShop() {
         <div class="item-name">${item.name}${owned ? ' <span style="color:#888877">[所持]</span>' : ''}</div>
         <div class="item-desc">${item.desc}</div>
       </div>
-      <span class="item-price">${item.price}G</span>
+      <span class="item-price">${priceDisplay}</span>
       <button class="btn-buy" ${btnDisabled ? 'disabled' : ''}>${btnLabel}</button>`;
 
     if (!btnDisabled) {
@@ -126,7 +138,7 @@ function isOwned(item) {
 
 // ---- 購入処理 ----
 function doBuy(item) {
-  GS.player.gold -= item.price;
+  GS.player.gold -= effectivePrice(item);
   if (item.cat === 'relic') {
     GS.player.relics.push({ ...item });
     if (item.hpBonus) {

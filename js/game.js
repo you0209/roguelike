@@ -16,48 +16,69 @@ const GS = {
   shopLineup: { relics: [], skills: [], items: [] },
 
   get atkTotal() {
-    let v = GS.player.attack;
-    for (const r of GS.player.relics) v += (r.attackBonus || 0);
-    v *= GS.player.floorAtkMult;
-    v *= GS.player.atkBuffMult;
-    if (GS.player.goldPowerActive) {
+    const p = GS.player;
+    let v = p.attack;
+    for (const r of p.relics) v += (r.attackBonus || 0);
+    v *= p.floorAtkMult;
+    v *= p.atkBuffMult;
+    if (p.goldPowerActive) {
       // 動的計算：現時点のゴールド量に基づく（25Gにつき×1.1、最大×2）
-      const stacks = Math.min(Math.floor(GS.player.gold / 25), 10);
+      const stacks = Math.min(Math.floor(p.gold / 25), 10);
       v *= Math.min(2, Math.pow(1.1, stacks));
     }
-    if (GS.player.hpLowAtkActive) {
+    if (p.hpLowAtkActive) {
       // HPが低いほど攻撃力が上昇（最大×2）
-      const hpRatio = GS.player.hp / GS.player.maxHp;
+      const hpRatio = p.hp / p.maxHp;
       v *= (1 + (1 - hpRatio));
     }
     // 貪欲の宝珠
-    if (GS.player.relics.some(r => r.passive === 'greedOrb')) v += GS.player.relics.length * 3;
+    if (p.relics.some(r => r.passive === 'greedOrb')) v += p.relics.length * 3;
     // 経験の勲章
-    if (GS.player.relics.some(r => r.passive === 'expMedal')) v += GS.battleCount * 3;
+    if (p.relics.some(r => r.passive === 'expMedal')) v += GS.battleCount * 3;
     // 沈黙の仮面ボーナス（前の戦闘でスキル未使用の場合）
-    if (GS.player.silenceMaskBonus) v += GS.player.silenceMaskBonus;
+    if (p.silenceMaskBonus) v += p.silenceMaskBonus;
     // 持久の旗（5ターン以上生存で攻撃力+30）
-    if (GS.player.relics.some(r => r.passive === 'enduranceFlag') && GS.player.battleTurn >= 5) v += 30;
+    if (p.relics.some(r => r.passive === 'enduranceFlag') && p.battleTurn >= 5) v += 30;
     // 混沌の石（攻撃力）
-    if (GS.player.chaosAtkBonus) v += GS.player.chaosAtkBonus;
+    if (p.chaosAtkBonus) v += p.chaosAtkBonus;
+    // 怒りの石・反骨の魂・賭博師の骰子
+    v += (p.wrathBonus || 0) + (p.rebellionAtkBonus || 0) + (p.gamblerBonus || 0);
+    // 血染めの短剣（HP50%以下で+25）
+    if (p.relics.some(r => r.passive === 'bloodDagger') && p.hp / p.maxHp <= 0.5) v += 25;
+    // 瀕死の怒り（HP50%以下で+15）
+    if (p.relics.some(r => r.passive === 'neardieRage') && p.hp / p.maxHp <= 0.5) v += 15;
+    // 黄金の剣（100Gにつき+4）
+    if (p.relics.some(r => r.passive === 'goldSword')) v += Math.floor(p.gold / 100) * 4;
+    // 財宝の守護者（200G以上で+20）
+    if (p.relics.some(r => r.passive === 'treasureGuard') && p.gold >= 200) v += 20;
     return Math.floor(v);
   },
   get defTotal() {
-    let v = GS.player.defense;
-    for (const r of GS.player.relics) v += (r.defenseBonus || 0);
-    if (GS.player.buffDef) v += 22;
-    v *= GS.player.floorDefMult;
-    v *= GS.player.defBuffMult;
+    const p = GS.player;
+    let v = p.defense;
+    for (const r of p.relics) v += (r.defenseBonus || 0);
+    if (p.buffDef) v += 22;
+    v *= p.floorDefMult;
+    v *= p.defBuffMult;
     // 偶数の紋章（偶数ターンに防御力+15）
-    if (GS.player.relics.some(r => r.passive === 'evenCrest') && GS.player.battleTurn % 2 === 0 && GS.player.battleTurn > 0) v += 15;
+    if (p.relics.some(r => r.passive === 'evenCrest') && p.battleTurn % 2 === 0 && p.battleTurn > 0) v += 15;
     // 混沌の石（防御力）
-    if (GS.player.chaosDefBonus) v += GS.player.chaosDefBonus;
+    if (p.chaosDefBonus) v += p.chaosDefBonus;
+    // 忍耐の石板（防御スタック）
+    v += (p.patienceDefBonus || 0);
+    // 金塊の鎧（100Gにつき+3）
+    if (p.relics.some(r => r.passive === 'goldArmor')) v += Math.floor(p.gold / 100) * 3;
+    // 財宝の守護者（200G以上で+10）
+    if (p.relics.some(r => r.passive === 'treasureGuard') && p.gold >= 200) v += 10;
     return Math.floor(v);
   },
   get magicAtkTotal() {
-    let v = GS.player.magicAttack;
-    for (const r of GS.player.relics) v += (r.magicAttackBonus || 0);
-    v *= GS.player.floorAtkMult;
+    const p = GS.player;
+    let v = p.magicAttack;
+    for (const r of p.relics) v += (r.magicAttackBonus || 0);
+    v *= p.floorAtkMult;
+    // 智慧の指輪（最大MPの30%を魔法攻撃力に加算）
+    if (p.relics.some(r => r.passive === 'wisdomRing')) v += Math.floor(p.maxMp * 0.3);
     return Math.floor(v);
   }
 };
@@ -114,7 +135,16 @@ function resetGame() {
     chaosMaxMpBonus: 0,
     chaosCritBonus: 0,
     counterActive: false,
-    counterPower: 0
+    counterPower: 0,
+    // 新レリックパッシブ用
+    wrathBonus: 0,
+    adversityBonus: 0,
+    patienceDefBonus: 0,
+    rebellionAtkBonus: 0,
+    chainCount: 0,
+    magicChainCount: 0,
+    gamblerBonus: 0,
+    shieldCounterReady: false
   };
   GS._challengeVictory = false;
 

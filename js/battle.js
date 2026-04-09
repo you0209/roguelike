@@ -98,6 +98,25 @@ function initBattle() {
     addLog(`混沌の石が発動！　${labels[roll]}！`, 'log-special');
   }
 
+  // 新レリックパッシブリセット
+  {
+    const p = GS.player;
+    p.wrathBonus = 0; p.adversityBonus = 0;
+    p.patienceDefBonus = 0; p.rebellionAtkBonus = 0;
+    p.chainCount = 0; p.magicChainCount = 0;
+    p.gamblerBonus = 0; p.shieldCounterReady = false;
+    // 炎の仮面：戦闘開始時に敵に20固定ダメージ
+    if (p.relics.some(r => r.passive === 'flameMask')) {
+      e.hp -= 20;
+      addLog('炎の仮面！　敵に20ダメージ！', 'log-special');
+    }
+    // 賭博師の骰子：50%でボーナス+35、50%で-5
+    if (p.relics.some(r => r.passive === 'gamblerDice')) {
+      p.gamblerBonus = Math.random() < 0.5 ? 35 : -5;
+      addLog(`賭博師の骰子！　攻撃力${p.gamblerBonus > 0 ? '+' : ''}${p.gamblerBonus}！`, 'log-special');
+    }
+  }
+
   updateBattleUI();
   logTurnRelics(GS.player);
   enableCmds();
@@ -149,6 +168,11 @@ function disableCmds() {
 // ============================================================
 function doAttack() {
   if (!playerTurn || battleOver) return;
+  // 封印された禁書：通常攻撃不可
+  if (GS.player.relics.some(r => r.passive === 'forbiddenBook')) {
+    addLog('封印された禁書！　通常攻撃は使えない！', 'log-system');
+    return;
+  }
   disableCmds();
 
   const p = GS.player;
@@ -157,26 +181,53 @@ function doAttack() {
 
   // 攻撃倍率の計算
   let attackMult = 1;
-  if (p.revengeBladeReady) { attackMult *= 1.5; p.revengeBladeReady = false; }
+  // 先制の剣（1ターン目2倍）
+  if (p.relics.some(r => r.passive === 'firstStrike') && p.battleTurn === 1) attackMult *= 2.0;
+  // revengeBlade / shieldCounter（最大値採用）
+  const wasRevenge = p.revengeBladeReady;
+  const wasShield  = p.shieldCounterReady;
+  let defCounterMult = 1;
+  if (p.revengeBladeReady)  { defCounterMult = Math.max(defCounterMult, 1.5); p.revengeBladeReady  = false; }
+  if (p.shieldCounterReady) { defCounterMult = Math.max(defCounterMult, 2.0); p.shieldCounterReady = false; }
+  attackMult *= defCounterMult;
+  // 逆境の炎（被ダメ蓄積を消費）
+  if (p.adversityBonus > 0) { attackMult *= (1 + p.adversityBonus); p.adversityBonus = 0; }
   if (p.relics.some(r => r.passive === 'oddCharm')   && p.battleTurn % 2 === 1) attackMult *= 1.3;
   if (p.relics.some(r => r.passive === 'hourglass')  && p.battleTurn >= 3)      attackMult *= 1.2;
   if (p.relics.some(r => r.passive === 'demonEye'))  attackMult *= 0.7;
 
   const critRate = p.critRate + (p.relics.some(r => r.passive === 'luckyFoot') ? 0.15 : 0);
   const isCrit   = Math.random() < critRate;
-  const power    = (isCrit ? 1.5 : 1.0) * attackMult;
+  const critMult = p.relics.some(r => r.passive === 'shadowBlade') ? 2.0 : 1.5;
+  const power    = (isCrit ? critMult : 1.0) * attackMult;
   let dmg        = calcPhysDmg(GS.atkTotal, e.defense, power);
   if (e.isDefending) {
     dmg = Math.floor(dmg * 0.5);
     e.isDefending = false;
     addLog(`${e.name}は防御した！　ダメージ半減！`, 'log-system');
   }
+  // 狩人の眼（敵HP30%以下で+20%）
+  if (p.relics.some(r => r.passive === 'hunterEye') && e.hp / e.maxHp <= 0.3)
+    dmg = Math.floor(dmg * 1.2);
+  // 城壁の証（防御力の30%を加算）
+  if (p.relics.some(r => r.passive === 'fortressProof'))
+    dmg += Math.floor(GS.defTotal * 0.3);
+  // 死神の眼（HP30%以下で+40%）
+  if (p.relics.some(r => r.passive === 'deathEye') && p.hp / p.maxHp <= 0.3)
+    dmg = Math.floor(dmg * 1.4);
   e.hp -= dmg;
 
   const critPart    = isCrit ? '会心の一撃！　' : '';
-  const revengePart = (attackMult >= 1.5 && p.relics.some(r => r.passive === 'revengeBlade')) ? '復讐の刃！　' : '';
-  addLog(`${revengePart}${critPart}勇者の攻撃！　${e.name}に ${dmg} ダメージ！`, isCrit ? 'log-special' : 'log-damage');
+  const revengePart = wasRevenge ? '復讐の刃！　' : '';
+  const shieldPart  = wasShield  ? '盾返し！　'   : '';
+  addLog(`${revengePart}${shieldPart}${critPart}勇者の攻撃！　${e.name}に ${dmg} ダメージ！`, isCrit ? 'log-special' : 'log-damage');
   flash.enemy = 10;
+
+  // 雷の紋章（会心時+15固定）
+  if (isCrit && p.relics.some(r => r.passive === 'thunderCrest') && e.hp > 0) {
+    e.hp -= 15;
+    addLog('雷の紋章！　追加15ダメージ！', 'log-special');
+  }
 
   // 吸血の牙（1打目）
   if (p.relics.some(r => r.passive === 'lifeSteal')) {
@@ -185,34 +236,55 @@ function doAttack() {
     addLog(`吸血の牙！　${heal}HP吸収！`, 'log-heal');
   }
 
+  // チェーン系リセット（通常攻撃でスタック破棄）
+  if (p.relics.some(r => r.passive === 'chainStone'))    p.chainCount = 0;
+  if (p.relics.some(r => r.passive === 'magicAmplifier')) p.magicChainCount = 0;
+  if (p.relics.some(r => r.passive === 'patienceTablet')) p.patienceDefBonus = 0;
+
   updateBattleUI();
 
-  // 2打目チェック（呪われた兜：確定 / 連撃のリング：10%）
+  // 多段攻撃チェック
   const hasCursedHelm = p.relics.some(r => r.passive === 'cursedHelm');
-  const hasDoubleHit  = p.relics.some(r => r.passive === 'doubleHit') && Math.random() < 0.1;
+  let extraHits = 0;
+  if (hasCursedHelm) extraHits = 1;
+  else if (p.relics.some(r => r.passive === 'doubleHit') && Math.random() < 0.1) extraHits = 1;
+  if (p.relics.some(r => r.passive === 'tripleHit') && Math.random() < 0.15)
+    extraHits = Math.max(extraHits, 2);
 
-  if ((hasCursedHelm || hasDoubleHit) && e.hp > 0 && !battleOver) {
-    setTimeout(() => {
+  if (extraHits > 0 && e.hp > 0 && !battleOver) {
+    function doExtraHit(n) {
       if (battleOver) return;
-      const critRate2 = p.critRate + (p.relics.some(r => r.passive === 'luckyFoot') ? 0.15 : 0);
-      const isCrit2   = Math.random() < critRate2;
-      let power2      = isCrit2 ? 1.5 : 1.0;
-      if (p.relics.some(r => r.passive === 'oddCharm')  && p.battleTurn % 2 === 1) power2 *= 1.3;
-      if (p.relics.some(r => r.passive === 'hourglass') && p.battleTurn >= 3)      power2 *= 1.2;
-      if (p.relics.some(r => r.passive === 'demonEye')) power2 *= 0.7;
-      const dmg2   = calcPhysDmg(GS.atkTotal, e.defense, power2);
+      const cr2 = p.critRate + (p.relics.some(r => r.passive === 'luckyFoot') ? 0.15 : 0);
+      const ic2 = Math.random() < cr2;
+      const cm2 = p.relics.some(r => r.passive === 'shadowBlade') ? 2.0 : 1.5;
+      let pow2 = ic2 ? cm2 : 1.0;
+      if (p.relics.some(r => r.passive === 'oddCharm')  && p.battleTurn % 2 === 1) pow2 *= 1.3;
+      if (p.relics.some(r => r.passive === 'hourglass') && p.battleTurn >= 3)      pow2 *= 1.2;
+      if (p.relics.some(r => r.passive === 'demonEye')) pow2 *= 0.7;
+      let dmg2 = calcPhysDmg(GS.atkTotal, e.defense, pow2);
+      if (p.relics.some(r => r.passive === 'hunterEye') && e.hp / e.maxHp <= 0.3) dmg2 = Math.floor(dmg2 * 1.2);
+      if (p.relics.some(r => r.passive === 'fortressProof')) dmg2 += Math.floor(GS.defTotal * 0.3);
+      if (p.relics.some(r => r.passive === 'deathEye') && p.hp / p.maxHp <= 0.3) dmg2 = Math.floor(dmg2 * 1.4);
       e.hp -= dmg2;
-      const prefix = hasCursedHelm ? '呪われた兜の連撃！　' : '連撃！　';
-      addLog(`${prefix}${isCrit2 ? '会心！　' : ''}${e.name}に ${dmg2} ダメージ！`, isCrit2 ? 'log-special' : 'log-damage');
+      const prefix = n === 1 ? (hasCursedHelm ? '呪われた兜の連撃！　' : '連撃！　') : `${n + 1}撃目！　`;
+      addLog(`${prefix}${ic2 ? '会心！　' : ''}${e.name}に ${dmg2} ダメージ！`, ic2 ? 'log-special' : 'log-damage');
       flash.enemy = 10;
+      if (ic2 && p.relics.some(r => r.passive === 'thunderCrest') && e.hp > 0) {
+        e.hp -= 15; addLog('雷の紋章！　追加15ダメージ！', 'log-special');
+      }
       if (p.relics.some(r => r.passive === 'lifeSteal')) {
-        const heal2 = Math.max(1, Math.floor(dmg2 * 0.15));
-        p.hp = Math.min(p.maxHp, p.hp + heal2);
-        addLog(`吸血の牙！　${heal2}HP吸収！`, 'log-heal');
+        const h2 = Math.max(1, Math.floor(dmg2 * 0.15));
+        p.hp = Math.min(p.maxHp, p.hp + h2);
+        addLog(`吸血の牙！　${h2}HP吸収！`, 'log-heal');
       }
       updateBattleUI();
-      afterPlayerAction();
-    }, 350);
+      if (n < extraHits && e.hp > 0) {
+        setTimeout(() => doExtraHit(n + 1), 350);
+      } else {
+        afterPlayerAction();
+      }
+    }
+    setTimeout(() => doExtraHit(1), 350);
     return;
   }
 
@@ -236,6 +308,18 @@ function doDefend() {
   if (GS.player.relics.some(r => r.passive === 'revengeBlade')) {
     GS.player.revengeBladeReady = true;
   }
+  // 盾返しの腕輪
+  if (GS.player.relics.some(r => r.passive === 'shieldCounter')) GS.player.shieldCounterReady = true;
+  // 忍耐の石板（連続防御で防御力スタック）
+  if (GS.player.relics.some(r => r.passive === 'patienceTablet')) {
+    GS.player.patienceDefBonus = Math.min(30, GS.player.patienceDefBonus + 10);
+    addLog(`忍耐の石板！　防御力+10（累計+${GS.player.patienceDefBonus}）`, 'log-special');
+  }
+  // 反骨の魂（防御するたびに攻撃力スタック）
+  if (GS.player.relics.some(r => r.passive === 'rebellionSoul')) {
+    GS.player.rebellionAtkBonus = Math.min(32, GS.player.rebellionAtkBonus + 8);
+    addLog(`反骨の魂！　攻撃力+8（累計+${GS.player.rebellionAtkBonus}）`, 'log-special');
+  }
   addLog('勇者は防御態勢をとった！　ダメージを大幅軽減。', 'log-system');
   updateBattleUI();
   afterPlayerAction();
@@ -254,14 +338,22 @@ function openSkillMenu() {
     return;
   }
 
-  const mpSaverBonus = GS.player.relics.some(r => r.passive === 'mpSaver') ? 2 : 0;
-  GS.player.skills.forEach(id => {
+  const p2 = GS.player;
+  const mpSaverBonus  = p2.relics.some(r => r.passive === 'mpSaver')   ? 2 : 0;
+  const magicCoreCost = p2.relics.some(r => r.passive === 'magicCore') ? 3 : 0;
+  const hasForbidden  = p2.relics.some(r => r.passive === 'forbiddenBook');
+  const hasLifeBet    = p2.relics.some(r => r.passive === 'lifeBet') && p2.hp / p2.maxHp <= 0.15;
+  p2.skills.forEach(id => {
     const sk = SKILLS[id];
     if (!sk) return;
-    const actualCost = GS.player.mpFree ? 0 : Math.max(1, Math.ceil(sk.mpCost * (GS.player.mpCostMult || 1)) - mpSaverBonus);
-    const noMp  = GS.player.mp < actualCost;
-    const label = `${sk.name}  [${actualCost}MP]  ${sk.desc}`;
-    menu.appendChild(makeMenuBtn(label, noMp, () => {
+    const isPhysical = sk.type.startsWith('physical') || sk.type === 'counter';
+    let actualCost = p2.mpFree ? 0 : Math.max(1, Math.ceil(sk.mpCost * (p2.mpCostMult || 1)) - mpSaverBonus + magicCoreCost);
+    if (hasForbidden && !isPhysical) actualCost = 0;
+    if (hasLifeBet) actualCost = 0;
+    const disabled = hasForbidden && isPhysical;
+    const noMp  = p2.mp < actualCost;
+    const label = `${sk.name}  [${actualCost}MP]  ${sk.desc}${disabled ? '  ※封印中' : ''}`;
+    menu.appendChild(makeMenuBtn(label, noMp || disabled, () => {
       menu.classList.add('hidden');
       doSkill(id);
     }));
@@ -276,22 +368,41 @@ function doSkill(id) {
   const p  = GS.player;
   const e  = GS.enemy;
 
+  // 封印された禁書：物理スキル・カウンター使用不可
+  if (p.relics.some(r => r.passive === 'forbiddenBook') && (sk.type.startsWith('physical') || sk.type === 'counter')) {
+    addLog('封印された禁書！　物理スキルは使えない！', 'log-system');
+    enableCmds(); return;
+  }
+
   p.battleTurn++;
   p.usedSkillThisBattle = true;
 
-  const mpSaverBonus = p.relics.some(r => r.passive === 'mpSaver') ? 2 : 0;
-  const mpCost = p.mpFree ? 0 : Math.max(1, Math.ceil(sk.mpCost * (p.mpCostMult || 1)) - mpSaverBonus);
+  const mpSaverBonus  = p.relics.some(r => r.passive === 'mpSaver') ? 2 : 0;
+  const magicCoreCost = p.relics.some(r => r.passive === 'magicCore') ? 3 : 0;
+  let mpCost = p.mpFree ? 0 : Math.max(1, Math.ceil(sk.mpCost * (p.mpCostMult || 1)) - mpSaverBonus + magicCoreCost);
+  if (p.relics.some(r => r.passive === 'forbiddenBook')) mpCost = 0; // 魔法スキルコスト0
+  if (p.relics.some(r => r.passive === 'lifeBet') && p.hp / p.maxHp <= 0.15) mpCost = 0;
   if (p.mp < mpCost) { addLog('MPが足りない！', 'log-system'); enableCmds(); return; }
   p.mp -= mpCost;
 
   if (sk.type === 'physical') {
-    const critRate = p.critRate + (p.relics.some(r => r.passive === 'luckyFoot') ? 0.15 : 0);
+    const critRate = p.critRate
+      + (p.relics.some(r => r.passive === 'luckyFoot')     ? 0.15 : 0)
+      + (p.relics.some(r => r.passive === 'swordsmanOath') ? 0.20 : 0)
+      + (p.relics.some(r => r.passive === 'madnessCrest') && p.hp / p.maxHp <= 0.25 ? 0.30 : 0);
     const isCrit   = Math.random() < critRate;
-    let physMult   = (isCrit ? sk.power * 1.5 : sk.power) * (p.skillPowerMult || 1);
+    const critMult = p.relics.some(r => r.passive === 'shadowBlade') ? 2.0 : 1.5;
+    let physMult   = (isCrit ? sk.power * critMult : sk.power) * (p.skillPowerMult || 1);
     if (p.relics.some(r => r.passive === 'oddCharm')  && p.battleTurn % 2 === 1) physMult *= 1.3;
     if (p.relics.some(r => r.passive === 'hourglass') && p.battleTurn >= 3)      physMult *= 1.2;
     if (p.relics.some(r => r.passive === 'demonEye')) physMult *= 0.7;
-    let dmg = calcPhysDmg(GS.atkTotal, e.defense, physMult);
+    // 連鎖の石：連続スキルでダメージ+15%/スタック
+    if (p.relics.some(r => r.passive === 'chainStone')) physMult *= (1 + Math.min(3, p.chainCount) * 0.15);
+    // 大地の剣：防御力0.7倍で計算
+    const defVal = p.relics.some(r => r.passive === 'earthSword') ? Math.floor(e.defense * 0.7) : e.defense;
+    let dmg = calcPhysDmg(GS.atkTotal, defVal, physMult);
+    if (p.relics.some(r => r.passive === 'fortressProof')) dmg += Math.floor(GS.defTotal * 0.3);
+    if (p.relics.some(r => r.passive === 'deathEye') && p.hp / p.maxHp <= 0.3) dmg = Math.floor(dmg * 1.4);
     if (e.isDefending) { dmg = Math.floor(dmg * 0.5); e.isDefending = false; addLog(`${e.name}は防御した！　ダメージ半減！`, 'log-system'); }
     e.hp -= dmg;
     const msg = isCrit
@@ -299,16 +410,27 @@ function doSkill(id) {
       : `${sk.name}！　${e.name}に ${dmg} ダメージ！`;
     addLog(msg, isCrit ? 'log-special' : 'log-damage');
     flash.enemy = 10;
+    // チェーンスタック更新
+    if (p.relics.some(r => r.passive === 'chainStone'))    p.chainCount = Math.min(3, p.chainCount + 1);
+    if (p.relics.some(r => r.passive === 'magicAmplifier')) p.magicChainCount = 0;
   } else if (sk.type === 'magic') {
     let magicMult = p.skillPowerMult || 1;
     if (p.relics.some(r => r.passive === 'magicCatalyst')) magicMult *= 1.2;
     if (p.relics.some(r => r.passive === 'demonEye'))      magicMult *= 1.5;
     if (p.relics.some(r => r.passive === 'hourglass') && p.battleTurn >= 3) magicMult *= 1.2;
+    // 魔力増幅器：連続magic使用でダメージ+20%/スタック
+    if (p.relics.some(r => r.passive === 'magicAmplifier')) magicMult *= (1 + Math.min(3, p.magicChainCount) * 0.2);
+    // 黒魔法の指輪：+15%
+    if (p.relics.some(r => r.passive === 'blackMagicRing')) magicMult *= 1.15;
     let dmg = calcMagicDmg(GS.magicAtkTotal, sk.power * magicMult);
+    if (p.relics.some(r => r.passive === 'deathEye') && p.hp / p.maxHp <= 0.3) dmg = Math.floor(dmg * 1.4);
     if (e.isDefending) { dmg = Math.floor(dmg * 0.5); e.isDefending = false; addLog(`${e.name}は防御した！　ダメージ半減！`, 'log-system'); }
     e.hp -= dmg;
     addLog(`${sk.name}！　魔法で ${e.name}に ${dmg} ダメージ！`, 'log-special');
     flash.enemy = 10;
+    // チェーンスタック更新
+    if (p.relics.some(r => r.passive === 'magicAmplifier')) p.magicChainCount = Math.min(3, p.magicChainCount + 1);
+    if (p.relics.some(r => r.passive === 'chainStone'))    p.chainCount = 0;
   } else if (sk.type === 'heal') {
     const healed = Math.min(Math.floor(sk.healAmount * (p.skillPowerMult || 1)), p.maxHp - p.hp);
     p.hp += healed;
@@ -490,13 +612,20 @@ function checkWin() {
   battleOver = true;
 
   const merchantMult = GS.player.relics.some(r => r.passive === 'merchantRing') ? 1.2 : 1;
-  const gold = Math.floor(GS.enemy.goldReward * (GS.player.goldDouble ? 2 : 1) * merchantMult);
+  const thiefMult    = (GS.player.relics.some(r => r.passive === 'thiefRing') && GS.player.battleTurn <= 5) ? 1.5 : 1;
+  const gold = Math.floor(GS.enemy.goldReward * (GS.player.goldDouble ? 2 : 1) * merchantMult * thiefMult);
   GS.player.gold += gold;
   GS.totalGold   += gold;
   GS.battleCount++;
   GS.totalBattles++;
 
   addLog(`${GS.enemy.name}を倒した！　${gold}G を得た！`, 'log-special');
+  // 錬金術師の指輪：追加+25G
+  if (GS.player.relics.some(r => r.passive === 'alchemistRing')) {
+    GS.player.gold += 25;
+    GS.totalGold   += 25;
+    addLog('錬金術師の指輪！　+25G！', 'log-special');
+  }
 
   // バフカウントダウン（戦闘終了時）
   const _p = GS.player;
@@ -550,16 +679,40 @@ function checkLose() {
 }
 
 function applyDmgToPlayer(dmg, logMsg) {
-  dmg = Math.ceil(dmg * GS.player.damageTakenMult);
-  if (GS.player.goldShield && dmg > 0) {
-    const absorbed = Math.min(GS.player.gold, dmg);
-    GS.player.gold -= absorbed;
+  const p = GS.player;
+  dmg = Math.ceil(dmg * p.damageTakenMult);
+  if (p.goldShield && dmg > 0) {
+    const absorbed = Math.min(p.gold, dmg);
+    p.gold -= absorbed;
     dmg -= absorbed;
     if (absorbed > 0) addLog(`ゴールドがダメージを肩代わり！ (-${absorbed}G)`, 'log-special');
   }
-  GS.player.hp -= dmg;
+  // 鉄壁の守護：固定5軽減
+  if (p.relics.some(r => r.passive === 'ironWall')) dmg = Math.max(1, dmg - 5);
+  // 不動の岩：HP50%以上で20%軽減
+  if (p.relics.some(r => r.passive === 'steadyRock') && p.hp / p.maxHp >= 0.5)
+    dmg = Math.floor(dmg * 0.8);
+  // 死への挑戦：常時30%軽減
+  if (p.relics.some(r => r.passive === 'deathChallenge')) dmg = Math.floor(dmg * 0.7);
+  // 命の砂時計：HP25%以下でさらに30%軽減
+  if (p.relics.some(r => r.passive === 'lifeHourglass') && p.hp / p.maxHp <= 0.25)
+    dmg = Math.floor(dmg * 0.7);
+  p.hp -= dmg;
   addLog(logMsg.replace('{dmg}', dmg), 'log-damage');
   flash.player = 10;
+  // 茨の鎧：防御中に30%反射
+  if (p.isDefending && p.relics.some(r => r.passive === 'thornArmor') && GS.enemy) {
+    const ref = Math.max(1, Math.floor(dmg * 0.3));
+    GS.enemy.hp -= ref;
+    addLog(`茨の鎧！　${ref} ダメージを反射！`, 'log-special');
+    flash.enemy = 10;
+  }
+  // 怒りの石：被ダメ時に攻撃力スタック
+  if (p.relics.some(r => r.passive === 'wrathStone'))
+    p.wrathBonus = Math.min(25, p.wrathBonus + 5);
+  // 逆境の炎：被ダメ時に攻撃倍率蓄積
+  if (p.relics.some(r => r.passive === 'adversityFlame'))
+    p.adversityBonus += 0.12;
 }
 
 // ---- 敵行動ヘルパー ----
@@ -584,9 +737,13 @@ function executeEnemySkill(skill) {
     // physical: e.attack * power - defTotal * 0.4 (with randomness)
     const base = e.attack * skill.power - GS.defTotal * 0.4;
     dmg = Math.max(1, Math.floor(Math.max(1, base) * (0.9 + Math.random() * 0.2)));
-    if (p.isDefending) dmg = Math.floor(dmg * 0.35);
+    if (p.isDefending) {
+      const skillDefMult = p.relics.some(r => r.passive === 'guardShield') ? 0.25 : 0.35;
+      dmg = Math.floor(dmg * skillDefMult);
+    }
   }
   applyDmgToPlayer(dmg, `${e.name}の${skill.name}！　勇者に {dmg} ダメージ！`);
+  if (checkWin()) return;
   if (skill.lifesteal) {
     const healed = Math.floor(dmg * 0.3);
     e.hp = Math.min(e.maxHp, e.hp + healed);
@@ -620,6 +777,7 @@ function doEnemyTurn() {
     e.chargedSkill = null;
     addLog(`${e.name}の${sk.name}！`, 'log-special');
     executeEnemySkill(sk);
+    if (battleOver) return;
     p.isDefending = false;
     p.buffDef     = false;
     updateBattleUI();
@@ -677,12 +835,16 @@ function doEnemyTurn() {
 
   if (bossAction === 'dragonBreath') {
     let dmg = Math.max(1, Math.floor(e.attack * 1.6 - p.defense * 0.2));
-    dmg = p.isDefending ? Math.floor(dmg * 0.35) : dmg;
+    const bossDefMult = p.isDefending ? (p.relics.some(r => r.passive === 'guardShield') ? 0.25 : 0.35) : 1;
+    dmg = Math.floor(dmg * bossDefMult);
     applyDmgToPlayer(dmg, `${e.name}のドラゴンブレス！　勇者に {dmg} ダメージ！`);
+    if (checkWin()) return;
   } else if (bossAction === 'tailSwipe') {
     let dmg = Math.max(1, Math.floor(e.attack * 1.3 - p.defense * 0.4));
-    dmg = p.isDefending ? Math.floor(dmg * 0.35) : dmg;
+    const bossDefMult = p.isDefending ? (p.relics.some(r => r.passive === 'guardShield') ? 0.25 : 0.35) : 1;
+    dmg = Math.floor(dmg * bossDefMult);
     applyDmgToPlayer(dmg, `${e.name}の尻尾攻撃！　勇者に {dmg} ダメージ！`);
+    if (checkWin()) return;
   } else if (bossAction === 'dragonRoar') {
     addLog(`${e.name}の咆哮！　勇者は怯んだ！`, 'log-special');
     p.roarDebuff = true;
@@ -698,13 +860,17 @@ function doEnemyTurn() {
       if (checkWin()) return;
     } else {
       let dmg = Math.max(1, Math.floor(e.attack - GS.defTotal * 0.55));
-      if (p.isDefending) dmg = Math.floor(dmg * 0.25);
+      if (p.isDefending) {
+        const normDefMult = p.relics.some(r => r.passive === 'guardShield') ? 0.15 : 0.25;
+        dmg = Math.floor(dmg * normDefMult);
+      }
       applyDmgToPlayer(
         dmg,
         p.isDefending
           ? `${e.name}の攻撃！　防御した！　勇者に {dmg} ダメージ。`
           : `${e.name}の攻撃！　勇者に {dmg} ダメージ！`
       );
+      if (checkWin()) return;
     }
   }
 
