@@ -9,7 +9,8 @@ body {
   justify-content: center;
   align-items: flex-start;
   min-height: 100vh;
-  padding: 20px 0;
+  padding: 0;
+  overflow: hidden;
 }
 
 /* ===== GAME CONTAINER ===== */
@@ -21,6 +22,7 @@ body {
   box-shadow: 0 0 40px rgba(80, 80, 180, 0.35), inset 0 0 20px rgba(0,0,10,0.5);
   position: relative;
   overflow: hidden;
+  transform-origin: top center;
 }
 
 .scene { width: 100%; }
@@ -492,7 +494,7 @@ body {
 .modal-box {
   background: #111128;
   border: 2px solid #333366;
-  width: 340px; max-height: 480px;
+  width: 35vw; max-height: 65vh;
   display: flex; flex-direction: column;
   font-family: 'Courier New', Courier, monospace;
 }
