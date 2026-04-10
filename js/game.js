@@ -472,4 +472,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Boot
   initTitle();
+
+  // スケーリング
+  function scaleGame() {
+    const scale = Math.min(
+      window.innerWidth  / 640,
+      window.innerHeight / 560
+    );
+    document.getElementById('game-container').style.transform = `scale(${scale})`;
+  }
+  window.addEventListener('resize', scaleGame);
+  scaleGame();
 });
