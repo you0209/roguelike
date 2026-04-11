@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>DUNGEON QUEST — 振り返り・今後の議題</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Hiragino Kaku Gothic ProN', 'Meiryo', sans-serif;
+      font-size: 13px;
+      line-height: 1.8;
+      color: #1a1a2e;
+      background: #fff;
+      padding: 36px 48px;
+      max-width: 900px;
+    }
+
+    .doc-header {
+      border-bottom: 3px solid #1a1a2e;
+      padding-bottom: 12px;
+      margin-bottom: 28px;
+    }
+    .doc-header h1 { font-size: 22px; letter-spacing: 0.05em; }
+    .doc-header .subtitle { font-size: 12px; color: #666; margin-top: 4px; }
+
+    h2 {
+      font-size: 15px;
+      border-left: 5px solid #3355aa;
+      padding-left: 10px;
+      margin: 32px 0 14px;
+    }
+    h3 {
+      font-size: 13px;
+      font-weight: bold;
+      margin: 20px 0 8px;
+      color: #222;
+    }
+
+    /* カード */
+    .card {
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      padding: 14px 18px;
+      margin-bottom: 12px;
+    }
+    .card.green  { border-left: 5px solid #33aa55; }
+    .card.blue   { border-left: 5px solid #3355aa; }
+    .card.orange { border-left: 5px solid #dd8833; }
+    .card.red    { border-left: 5px solid #cc3344; }
+    .card.gray   { border-left: 5px solid #888; }
+
+    .card-label {
+      font-size: 11px;
+      font-weight: bold;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 6px;
+    }
+    .card.green  .card-label { color: #33aa55; }
+    .card.blue   .card-label { color: #3355aa; }
+    .card.orange .card-label { color: #dd8833; }
+    .card.red    .card-label { color: #cc3344; }
+    .card.gray   .card-label { color: #888; }
+
+    .card p { font-size: 13px; color: #333; }
+    .card .sub { font-size: 12px; color: #666; margin-top: 4px; }
+
+    /* 議題テーブル */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 16px;
+      font-size: 12.5px;
+    }
+    th {
+      background: #1a1a2e;
+      color: #fff;
+      padding: 7px 12px;
+      text-align: left;
+    }
+    td {
+      padding: 8px 12px;
+      border-bottom: 1px solid #e0e0e0;
+      vertical-align: top;
+    }
+    tr:nth-child(even) td { background: #f7f8ff; }
+
+    .tag {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 3px;
+      font-size: 11px;
+      font-weight: bold;
+      white-space: nowrap;
+    }
+    .tag-high   { background: #ffeeee; color: #cc3344; border: 1px solid #ffbbbb; }
+    .tag-mid    { background: #fff8e0; color: #996600; border: 1px solid #ffdd88; }
+    .tag-low    { background: #eeffee; color: #336633; border: 1px solid #99cc99; }
+    .tag-design { background: #eef0ff; color: #334499; border: 1px solid #aabbee; }
+    .tag-impl   { background: #f0fff0; color: #226633; border: 1px solid #88cc88; }
+
+    .note {
+      background: #fffbe6;
+      border: 1px solid #f0c040;
+      border-radius: 4px;
+      padding: 10px 16px;
+      font-size: 12px;
+      color: #665500;
+      margin: 16px 0;
+    }
+
+    .doc-footer {
+      margin-top: 48px;
+      border-top: 1px solid #ccc;
+      padding-top: 10px;
+      font-size: 11px;
+      color: #999;
+      text-align: right;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="doc-header">
+    <h1>DUNGEON QUEST — ハッカソン振り返り・今後の議題</h1>
+    <div class="subtitle">作成日: 2026-04-12　　リポジトリ: https://github.com/you0209/roguelike</div>
+  </div>
+
+
+  <!-- ========== 講評まとめ ========== -->
+  <h2>1. ハッカソン講評まとめ</h2>
+
+  <div class="card green">
+    <div class="card-label">✅ 高評価ポイント</div>
+    <p>設計からリリースまで一通りやり切っているのが非常に高評価だった。</p>
+  </div>
+
+  <div class="card blue">
+    <div class="card-label">❓ 質問として受けた内容</div>
+    <p>「トルネコの大冒険・風来のシレンといった既存の JRPG×ローグライク作品との差別化・優位性はどこか？」</p>
+    <div class="sub">→ 次回発表時は差別化ポイントを事前に言語化して備えておく。</div>
+  </div>
+
+  <div class="card orange">
+    <div class="card-label">💡 今後へのアドバイス（審査員より）</div>
+    <p>実際のユーザーに触ってもらってフィードバックを収集し、改善サイクルを回すことを推奨された。</p>
+  </div>
+
+
+  <!-- ========== 今後の議題 ========== -->
+  <h2>2. 今後チームで話し合うべき議題</h2>
+
+  <div class="note">
+    ⚠ 以下はすべて <strong>未決定</strong> の議題です。まず何から話し合うかの優先度を揃えることから始めてください。
+  </div>
+
+  <!-- ── 方向性 ── -->
+  <h3>① ゲームの方向性・コンセプト</h3>
+  <table>
+    <tr>
+      <th style="width:260px">議題</th>
+      <th>選択肢・論点</th>
+      <th style="width:80px">優先度</th>
+    </tr>
+    <tr>
+      <td>今後のジャンル定義</td>
+      <td>現状の「ソロ・レリックビルド型」を深掘りする vs「パーティ編成型ローグライト」へ拡張する</td>
+      <td><span class="tag tag-high">高</span></td>
+    </tr>
+    <tr>
+      <td>トルネコ・シレンとの差別化ポイント</td>
+      <td>「何が違うゲームか」を一言で言えるようにしておく（対外説明・設計判断の軸になる）</td>
+      <td><span class="tag tag-high">高</span></td>
+    </tr>
+    <tr>
+      <td>ターゲットユーザー</td>
+      <td>ローグライク経験者向け？JRPG経験者向け？ライトゲーマー向け？</td>
+      <td><span class="tag tag-mid">中</span></td>
+    </tr>
+  </table>
+
+  <!-- ── 仲間システム ── -->
+  <h3>② 仲間システム</h3>
+  <table>
+    <tr>
+      <th style="width:260px">議題</th>
+      <th>選択肢・論点</th>
+      <th style="width:80px">優先度</th>
+    </tr>
+    <tr>
+      <td>仲間システムを実装するか</td>
+      <td>入れる / 入れない / 将来的に入れる（まず現状を磨く）</td>
+      <td><span class="tag tag-high">高</span></td>
+    </tr>
+    <tr>
+      <td>パーティ人数</td>
+      <td>ソロ継続 / 2人 / 最大3人など</td>
+      <td><span class="tag tag-high">高</span></td>
+    </tr>
+    <tr>
+      <td>仲間の役割</td>
+      <td>バトルに直接参加（毎ターン行動） / パッシブ効果のみ / スキル提供のみ</td>
+      <td><span class="tag tag-high">高</span></td>
+    </tr>
+    <tr>
+      <td>仲間と職業の関係</td>
+      <td>仲間ごとに固有ステータス・スキルを持たせる（仲間＝職業）/ 仲間と職業を別システムにする</td>
+      <td><span class="tag tag-high">高</span></td>
+    </tr>
+    <tr>
+      <td>主人公の扱い</td>
+      <td>常にパーティ固定 / 仲間の1人として交代可能</td>
+      <td><span class="tag tag-mid">中</span></td>
+    </tr>
+    <tr>
+      <td>仲間の解放方法</td>
+      <td>イベント / 実績 / ショップ / フロアクリア報酬 など</td>
+      <td><span class="tag tag-mid">中</span></td>
+    </tr>
+    <tr>
+      <td>仲間の死亡ルール</td>
+      <td>戦闘中に倒れても続行 / 倒れたらゲームオーバー / 蘇生アイテムで復活</td>
+      <td><span class="tag tag-mid">中</span></td>
+    </tr>
+    <tr>
+      <td>ランをまたいだ引き継ぎ</td>
+      <td>仲間を一度解放したら次ランも使える（ローグライト）/ 毎ラン最初から集め直す（ローグライク）</td>
+      <td><span class="tag tag-mid">中</span></td>
+    </tr>
+    <tr>
+      <td>仲間の総数・実装スコープ</td>
+      <td>初期実装で何人用意するか（多いほど実装コスト大）</td>
+      <td><span class="tag tag-low">低</span></td>
+    </tr>
+  </table>
+
+  <!-- ── レリック・装備 ── -->
+  <h3>③ レリック・装備システム</h3>
+  <table>
+    <tr>
+      <th style="width:260px">議題</th>
+      <th>選択肢・論点</th>
+      <th style="width:80px">優先度</th>
+    </tr>
+    <tr>
+      <td>レリックの帰属</td>
+      <td>パーティ共有（現状）/ キャラ個別装備 / 共有＋個別の2層構造</td>
+      <td><span class="tag tag-high">高</span></td>
+    </tr>
+    <tr>
+      <td>装備システムの追加有無</td>
+      <td>キャラごとに装備スロットを作りステータスアップ専用にする / レリックだけで完結させる</td>
+      <td><span class="tag tag-high">高</span></td>
+    </tr>
+    <tr>
+      <td>装備とレリックの役割分担</td>
+      <td>装備＝シンプルな数値増加、レリック＝ビルド方向性の決定　という分担が考えられる</td>
+      <td><span class="tag tag-mid">中</span></td>
+    </tr>
+    <tr>
+      <td>装備の入手方法</td>
+      <td>ショップのみ / 戦闘ドロップ / イベント報酬 など</td>
+      <td><span class="tag tag-low">低</span></td>
+    </tr>
+  </table>
+
+  <!-- ── バトル ── -->
+  <h3>④ バトルシステム拡張</h3>
+  <table>
+    <tr>
+      <th style="width:260px">議題</th>
+      <th>選択肢・論点</th>
+      <th style="width:80px">優先度</th>
+    </tr>
+    <tr>
+      <td>パーティ戦闘時のターン構造</td>
+      <td>全員が毎ターン行動 / 1ターンに1人だけ行動を選ぶ / 素早さ順に自動決定</td>
+      <td><span class="tag tag-high">高</span></td>
+    </tr>
+    <tr>
+      <td>全滅条件</td>
+      <td>全員HP0でゲームオーバー / 主人公が倒れたらゲームオーバー / 別条件</td>
+      <td><span class="tag tag-mid">中</span></td>
+    </tr>
+    <tr>
+      <td>敵の複数体対応</td>
+      <td>パーティ導入に合わせて敵も複数体出現させるか</td>
+      <td><span class="tag tag-mid">中</span></td>
+    </tr>
+    <tr>
+      <td>スキルのターゲット選択</td>
+      <td>敵が複数になった場合、全体攻撃・単体攻撃の区別が必要になる</td>
+      <td><span class="tag tag-low">低</span></td>
+    </tr>
+  </table>
+
+  <!-- ── 短期改善 ── -->
+  <h3>⑤ 短期的な改善（大きな設計変更なしにできること）</h3>
+  <table>
+    <tr>
+      <th style="width:260px">議題</th>
+      <th>内容</th>
+      <th style="width:80px">優先度</th>
+    </tr>
+    <tr>
+      <td>ユーザーフィードバックの収集</td>
+      <td>審査員のアドバイス通り、実際に触ってもらえる環境を作る（公開URL・共有方法）</td>
+      <td><span class="tag tag-high">高</span></td>
+    </tr>
+    <tr>
+      <td>バランス調整</td>
+      <td>現状のレリック79個・スキル15種・イベント31個のバランスを実プレイで確認する</td>
+      <td><span class="tag tag-high">高</span></td>
+    </tr>
+    <tr>
+      <td>BGM・SE の追加</td>
+      <td>ゲーム体験の完成度を上げるために効果音・BGMを検討する</td>
+      <td><span class="tag tag-mid">中</span></td>
+    </tr>
+    <tr>
+      <td>スマホ対応</td>
+      <td>タップ操作・レイアウト調整が必要、ユーザー層が大きく広がる</td>
+      <td><span class="tag tag-mid">中</span></td>
+    </tr>
+  </table>
+
+  <div class="doc-footer">
+    DUNGEON QUEST — Next Steps Document　v1.0　2026-04-12
+  </div>
+
+</body>
+</html>
