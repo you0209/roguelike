@@ -67,6 +67,14 @@ body {
 }
 .pixel-btn:hover { background: #242450; border-color: #9999dd; color: #ffffff; }
 .pixel-btn:active { transform: translateY(2px); }
+.feedback-btn {
+  margin-top: 12px;
+  border-color: #aa8833;
+  color: #ffcc44;
+  text-decoration: none;
+  display: inline-block;
+}
+.feedback-btn:hover { background: #2a2010; border-color: #ffcc44; color: #ffe080; }
 
 /* ===========================
    TITLE SCREEN
