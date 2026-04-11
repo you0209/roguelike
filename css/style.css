@@ -67,14 +67,26 @@ body {
 }
 .pixel-btn:hover { background: #242450; border-color: #9999dd; color: #ffffff; }
 .pixel-btn:active { transform: translateY(2px); }
-.feedback-btn {
-  margin-top: 12px;
-  border-color: #aa8833;
+.feedback-float-btn {
+  position: absolute;
+  bottom: 12px; right: 60px;
+  z-index: 500;
+  background: #111128;
+  border: 1px solid #aa8833;
   color: #ffcc44;
+  font-size: 11px;
+  padding: 0 10px;
+  height: 40px;
+  line-height: 40px;
+  cursor: pointer;
+  border-radius: 4px;
+  font-family: 'Courier New', monospace;
+  letter-spacing: 1px;
   text-decoration: none;
-  display: inline-block;
+  display: none;
 }
-.feedback-btn:hover { background: #2a2010; border-color: #ffcc44; color: #ffe080; }
+.feedback-float-btn:hover { background: #2a2010; border-color: #ffcc44; color: #ffe080; }
+.feedback-float-btn.visible { display: block; }
 
 /* ===========================
    TITLE SCREEN

@@ -168,6 +168,8 @@ function showScene(name) {
   const hideOn = ['title', 'gameover', 'victory'];
   const floatBtn = document.getElementById('btn-status-float');
   if (floatBtn) floatBtn.classList.toggle('hidden', hideOn.includes(name));
+  const feedbackBtn = document.getElementById('btn-feedback-float');
+  if (feedbackBtn) feedbackBtn.classList.toggle('visible', name !== 'battle');
 }
 
 // ============================================================
