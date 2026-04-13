@@ -775,6 +775,7 @@ function doEnemyTurn() {
   if (e.chargedSkill) {
     const sk = e.chargedSkill;
     e.chargedSkill = null;
+    p.counterActive = false;
     addLog(`${e.name}の${sk.name}！`, 'log-special');
     executeEnemySkill(sk);
     if (battleOver) return;
@@ -797,6 +798,7 @@ function doEnemyTurn() {
   if (selectedAction.type === 'skill') {
     // チャージ開始（次のターンに発動）
     e.chargedSkill = selectedAction;
+    p.counterActive = false;
     addLog(`${e.name}：${selectedAction.warning}`, 'log-system');
     p.isDefending = false;
     p.buffDef     = false;
@@ -813,6 +815,7 @@ function doEnemyTurn() {
 
   if (selectedAction.type === 'defend') {
     e.isDefending = true;
+    p.counterActive = false;
     addLog(`${e.name}は防御態勢をとった！`, 'log-system');
     p.isDefending = false;
     p.buffDef     = false;
@@ -832,6 +835,7 @@ function doEnemyTurn() {
   if (e.isBoss && e.bossSkills.length > 0 && Math.random() < 0.38) {
     bossAction = e.bossSkills[Math.floor(Math.random() * e.bossSkills.length)];
   }
+  if (bossAction !== 'attack') p.counterActive = false;
 
   if (bossAction === 'dragonBreath') {
     let dmg = Math.max(1, Math.floor(e.attack * 1.6 - p.defense * 0.2));
