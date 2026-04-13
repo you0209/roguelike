@@ -247,7 +247,7 @@ function doAttack() {
   const hasCursedHelm = p.relics.some(r => r.passive === 'cursedHelm');
   let extraHits = 0;
   if (hasCursedHelm) extraHits = 1;
-  else if (p.relics.some(r => r.passive === 'doubleHit') && Math.random() < 0.1) extraHits = 1;
+  else if (p.relics.some(r => r.passive === 'doubleHit') && Math.random() < 0.3) extraHits = 1;
   if (p.relics.some(r => r.passive === 'tripleHit') && Math.random() < 0.15)
     extraHits = Math.max(extraHits, 2);
 

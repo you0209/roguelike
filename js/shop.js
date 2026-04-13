@@ -76,6 +76,7 @@ function initShop() {
   shopTab = 'relics';
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
   document.querySelector('[data-tab="relics"]').classList.add('active');
+  document.getElementById('shop-floor').textContent = `第${GS.floor}階層`;
   generateLineup();
   renderShop();
 }
