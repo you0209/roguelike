@@ -363,6 +363,7 @@ body {
   border-bottom: 2px solid #3a3000;
 }
 .shop-title-text { font-size: 18px; color: #ddb833; letter-spacing: 3px; }
+.shop-floor-text { font-size: 12px; color: #8888aa; }
 
 .shop-tabs {
   display: flex;

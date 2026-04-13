@@ -169,10 +169,10 @@ const RELICS = {
   },
   doubleHitRing: {
     name: '連撃のリング',
-    desc: '通常攻撃が10%の確率で2回ヒット',
+    desc: '通常攻撃が30%の確率で2回ヒット',
     tier: 2,
     attackBonus: 0, defenseBonus: 0, hpBonus: 0, mpBonus: 0,
-    price: 120, passive: 'doubleHit'
+    price: 110, passive: 'doubleHit'
   },
 
   // ── パッシブ：ターン依存 ──
@@ -211,7 +211,7 @@ const RELICS = {
     desc: '通常攻撃2連打 / スキル使用不可',
     tier: 2,
     attackBonus: 0, defenseBonus: 0, hpBonus: 0, mpBonus: 0,
-    price: 80, passive: 'cursedHelm'
+    price: 130, passive: 'cursedHelm'
   },
   berserkerProof: {
     name: '狂戦士の証',
