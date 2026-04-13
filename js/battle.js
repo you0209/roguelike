@@ -758,6 +758,9 @@ function doEnemyTurn() {
   const e = GS.enemy;
   const p = GS.player;
 
+  // 前ターンの敵防御フラグをリセット
+  e.isDefending = false;
+
   // 毎ターン追加ダメージ（5層血の鎧効果）
   if (p.turnDmg > 0) {
     applyDmgToPlayer(p.turnDmg, `呪いの炎！　勇者に {dmg} ダメージ！`);
