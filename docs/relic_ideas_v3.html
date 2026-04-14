@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>レリック案 v3（100案）</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', sans-serif; background: #0d0d1a; color: #e0e0f0; padding: 20px; }
+    h1 { text-align: center; font-size: 1.7rem; color: #aaddff; margin-bottom: 4px; }
+    .subtitle { text-align: center; color: #556; font-size: 0.82rem; margin-bottom: 24px; }
+
+    .category { margin-bottom: 28px; }
+    .cat-header {
+      display: flex; align-items: baseline; gap: 12px;
+      border-bottom: 1px solid #2a2a40; padding-bottom: 6px; margin-bottom: 10px;
+    }
+    .cat-title { font-size: 1rem; font-weight: bold; color: #ffcc66; }
+    .cat-note  { font-size: 0.78rem; color: #667; }
+
+    table { width: 100%; border-collapse: collapse; font-size: 0.80rem; }
+    th { background: #14142a; color: #88aadd; padding: 6px 8px; text-align: left; font-weight: 600; }
+    tr:nth-child(even) { background: #111122; }
+    tr:nth-child(odd)  { background: #0e0e1c; }
+    tr:hover { background: #1a1a30; }
+    td { padding: 6px 8px; border-bottom: 1px solid #1a1a2a; vertical-align: top; line-height: 1.4; }
+
+    .tier { display: inline-block; padding: 1px 6px; border-radius: 8px; font-size: 0.70rem; font-weight: bold; white-space: nowrap; }
+    .t1 { background: #0e2a0e; color: #55cc55; border: 1px solid #1a4a1a; }
+    .t2 { background: #0e1e2e; color: #5599ee; border: 1px solid #1a3355; }
+    .t3 { background: #1e0e2e; color: #bb66ff; border: 1px solid #441166; }
+
+    .g  { color: #aaffaa; }
+    .b  { color: #ff7777; }
+    .n  { color: #88bbff; }
+
+    .pid { font-family: monospace; font-size: 0.70rem; color: #445; }
+
+    .impl { display: inline-block; font-size: 0.68rem; padding: 1px 5px; border-radius: 6px; white-space: nowrap; }
+    .ie { background: #0e2a0e; color: #77cc77; }
+    .im { background: #2a1e08; color: #ccaa44; }
+    .ih { background: #2a0e0e; color: #cc6666; }
+
+    .dm { color: #ff7777; font-size: 0.78rem; }
+
+    /* サマリー */
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 8px;
+      margin-top: 8px;
+    }
+    .summary-card {
+      background: #111122;
+      border: 1px solid #222244;
+      border-radius: 6px;
+      padding: 10px 12px;
+      font-size: 0.78rem;
+    }
+    .summary-card .sc-title { color: #ffcc66; font-weight: bold; margin-bottom: 4px; }
+    .summary-card .sc-count { font-size: 1.2rem; color: #aaddff; font-weight: bold; }
+    .summary-card .sc-sub   { color: #556; font-size: 0.72rem; }
+  </style>
+</head>
+<body>
+
+<h1>⚗️ レリック新案 100選</h1>
+<p class="subtitle">
+  <span class="tier t1">Tier1</span> 安定
+  <span class="tier t2">Tier2</span> 中核
+  <span class="tier t3">Tier3</span> 強力／特殊　／
+  <span class="dm">★</span> デメリット付き　／
+  実装難易度：<span style="color:#77cc77">●易</span> <span style="color:#ccaa44">●中</span> <span style="color:#cc6666">●難</span>
+</p>
+
+<!-- ===== 1 ===== -->
+<div class="category">
+  <div class="cat-header">
+    <span class="cat-title">① シンプルステータス増加（10案）</span>
+    <span class="cat-note">ショップの品揃え充実用。数値加算のみで実装が軽い。</span>
+  </div>
+  <table>
+    <tr><th>#</th><th>名前</th><th>Tier</th><th>効果</th><th>passive ID / ボーナスフィールド</th><th>実装</th></tr>
+    <tr><td>1</td><td>鉄の盾</td><td><span class="tier t1">T1</span></td><td class="g">防御力+10</td><td class="pid">defenseBonus:10</td><td><span class="impl ie">●易</span></td></tr>
+    <tr><td>2</td><td>鋼鉄の鎧</td><td><span class="tier t2">T2</span></td><td class="g">防御力+25</td><td class="pid">defenseBonus:25</td><td><span class="impl ie">●易</span></td></tr>
+    <tr><td>3</td><td>竜の心臓</td><td><span class="tier t3">T3</span></td><td class="g">最大HP+80</td><td class="pid">hpBonus:80</td><td><span class="impl ie">●易</span></td></tr>
+    <tr><td>4</td><td>魔力の腕輪</td><td><span class="tier t2">T2</span></td><td class="g">魔法攻撃力+18</td><td class="pid">magicAttackBonus:18</td><td><span class="impl ie">●易</span></td></tr>
+    <tr><td>5</td><td>深淵の杖</td><td><span class="tier t3">T3</span></td><td class="g">魔法攻撃力+40</td><td class="pid">magicAttackBonus:40</td><td><span class="impl ie">●易</span></td></tr>
+    <tr><td>6</td><td>ミスリルの剣</td><td><span class="tier t3">T3</span></td><td class="g">攻撃力+35</td><td class="pid">attackBonus:35</td><td><span class="impl ie">●易</span></td></tr>
+    <tr><td>7</td><td>英雄の証</td><td><span class="tier t2">T2</span></td><td class="g">攻撃力+10 / 防御力+10 / 最大HP+15</td><td class="pid">複合ボーナス</td><td><span class="impl ie">●易</span></td></tr>
+    <tr><td>8</td><td>冒険者の外套</td><td><span class="tier t2">T2</span></td><td class="g">防御力+12 / 最大HP+25</td><td class="pid">複合ボーナス</td><td><span class="impl ie">●易</span></td></tr>
+    <tr><td>9</td><td>水晶のリング</td><td><span class="tier t2">T2</span></td><td class="g">最大MP+45 / 魔法攻撃力+12</td><td class="pid">複合ボーナス</td><td><span class="impl ie">●易</span></td></tr>
+    <tr><td>10</td><td>勇者の盾</td><td><span class="tier t2">T2</span></td><td class="g">防御力+20 / 最大HP+20</td><td class="pid">複合ボーナス</td><td><span class="impl ie">●易</span></td></tr>
+  </table>
+</div>
+
+<!-- ===== 2 ===== -->
+<div class="category">
+  <div class="cat-header">
+    <span class="cat-title">② 通常攻撃強化（15案）</span>
+    <span class="cat-note">MP不要の通常攻撃ビルドを強化。連撃・毒・クリ倍率など多様なサブ効果を付与する。</span>
+  </div>
+  <table>
+    <tr><th>#</th><th>名前</th><th>Tier</th><th>効果</th><th>passive ID</th><th>実装</th></tr>
+    <tr><td>11</td><td>毒牙の指輪</td><td><span class="tier t2">T2</span></td><td class="g">通常攻撃に20%の確率で毒付与（毎ターン8ダメージ）</td><td class="pid">poisonFang</td><td><span class="impl im">●中</span></td></tr>
+    <tr><td>12</td><td>雷の紋章</td><td><span class="tier t2">T2</span></td><td class="g">会心ヒット時に追加15固定ダメージ</td><td class="pid">thunderCrest</td><td><span class="impl ie">●易</span></td></tr>
+    <tr><td>13</td><td>影の刃</td><td><span class="tier t2">T2</span></td><td class="g">通常攻撃の会心倍率を1.5倍→2.0倍に強化</td><td class="pid">shadowBlade</td><td><span class="impl ie">●易</span></td></tr>
+    <tr><td>14</td><td>先制の剣</td><td><span class="tier t2">T2</span></td><td class="g">1ターン目の通常攻撃が2.0倍</td><td class="pid">firstStrike</td><td><span class="impl ie">●易</span></td></tr>
+    <tr><td>15</td><td>炎の仮面</td><td><span class="tier t1">T1</span></td><td class="g">戦闘開始時に敵に20固定ダメージ</td><td class="pid">flameMask</td><td><span class="impl ie">●易</span></td></tr>
+    <tr><td>16</td><td>怒りの石</td><td><span class="tier t2">T2</span></td><td class="g">被ダメージのたびに攻撃力+5（最大+25、その戦闘中）</td><td class="pid">wrathStone</td><td><span class="impl ie">●易</span></td></tr>
+    <tr><td>17</td><td>剛力の証明</td><td><span class="tier t2">T2</span></td><td class="g">所持レリックが3個以下の時、攻撃力+30</td><td class="pid">strongProof</td><td><span class="impl ie">●易</span></td></tr>
+    <tr><td>18</td><td>逆境の炎</td><td><span class="tier t2">T2</span></td><td class="g">被ダメージのたびに次の攻撃+12%（攻撃すると解除）</td><td class="pid">adversityFlame</td><td><span class="impl im">●中</span></td></tr>
+    <tr><td>19</td><td>模倣の鏡</td><td><span class="tier t2">T2</span></td><td class="g">敵の攻撃力の10%を自分の攻撃力に加算</td><td class="pid">mimicMirror</td><td><span class="impl ie">●易</span></td></tr>
+    <tr><td>20</td><td>連撃の爪</td><td><span class="tier t3">T3</span></td><td class="g">通常攻撃が15%の確率で3回ヒット（独立クリティカル）</td><td class="pid">tripleHit</td><td><span class="impl im">●中</span></td></tr>
+    <tr><td>21</td><td>精鋭の証</td><td><span class="tier t2">T2</span></td><td class="g">3ターン以内に勝利すると次の戦闘で攻撃力+20</td><td class="pid">eliteProof</td><td><span class="impl ie">●易</span></td></tr>
+    <tr><td>22</td><td>狩人の眼</td><td><span class="tier t2">T2</span></td><td class="g">敵のHPが30%以下の時、攻撃力+20</td><td class="pid">hunterEye</td><td><span class="impl ie">●易</span></td></tr>
+    <tr><td>23</td><td>骨砕きの鎚</td><td><span class="tier t3">T3</span></td><td class="g">通常攻撃5%の確率で敵の防御力を半分に（その戦闘中）</td><td class="pid">boneCrush</td><td><span class="impl im">●中</span></td></tr>
+    <tr><td>24</td><td>業火の護符</td><td><span class="tier t3">T3</span></td><td class="g">HP1以下で生き残るたびに永続攻撃力+15（1戦闘1回）</td><td class="pid">hellflameAmulet</td><td><span class="impl im">●中</span></td></tr>
+    <tr><td>25</td><td>傷跡の勲章</td><td><span class="tier t2">T2</span></td><td class="g">その戦闘で受けた総ダメージ×0.08を攻撃力に加算（次ターンから反映）</td><td class="pid">scarMedal</td><td><span class="impl im">●中</span></td></tr>
+  </table>
+</div>
+
+<!-- ===== 3 ===== -->
+<div class="category">
+  <div class="cat-header">
+    <span class="cat-title">③ 物理スキル強化（12案）</span>
+    <span class="cat-note">斬撃・突撃など物理スキルを主軸にするビルドのパーツ。MP管理と高倍率のバランスが鍵。</span>
+  </div>
+  <table>
+    <tr><th>#</th><th>名前</th><th>Tier</th><th>効果</th><th>passive ID</th><th>実装</th></tr>
+    <tr><td>26</td><td>物理魔法書</td><td><span class="tier t2">T2</span></td><td class="g">物理スキルの威力+20%</td><td class="pid">physSpellbook</td><td><span class="impl ie">●易</span></td></tr>
+    <tr><td>27</td><td>呪いの巻物</td><td><span class="tier t1">T1</span></td><td class="g">戦闘開始時にMP+15（その戦闘のみ）</td><td class="pid">cursedScroll</td><td><span class="impl ie">●易</span></td></tr>
+    <tr><td>28</td><td>剣士の誓い</td><td><span class="tier t2">T2</span></td><td class="g">物理スキルの会心率+20%</td><td class="pid">swordsmanOath</td><td><span class="impl ie">●易</span></td></tr>
+    <tr><td>29</td><td>戦意の石板</td><td><span class="tier t2">T2</span></td><td class="g">物理スキル使用後の次の通常攻撃が+30%</td><td class="pid">battleSpirit</td><td><span class="impl im">●中</span></td></tr>
+    <tr><td>30</td><td>大地の剣</td><td><span class="tier t3">T3</span></td><td class="g">物理スキルが敵の防御力を30%無視</td><td class="pid">earthSword</td><td><span class="impl ie">●易</span></td></tr>
+    <tr><td>31</td><td>連鎖の石</td><td><span class="tier t3">T3</span></td><td class="g">スキルを連続使用するとダメージ+15%ずつ増加（最大+45%、通常攻撃でリセット）</td><td class="pid">chainStone</td><td><span class="impl im">●中</span></td></tr>
+    <tr><td>32</td><td>魔力転換器</td><td><span class="tier t2">T2</span></td><td class="g">物理スキルのダメージがMP残量に比例して+0〜20%（MP満タン時+20%）</td><td class="pid">mpConverter</td><td><span class="impl ie">●易</span></td></tr>
+    <tr><td>33</td><td>戦士の絆</td><td><span class="tier t2">T2</span></td><td class="g">物理スキルで会心した時MP+3回復</td><td class="pid">warriorBond</td><td><span class="impl ie">●易</span></td></tr>
+    <tr><td>34</td><td>血戦の証</td><td><span class="tier t2">T2</span></td><td class="g">物理スキルでとどめを刺すと次の戦闘で攻撃力+15</td><td class="pid">bloodyProof</td><td><span class="impl ie">●易</span></td></tr>
+    <tr><td>35</td><td>共鳴の結晶</td><td><span class="tier t3">T3</span></td><td class="g">物理スキルと魔法スキルを交互に使うと威力+30%</td><td class="pid">resonance</td><td><span class="impl im">●中</span></td></tr>
+    <tr><td>36</td><td>賢者の指輪</td><td><span class="tier t2">T2</span></td><td class="g">スキル使用後、次のスキルのMP消費-4</td><td class="pid">sageRing</td><td><span class="impl im">●中</span></td></tr>
+    <tr><td>37</td><td>古の魔石</td><td><span class="tier t2">T2</span></td><td class="g">スキル使用回数×5の攻撃力ボーナス（その戦闘中）</td><td class="pid">ancientGem</td><td><span class="impl ie">●易</span></td></tr>
+  </table>
+</div>
+
+<!-- ===== 4 ===== -->
+<div class="category">
+  <div class="cat-header">
+    <span class="cat-title">④ 魔法スキル強化（12案）</span>
+    <span class="cat-note">魔法攻撃力・MP管理・魔法特化のシナジーを拡充。既存の魔法触媒・魔人の眼を補完する。</span>
+  </div>
+  <table>
+    <tr><th>#</th><th>名前</th><th>Tier</th><th>効果</th><th>passive ID</th><th>実装</th></tr>
+    <tr><td>38</td><td>魔力増幅器</td><td><span class="tier t3">T3</span></td><td class="g">魔法スキルを連続使用するとダメージ+20%ずつ増加（最大+60%、物理スキルでリセット）</td><td class="pid">magicAmplifier</td><td><span class="impl im">●中</span></td></tr>
+    <tr><td>39</td><td>魔力の泉</td><td><span class="tier t1">T1</span></td><td class="g">毎ターン開始時にMP+2回復</td><td class="pid">mpFountain</td><td><span class="impl ie">●易</span></td></tr>
+    <tr><td>40</td><td>智慧の指輪</td><td><span class="tier t2">T2</span></td><td class="g">最大MPの30%を魔法攻撃力に加算（最大MP60→+18）</td><td class="pid">wisdomRing</td><td><span class="impl ie">●易</span></td></tr>
+    <tr><td>41</td><td>古の魔道書</td><td><span class="tier t2">T2</span></td><td class="g">魔法スキルでとどめを刺すと次の戦闘で魔法攻撃力+15</td><td class="pid">ancientSpellbook</td><td><span class="impl ie">●易</span></td></tr>
+    <tr><td>42</td><td>霊力の石</td><td><span class="tier t2">T2</span></td><td class="g">魔法スキル使用後HPが「消費MP×0.5」回復</td><td class="pid">spiritStone</td><td><span class="impl ie">●易</span></td></tr>
+    <tr><td>43</td><td>蒼炎の宝珠</td><td><span class="tier t2">T2</span></td><td class="g">魔法スキルの会心率+20%</td><td class="pid">blueFlameOrb</td><td><span class="impl ie">●易</span></td></tr>
+    <tr><td>44</td><td>魔力解放</td><td><span class="tier t2">T2</span></td><td class="g">HP20以上の時、毎ターン「HP10消費→MP10回復」を自動発動</td><td class="pid">manaRelease</td><td><span class="impl im">●中</span></td></tr>
+    <tr><td>45</td><td>変換の石</td><td><span class="tier t3">T3</span></td><td class="g">戦闘開始時にMP全量を魔法攻撃力ボーナスに変換（MP=0になるが1戦闘で強烈な火力）</td><td class="pid">convertStone</td><td><span class="impl ie">●易</span></td></tr>
+    <tr><td>46</td><td>黒魔法の指輪</td><td><span class="tier t2">T2</span></td><td><span class="g">魔法スキルのダメージ+15%</span> / <span class="b">防御力-10 <span class="dm">★</span></span></td><td class="pid">blackMagicRing</td><td><span class="impl ie">●易</span></td></tr>
+    <tr><td>47</td><td>過負荷の宝珠</td><td><span class="tier t3">T3</span></td><td><span class="g">MPが最大値の時スキル威力+40%</span> / <span class="b">発動するとMP消費が1.5倍 <span class="dm">★</span></span></td><td class="pid">overloadOrb</td><td><span class="impl im">●中</span></td></tr>
+    <tr><td>48</td><td>魔導核</td><td><span class="tier t2">T2</span></td><td><span class="g">最大MP+50</span> / <span class="b">スキルのMP消費+3 <span class="dm">★</span></span></td><td class="pid">magicCore</td><td><span class="impl ie">●易</span></td></tr>
+    <tr><td>49</td><td>封印された禁書</td><td><span class="tier t3">T3</span></td><td><span class="g">魔法スキルのMP消費0</span> / <span class="b">物理スキル・通常攻撃が使えない <span class="dm">★</span></span></td><td class="pid">forbiddenBook</td><td><span class="impl im">●中</span></td></tr>
+  </table>
+</div>
+
+<!-- ===== 5 ===== -->
+<div class="category">
+  <div class="cat-header">
+    <span class="cat-title">⑤ 防御カウンタービルド（12案）</span>
+    <span class="cat-note">防御コマンドを積極的に使う戦術。revengeBlade の1枚しかない現状を大幅補強。ターン管理ゲームになる。</span>
+  </div>
+  <table>
+    <tr><th>#</th><th>名前</th><th>Tier</th><th>効果</th><th>passive ID</th><th>実装</th></tr>
+    <tr><td>50</td><td>茨の鎧</td><td><span class="tier t2">T2</span></td><td class="g">防御中に受けたダメージの30%を敵に反射</td><td class="pid">thornArmor</td><td><span class="impl im">●中</span></td></tr>
+    <tr><td>51</td><td>守護の盾</td><td><span class="tier t2">T2</span></td><td class="g">防御コマンドのダメージ軽減を50%→65%に強化</td><td class="pid">guardShield</td><td><span class="impl ie">●易</span></td></tr>
+    <tr><td>52</td><td>待機の印</td><td><span class="tier t1">T1</span></td><td class="g">防御コマンド使用時にMP+4回復</td><td class="pid">waitSeal</td><td><span class="impl ie">●易</span></td></tr>
+    <tr><td>53</td><td>盾返しの腕輪</td><td><span class="tier t3">T3</span></td><td class="g">防御コマンド後の攻撃が2.0倍（revengeBlade 上位版）</td><td class="pid">shieldCounter</td><td><span class="impl ie">●易</span></td></tr>
+    <tr><td>54</td><td>鉄壁の守護</td><td><span class="tier t2">T2</span></td><td class="g">受けるダメージを5軽減（最低1）</td><td class="pid">ironWall</td><td><span class="impl ie">●易</span></td></tr>
+    <tr><td>55</td><td>忍耐の石板</td><td><span class="tier t2">T2</span></td><td class="g">連続して防御コマンドを使うたびに防御力+10増加（最大+30、攻撃でリセット）</td><td class="pid">patienceTablet</td><td><span class="impl im">●中</span></td></tr>
+    <tr><td>56</td><td>反骨の魂</td><td><span class="tier t2">T2</span></td><td class="g">防御コマンドを使うたびに攻撃力+8（最大+32、その戦闘中）</td><td class="pid">rebellionSoul</td><td><span class="impl ie">●易</span></td></tr>
+    <tr><td>57</td><td>不動の岩</td><td><span class="tier t2">T2</span></td><td class="g">HP50%以上の間、全ダメージ20%軽減</td><td class="pid">steadyRock</td><td><span class="impl ie">●易</span></td></tr>
+    <tr><td>58</td><td>鏡の盾</td><td><span class="tier t3">T3</span></td><td class="g">防御中に会心攻撃を受けた時、次の攻撃が必ず会心</td><td class="pid">mirrorShield</td><td><span class="impl im">●中</span></td></tr>
+    <tr><td>59</td><td>城壁の証</td><td><span class="tier t3">T3</span></td><td class="g">防御力の30%を通常攻撃のダメージに加算（タンクが殴れる）</td><td class="pid">fortressProof</td><td><span class="impl ie">●易</span></td></tr>
+    <tr><td>60</td><td>聖域の指輪</td><td><span class="tier t2">T2</span></td><td class="g">防御コマンド使用後のターン終了時に8HP回復</td><td class="pid">sanctuaryRing</td><td><span class="impl ie">●易</span></td></tr>
+    <tr><td>61</td><td>月光の祝福</td><td><span class="tier t1">T1</span></td><td class="g">奇数ターン終了時に5HP回復</td><td class="pid">moonlight</td><td><span class="impl ie">●易</span></td></tr>
+  </table>
+</div>
+
+<!-- ===== 6 ===== -->
+<div class="category">
+  <div class="cat-header">
+    <span class="cat-title">⑥ 瀕死特化ビルド（10案）</span>
+    <span class="cat-note">HPが低い状態を「強さ」に変換。意図的に削ったり耐えたりするハイリスクスタイル。</span>
+  </div>
+  <table>
+    <tr><th>#</th><th>名前</th><th>Tier</th><th>効果</th><th>passive ID</th><th>実装</th></tr>
+    <tr><td>62</td><td>血染めの短剣</td><td><span class="tier t2">T2</span></td><td class="g">HP50%以下の時、攻撃力+25</td><td class="pid">bloodDagger</td><td><span class="impl ie">●易</span></td></tr>
+    <tr><td>63</td><td>死神の眼</td><td><span class="tier t3">T3</span></td><td class="g">HP30%以下の時、全攻撃+40%</td><td class="pid">deathEye</td><td><span class="impl ie">●易</span></td></tr>
+    <tr><td>64</td><td>狂気の紋章</td><td><span class="tier t2">T2</span></td><td class="g">HP25%以下の時、会心率+30%</td><td class="pid">madnessCrest</td><td><span class="impl ie">●易</span></td></tr>
+    <tr><td>65</td><td>命の賭け</td><td><span class="tier t3">T3</span></td><td class="g">HP15%以下の時、スキルのMP消費0</td><td class="pid">lifeBet</td><td><span class="impl ie">●易</span></td></tr>
+    <tr><td>66</td><td>不死鳥の羽</td><td><span class="tier t3">T3</span></td><td class="g">初めて致死ダメージを受けた時HP20%で復活（1戦闘1回限り）</td><td class="pid">phoenix</td><td><span class="impl im">●中</span></td></tr>
+    <tr><td>67</td><td>再生の欠片</td><td><span class="tier t2">T2</span></td><td class="g">HP50%以下の時、毎ターン5HP回復</td><td class="pid">regenShard</td><td><span class="impl ie">●易</span></td></tr>
+    <tr><td>68</td><td>命の砂時計</td><td><span class="tier t3">T3</span></td><td class="g">HP25%以下の時、受けるダメージ30%軽減</td><td class="pid">lifeHourglass</td><td><span class="impl ie">●易</span></td></tr>
+    <tr><td>69</td><td>死への挑戦</td><td><span class="tier t3">T3</span></td><td><span class="g">被ダメージ30%軽減</span> / <span class="b">最大HP-50 <span class="dm">★</span>（HPを低く保ちやすくなる）</span></td><td class="pid">deathChallenge</td><td><span class="impl ie">●易</span></td></tr>
+    <tr><td>70</td><td>瀕死の怒り</td><td><span class="tier t2">T2</span></td><td class="g">HP50%以下の時、攻撃力+15 / 受けるダメージ10%軽減（両立）</td><td class="pid">neardieRage</td><td><span class="impl ie">●易</span></td></tr>
+    <tr><td>71</td><td>最後の意志</td><td><span class="tier t3">T3</span></td><td class="g">1戦闘中1度だけ、致死ダメージをHP1で耐える</td><td class="pid">lastWill</td><td><span class="impl im">●中</span></td></tr>
+  </table>
+</div>
+
+<!-- ===== 7 ===== -->
+<div class="category">
+  <div class="cat-header">
+    <span class="cat-title">⑦ 毒スタックビルド（10案）</span>
+    <span class="cat-note">毒を付与して防御しながら削るコントロール系。現状プレイヤーから毒を使う手段が少ないため新規性が高い。</span>
+  </div>
+  <table>
+    <tr><th>#</th><th>名前</th><th>Tier</th><th>効果</th><th>passive ID</th><th>実装</th></tr>
+    <tr><td>72</td><td>沼毒の指輪</td><td><span class="tier t2">T2</span></td><td class="g">戦闘開始時に敵へ毒付与（毎ターン6ダメージ）</td><td class="pid">swampPoison</td><td><span class="impl ie">●易</span></td></tr>
+    <tr><td>73</td><td>毒使いの仮面</td><td><span class="tier t2">T2</span></td><td class="g">毒中の敵への攻撃力+15</td><td class="pid">poisonMaster</td><td><span class="impl ie">●易</span></td></tr>
+    <tr><td>74</td><td>毒沼の石</td><td><span class="tier t2">T2</span></td><td class="g">毒ダメージ+8強化（全ての毒に加算）</td><td class="pid">poisonSwamp</td><td><span class="impl ie">●易</span></td></tr>
+    <tr><td>75</td><td>腐食の刃</td><td><span class="tier t3">T3</span></td><td class="g">通常攻撃10%の確率で毒付与＋敵の防御力-5デバフ（その戦闘中）</td><td class="pid">corrosiveBlade</td><td><span class="impl im">●中</span></td></tr>
+    <tr><td>76</td><td>毒霧の仮面</td><td><span class="tier t2">T2</span></td><td class="g">防御コマンド使用時に敵へ毒付与（防御カウンタービルドとのシナジー）</td><td class="pid">poisonMist</td><td><span class="impl ie">●易</span></td></tr>
+    <tr><td>77</td><td>猛毒の牙</td><td><span class="tier t2">T2</span></td><td class="g">毒ダメージを2倍にするが毒の効果が3ターンで切れる（高火力短期型）</td><td class="pid">virulentFang</td><td><span class="impl im">●中</span></td></tr>
+    <tr><td>78</td><td>錬毒師の証</td><td><span class="tier t1">T1</span></td><td class="g">毒中の敵を倒すとMP+5回復</td><td class="pid">poisonAlchemist</td><td><span class="impl ie">●易</span></td></tr>
+    <tr><td>79</td><td>毒沼の主</td><td><span class="tier t3">T3</span></td><td class="g">毒ターン経過ごとに毒ダメージ+2ずつ増加（1→3→5→7…）</td><td class="pid">poisonLord</td><td><span class="impl im">●中</span></td></tr>
+    <tr><td>80</td><td>致死毒の結晶</td><td><span class="tier t2">T2</span></td><td class="g">毒ダメージが敵最大HPの1%に変わる（1000HP敵なら毎ターン10ダメージ）</td><td class="pid">lethalPoison</td><td><span class="impl im">●中</span></td></tr>
+    <tr><td>81</td><td>毒研究書</td><td><span class="tier t1">T1</span></td><td class="g">通常攻撃の毒付与率+20%（他の毒付与レリックと組み合わせ可）</td><td class="pid">poisonResearch</td><td><span class="impl ie">●易</span></td></tr>
+  </table>
+</div>
+
+<!-- ===== 8 ===== -->
+<div class="category">
+  <div class="cat-header">
+    <span class="cat-title">⑧ ゴールド投資ビルド（8案）</span>
+    <span class="cat-note">ゴールドを戦闘力に変換する経済ビルド。「使わずに溜める」か「買い続けるか」のジレンマが面白い。</span>
+  </div>
+  <table>
+    <tr><th>#</th><th>名前</th><th>Tier</th><th>効果</th><th>passive ID</th><th>実装</th></tr>
+    <tr><td>82</td><td>黄金の剣</td><td><span class="tier t2">T2</span></td><td class="g">所持ゴールド100Gごとに攻撃力+4</td><td class="pid">goldSword</td><td><span class="impl ie">●易</span></td></tr>
+    <tr><td>83</td><td>金塊の鎧</td><td><span class="tier t2">T2</span></td><td class="g">所持ゴールド100Gごとに防御力+3</td><td class="pid">goldArmor</td><td><span class="impl ie">●易</span></td></tr>
+    <tr><td>84</td><td>財宝の守護者</td><td><span class="tier t2">T2</span></td><td class="g">ゴールド200G以上保有時、攻撃力+20 / 防御力+10</td><td class="pid">treasureGuard</td><td><span class="impl ie">●易</span></td></tr>
+    <tr><td>85</td><td>錬金術師の指輪</td><td><span class="tier t1">T1</span></td><td class="g">戦闘勝利後にゴールド+25G固定</td><td class="pid">alchemistRing</td><td><span class="impl ie">●易</span></td></tr>
+    <tr><td>86</td><td>盗賊の指輪</td><td><span class="tier t2">T2</span></td><td class="g">5ターン以内に勝利するとゴールド+50%</td><td class="pid">thiefRing</td><td><span class="impl ie">●易</span></td></tr>
+    <tr><td>87</td><td>宝石商の眼</td><td><span class="tier t2">T2</span></td><td class="g">レリック購入費-15%（全ショップに適用）</td><td class="pid">gemEye</td><td><span class="impl ie">●易</span></td></tr>
+    <tr><td>88</td><td>強欲の契約</td><td><span class="tier t2">T2</span></td><td><span class="g">戦闘勝利時ゴールド+50%</span> / <span class="b">敗北時ゴールド半減 <span class="dm">★</span></span></td><td class="pid">greedContract</td><td><span class="impl ie">●易</span></td></tr>
+    <tr><td>89</td><td>賭博師の骰子</td><td><span class="tier t1">T1</span></td><td><span class="g">戦闘開始時50%の確率で攻撃力+35</span> / <span class="b">50%で攻撃力-5 <span class="dm">★</span></span></td><td class="pid">gamblerDice</td><td><span class="impl ie">●易</span></td></tr>
+  </table>
+</div>
+
+<!-- ===== 9 ===== -->
+<div class="category">
+  <div class="cat-header">
+    <span class="cat-title">⑨ デメリット付き強力系 <span class="dm">★</span>（11案）</span>
+    <span class="cat-note">高倍率の代わりに制約やリスクを伴う上級者向け。呪われた兜・狂戦士の証のラインを拡張。</span>
+  </div>
+  <table>
+    <tr><th>#</th><th>名前</th><th>Tier</th><th>効果</th><th>passive ID</th><th>実装</th></tr>
+    <tr><td>90</td><td>狂気の石板</td><td><span class="tier t2">T2</span></td><td><span class="g">攻撃力+40</span> / <span class="b">毎ターン自分が5ダメージ <span class="dm">★</span></span></td><td class="pid">madnessTablet</td><td><span class="impl ie">●易</span></td></tr>
+    <tr><td>91</td><td>魂食いの短剣</td><td><span class="tier t2">T2</span></td><td><span class="g">攻撃力+35</span> / <span class="b">防御力-20 <span class="dm">★</span></span></td><td class="pid">soulEater</td><td><span class="impl ie">●易</span></td></tr>
+    <tr><td>92</td><td>呪われた鎧</td><td><span class="tier t2">T2</span></td><td><span class="g">防御力+30</span> / <span class="b">最大HP-40 <span class="dm">★</span></span></td><td class="pid">cursedArmorRelic</td><td><span class="impl ie">●易</span></td></tr>
+    <tr><td>93</td><td>血の石板</td><td><span class="tier t3">T3</span></td><td><span class="g">攻撃力+20 / スキル威力+20%</span> / <span class="b">HPが毎戦闘5ずつ永久に減少 <span class="dm">★</span></span></td><td class="pid">bloodTablet</td><td><span class="impl im">●中</span></td></tr>
+    <tr><td>94</td><td>空腹の悪魔</td><td><span class="tier t3">T3</span></td><td><span class="g">攻撃力+50</span> / <span class="b">敵ターンごとにゴールド5G減少 <span class="dm">★</span></span></td><td class="pid">hungerDemon</td><td><span class="impl ie">●易</span></td></tr>
+    <tr><td>95</td><td>自傷の腕輪</td><td><span class="tier t2">T2</span></td><td><span class="g">攻撃力+25</span> / <span class="b">通常攻撃のたびに自分が3ダメージ <span class="dm">★</span></span></td><td class="pid">selfHarm</td><td><span class="impl ie">●易</span></td></tr>
+    <tr><td>96</td><td>孤独の魂</td><td><span class="tier t3">T3</span></td><td><span class="g">所持レリックがこれ1個だけの場合、全ダメージ+50%</span> / <span class="b">2個目を持った瞬間効果消滅 <span class="dm">★</span></span></td><td class="pid">loneSoul</td><td><span class="impl ie">●易</span></td></tr>
+    <tr><td>97</td><td>変幻の石</td><td><span class="tier t3">T3</span></td><td class="g">各戦闘開始時ランダムで強力ボーナス（攻撃力+40 / 魔法攻撃力+40 / 防御力+30 / 最大HP+50 / 会心率+25% / 全ダメ+20% の6択）</td><td class="pid">shapeshifter</td><td><span class="impl im">●中</span></td></tr>
+    <tr><td>98</td><td>封印の石</td><td><span class="tier t3">T3</span></td><td><span class="g">攻撃力+50</span> / <span class="b">スキル使用不可（呪われた兜の強攻撃版・連撃なし） <span class="dm">★</span></span></td><td class="pid">sealStone</td><td><span class="impl ie">●易</span></td></tr>
+    <tr><td>99</td><td>二律背反の証</td><td><span class="tier t2">T2</span></td><td><span class="g">奇数ターンの攻撃1.5倍</span> / <span class="b">偶数ターンに防御力-20 <span class="dm">★</span></span></td><td class="pid">paradoxProof</td><td><span class="impl ie">●易</span></td></tr>
+    <tr><td>100</td><td>魂の天秤</td><td><span class="tier t3">T3</span></td><td><span class="g">攻撃力と防御力の差（|攻-防|）×0.5をダメージに加算</span> / <span class="b">攻撃と防御が均等だと効果0 <span class="dm">★</span></span></td><td class="pid">soulScale</td><td><span class="impl im">●中</span></td></tr>
+  </table>
+</div>
+
+<!-- ===== サマリー ===== -->
+<div class="category">
+  <div class="cat-header"><span class="cat-title">📊 サマリー</span></div>
+  <div class="summary-grid">
+    <div class="summary-card">
+      <div class="sc-title">① シンプルステータス</div>
+      <div class="sc-count">10案</div>
+      <div class="sc-sub">全て実装容易 / デメリットなし</div>
+    </div>
+    <div class="summary-card">
+      <div class="sc-title">② 通常攻撃強化</div>
+      <div class="sc-count">15案</div>
+      <div class="sc-sub">条件付きバフ中心 / 毒・連撃系</div>
+    </div>
+    <div class="summary-card">
+      <div class="sc-title">③ 物理スキル強化</div>
+      <div class="sc-count">12案</div>
+      <div class="sc-sub">MP連携・会心強化・威力倍率</div>
+    </div>
+    <div class="summary-card">
+      <div class="sc-title">④ 魔法スキル強化</div>
+      <div class="sc-count">12案</div>
+      <div class="sc-sub">MP変換・連続詠唱・デメリット系含む</div>
+    </div>
+    <div class="summary-card">
+      <div class="sc-title">⑤ 防御カウンタービルド</div>
+      <div class="sc-count">12案</div>
+      <div class="sc-sub">現状最も不足している軸</div>
+    </div>
+    <div class="summary-card">
+      <div class="sc-title">⑥ 瀕死特化ビルド</div>
+      <div class="sc-count">10案</div>
+      <div class="sc-sub">HP管理が戦略の中心に</div>
+    </div>
+    <div class="summary-card">
+      <div class="sc-title">⑦ 毒スタックビルド</div>
+      <div class="sc-count">10案</div>
+      <div class="sc-sub">コントロール系の新規ビルド</div>
+    </div>
+    <div class="summary-card">
+      <div class="sc-title">⑧ ゴールド投資ビルド</div>
+      <div class="sc-count">8案</div>
+      <div class="sc-sub">経済戦略がビルドに影響</div>
+    </div>
+    <div class="summary-card">
+      <div class="sc-title">⑨ デメリット付き強力系</div>
+      <div class="sc-count">11案</div>
+      <div class="sc-sub">上級者向けリスクリワード</div>
+    </div>
+  </div>
+  <table style="margin-top:12px;">
+    <tr><th>実装難易度</th><th>易</th><th>中</th><th>難</th><th>デメリット付き</th><th>Tier1</th><th>Tier2</th><th>Tier3</th></tr>
+    <tr><td>合計（100案）</td><td style="color:#77cc77">79</td><td style="color:#ccaa44">21</td><td style="color:#cc6666">0</td><td style="color:#ff7777">19</td><td>15</td><td>54</td><td>31</td></tr>
+  </table>
+</div>
+
+<p style="text-align:center; color:#334; font-size:0.72rem; margin-top:16px;">
+  ※ passive ID は実装時の識別子の提案。実際のコードに合わせて変更してください。
+</p>
+
+</body>
+</html>

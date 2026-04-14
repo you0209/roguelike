@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>レリック案 v2（50案）</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #0d0d1a;
+      color: #e0e0f0;
+      padding: 24px;
+    }
+    h1 {
+      text-align: center;
+      font-size: 1.8rem;
+      color: #aaddff;
+      margin-bottom: 6px;
+    }
+    .subtitle {
+      text-align: center;
+      color: #667;
+      font-size: 0.85rem;
+      margin-bottom: 28px;
+    }
+
+    /* カテゴリブロック */
+    .category {
+      margin-bottom: 32px;
+    }
+    .category-title {
+      font-size: 1rem;
+      font-weight: bold;
+      color: #ffcc66;
+      border-bottom: 1px solid #333;
+      padding-bottom: 6px;
+      margin-bottom: 12px;
+      letter-spacing: 0.05em;
+    }
+    .category-note {
+      font-size: 0.78rem;
+      color: #889;
+      margin-bottom: 10px;
+    }
+
+    /* テーブル */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.82rem;
+    }
+    th {
+      background: #1a1a2e;
+      color: #aaddff;
+      padding: 7px 10px;
+      text-align: left;
+      font-weight: 600;
+    }
+    tr:nth-child(even) { background: #12121f; }
+    tr:nth-child(odd)  { background: #0f0f1c; }
+    tr:hover { background: #1e1e35; }
+    td {
+      padding: 8px 10px;
+      vertical-align: top;
+      border-bottom: 1px solid #1e1e30;
+    }
+
+    /* Tier バッジ */
+    .tier {
+      display: inline-block;
+      padding: 2px 7px;
+      border-radius: 10px;
+      font-size: 0.72rem;
+      font-weight: bold;
+      white-space: nowrap;
+    }
+    .t1 { background: #1a3a1a; color: #66dd66; border: 1px solid #336633; }
+    .t2 { background: #1a2a3a; color: #66aaff; border: 1px solid #334466; }
+    .t3 { background: #2a1a2a; color: #cc88ff; border: 1px solid #553366; }
+
+    /* 効果テキスト */
+    .desc-good   { color: #aaffaa; }
+    .desc-bad    { color: #ff8888; }
+    .desc-neutral{ color: #aaccff; }
+
+    /* passive ID */
+    .passive-id {
+      font-family: monospace;
+      font-size: 0.72rem;
+      color: #556;
+    }
+
+    /* ノート */
+    .impl-note {
+      font-size: 0.72rem;
+      color: #778;
+      font-style: italic;
+    }
+
+    /* 難易度 */
+    .impl {
+      display: inline-block;
+      font-size: 0.7rem;
+      padding: 1px 6px;
+      border-radius: 8px;
+      white-space: nowrap;
+    }
+    .impl-easy   { background: #1a3a1a; color: #88cc88; }
+    .impl-medium { background: #3a2a10; color: #ddaa44; }
+    .impl-hard   { background: #3a1010; color: #dd6666; }
+
+    /* 凡例 */
+    .legend {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+      font-size: 0.78rem;
+    }
+    .legend-item { display: flex; align-items: center; gap: 6px; }
+
+    /* デメリットマーク */
+    .demerit-mark { color: #ff8888; font-weight: bold; }
+  </style>
+</head>
+<body>
+
+<h1>⚗️ レリック新案 50選</h1>
+<p class="subtitle">実装難易度：<span style="color:#88cc88">●易</span>  <span style="color:#ddaa44">●中</span>  <span style="color:#dd6666">●難</span>　／　<span style="color:#ff8888">★</span> = デメリット付き</p>
+
+<!-- ===== 1. シンプルステータス ===== -->
+<div class="category">
+  <div class="category-title">① シンプルステータス増加（8案）</div>
+  <p class="category-note">既存と同様の数値加算系。ショップの品揃えを厚くするためのもの。</p>
+  <table>
+    <tr>
+      <th>#</th><th>名前</th><th>Tier</th><th>効果</th><th>passive ID</th><th>実装</th>
+    </tr>
+    <tr>
+      <td>1</td>
+      <td>鉄の盾</td>
+      <td><span class="tier t1">Tier 1</span></td>
+      <td class="desc-good">防御力+10</td>
+      <td class="passive-id">—（defenseBonus）</td>
+      <td><span class="impl impl-easy">●易</span></td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <td>鋼鉄の鎧</td>
+      <td><span class="tier t2">Tier 2</span></td>
+      <td class="desc-good">防御力+25</td>
+      <td class="passive-id">—（defenseBonus）</td>
+      <td><span class="impl impl-easy">●易</span></td>
+    </tr>
+    <tr>
+      <td>3</td>
+      <td>竜の心臓</td>
+      <td><span class="tier t3">Tier 3</span></td>
+      <td class="desc-good">最大HP+80</td>
+      <td class="passive-id">—（hpBonus）</td>
+      <td><span class="impl impl-easy">●易</span></td>
+    </tr>
+    <tr>
+      <td>4</td>
+      <td>魔力の腕輪</td>
+      <td><span class="tier t2">Tier 2</span></td>
+      <td class="desc-good">魔法攻撃力+18</td>
+      <td class="passive-id">—（magicAttackBonus）</td>
+      <td><span class="impl impl-easy">●易</span></td>
+    </tr>
+    <tr>
+      <td>5</td>
+      <td>深淵の杖</td>
+      <td><span class="tier t3">Tier 3</span></td>
+      <td class="desc-good">魔法攻撃力+40</td>
+      <td class="passive-id">—（magicAttackBonus）</td>
+      <td><span class="impl impl-easy">●易</span></td>
+    </tr>
+    <tr>
+      <td>6</td>
+      <td>ミスリルの剣</td>
+      <td><span class="tier t3">Tier 3</span></td>
+      <td class="desc-good">攻撃力+35</td>
+      <td class="passive-id">—（attackBonus）</td>
+      <td><span class="impl impl-easy">●易</span></td>
+    </tr>
+    <tr>
+      <td>7</td>
+      <td>英雄の証</td>
+      <td><span class="tier t2">Tier 2</span></td>
+      <td class="desc-good">攻撃力+10 / 防御力+10 / 最大HP+15</td>
+      <td class="passive-id">—（複合ボーナス）</td>
+      <td><span class="impl impl-easy">●易</span></td>
+    </tr>
+    <tr>
+      <td>8</td>
+      <td>冒険者の外套</td>
+      <td><span class="tier t2">Tier 2</span></td>
+      <td class="desc-good">防御力+12 / 最大HP+25</td>
+      <td class="passive-id">—（複合ボーナス）</td>
+      <td><span class="impl impl-easy">●易</span></td>
+    </tr>
+  </table>
+</div>
+
+<!-- ===== 2. HP回復・生存 ===== -->
+<div class="category">
+  <div class="category-title">② HP回復・生存系（7案）</div>
+  <p class="category-note">長期戦・タンク構築向け。持久力を大きく左右する。</p>
+  <table>
+    <tr><th>#</th><th>名前</th><th>Tier</th><th>効果</th><th>passive ID</th><th>実装</th></tr>
+    <tr>
+      <td>9</td>
+      <td>回復の指輪</td>
+      <td><span class="tier t1">Tier 1</span></td>
+      <td class="desc-good">毎ターン開始時に3HP回復</td>
+      <td class="passive-id">regenRing</td>
+      <td><span class="impl impl-easy">●易</span></td>
+    </tr>
+    <tr>
+      <td>10</td>
+      <td>聖水の瓶</td>
+      <td><span class="tier t1">Tier 1</span></td>
+      <td class="desc-good">戦闘開始時にHP15%回復</td>
+      <td class="passive-id">holyWater</td>
+      <td><span class="impl impl-easy">●易</span></td>
+    </tr>
+    <tr>
+      <td>11</td>
+      <td>不死鳥の羽</td>
+      <td><span class="tier t3">Tier 3</span></td>
+      <td class="desc-good">初めて致死ダメージを受けた時、HP20%で復活（戦闘1回限り）</td>
+      <td class="passive-id">phoenix</td>
+      <td><span class="impl impl-medium">●中</span></td>
+    </tr>
+    <tr>
+      <td>12</td>
+      <td>星の護符</td>
+      <td><span class="tier t2">Tier 2</span></td>
+      <td class="desc-good">受けるダメージを5軽減（最低1）</td>
+      <td class="passive-id">starAmulet</td>
+      <td><span class="impl impl-easy">●易</span> <span class="impl-note">applyDmgToPlayer に -5 追加</span></td>
+    </tr>
+    <tr>
+      <td>13</td>
+      <td>守護の盾</td>
+      <td><span class="tier t2">Tier 2</span></td>
+      <td class="desc-good">防御コマンドのダメージ軽減を50%→65%に強化</td>
+      <td class="passive-id">guardShield</td>
+      <td><span class="impl impl-easy">●易</span> <span class="impl-note">doDefend の軽減率を条件分岐</span></td>
+    </tr>
+    <tr>
+      <td>14</td>
+      <td>月光の祝福</td>
+      <td><span class="tier t1">Tier 1</span></td>
+      <td class="desc-good">奇数ターン終了時に5HP回復</td>
+      <td class="passive-id">moonlight</td>
+      <td><span class="impl impl-easy">●易</span></td>
+    </tr>
+    <tr>
+      <td>15</td>
+      <td>命の砂時計</td>
+      <td><span class="tier t3">Tier 3</span></td>
+      <td class="desc-good">HP25%以下の時、受けるダメージ30%軽減</td>
+      <td class="passive-id">lifeHourglass</td>
+      <td><span class="impl impl-easy">●易</span> <span class="impl-note">applyDmgToPlayer に HP比率チェック</span></td>
+    </tr>
+  </table>
+</div>
+
+<!-- ===== 3. MP・スキル強化 ===== -->
+<div class="category">
+  <div class="category-title">③ MP・スキル強化系（7案）</div>
+  <p class="category-note">スキルを軸にした構築を強化。既存の魔法触媒・節約の宝珠と相性が良い。</p>
+  <table>
+    <tr><th>#</th><th>名前</th><th>Tier</th><th>効果</th><th>passive ID</th><th>実装</th></tr>
+    <tr>
+      <td>16</td>
+      <td>物理魔法書</td>
+      <td><span class="tier t2">Tier 2</span></td>
+      <td class="desc-good">物理スキルの威力+20%</td>
+      <td class="passive-id">physSpellbook</td>
+      <td><span class="impl impl-easy">●易</span> <span class="impl-note">magicCatalyst の物理版</span></td>
+    </tr>
+    <tr>
+      <td>17</td>
+      <td>呪いの巻物</td>
+      <td><span class="tier t1">Tier 1</span></td>
+      <td class="desc-good">戦闘開始時にMP+15（その戦闘のみ）</td>
+      <td class="passive-id">cursedScroll</td>
+      <td><span class="impl impl-easy">●易</span> <span class="impl-note">initBattle で p.mp += 15</span></td>
+    </tr>
+    <tr>
+      <td>18</td>
+      <td>賢者の指輪</td>
+      <td><span class="tier t2">Tier 2</span></td>
+      <td class="desc-good">スキル使用後、次のスキルのMP消費-4</td>
+      <td class="passive-id">sageRing</td>
+      <td><span class="impl impl-medium">●中</span> <span class="impl-note">usedSkillLastTurn フラグが必要</span></td>
+    </tr>
+    <tr>
+      <td>19</td>
+      <td>魔導核</td>
+      <td><span class="tier t2">Tier 2</span></td>
+      <td><span class="desc-good">最大MP+50</span> / <span class="desc-bad">スキルのMP消費+3 <span class="demerit-mark">★</span></span></td>
+      <td class="passive-id">magicCore</td>
+      <td><span class="impl impl-easy">●易</span> <span class="impl-note">mpCost 計算時に+3</span></td>
+    </tr>
+    <tr>
+      <td>20</td>
+      <td>古の魔石</td>
+      <td><span class="tier t2">Tier 2</span></td>
+      <td class="desc-good">スキル使用回数×5の魔法攻撃力ボーナス（その戦闘中）</td>
+      <td class="passive-id">ancientGem</td>
+      <td><span class="impl impl-easy">●易</span> <span class="impl-note">usedSkillThisBattle を回数にカウントアップ</span></td>
+    </tr>
+    <tr>
+      <td>21</td>
+      <td>共鳴の結晶</td>
+      <td><span class="tier t3">Tier 3</span></td>
+      <td class="desc-good">物理スキルと魔法スキルを交互に使うと威力+30%</td>
+      <td class="passive-id">resonance</td>
+      <td><span class="impl impl-medium">●中</span> <span class="impl-note">lastSkillType フラグが必要</span></td>
+    </tr>
+    <tr>
+      <td>22</td>
+      <td>過負荷の宝珠</td>
+      <td><span class="tier t3">Tier 3</span></td>
+      <td><span class="desc-good">MPが最大値の時スキル威力+40%</span> / <span class="desc-bad">発動するとMP消費が1.5倍 <span class="demerit-mark">★</span></span></td>
+      <td class="passive-id">overloadOrb</td>
+      <td><span class="impl impl-medium">●中</span></td>
+    </tr>
+  </table>
+</div>
+
+<!-- ===== 4. 攻撃強化パッシブ ===== -->
+<div class="category">
+  <div class="category-title">④ 攻撃強化パッシブ（8案）</div>
+  <p class="category-note">通常攻撃・物理ビルドの強化。クリティカルとの相性が高いものも含む。</p>
+  <table>
+    <tr><th>#</th><th>名前</th><th>Tier</th><th>効果</th><th>passive ID</th><th>実装</th></tr>
+    <tr>
+      <td>23</td>
+      <td>毒牙の指輪</td>
+      <td><span class="tier t2">Tier 2</span></td>
+      <td class="desc-good">通常攻撃に20%の確率で毒付与（毎ターン8ダメージ）</td>
+      <td class="passive-id">poisonFang</td>
+      <td><span class="impl impl-medium">●中</span> <span class="impl-note">毒システムは既存流用可</span></td>
+    </tr>
+    <tr>
+      <td>24</td>
+      <td>雷の紋章</td>
+      <td><span class="tier t2">Tier 2</span></td>
+      <td class="desc-good">会心ヒット時に追加15固定ダメージ</td>
+      <td class="passive-id">thunderCrest</td>
+      <td><span class="impl impl-easy">●易</span> <span class="impl-note">isCrit の直後に e.hp -= 15</span></td>
+    </tr>
+    <tr>
+      <td>25</td>
+      <td>影の刃</td>
+      <td><span class="tier t2">Tier 2</span></td>
+      <td class="desc-good">通常攻撃の会心倍率を1.5倍→2.0倍に強化</td>
+      <td class="passive-id">shadowBlade</td>
+      <td><span class="impl impl-easy">●易</span> <span class="impl-note">doAttack の critMult を 2.0 に変更</span></td>
+    </tr>
+    <tr>
+      <td>26</td>
+      <td>先制の剣</td>
+      <td><span class="tier t2">Tier 2</span></td>
+      <td class="desc-good">1ターン目の攻撃が2.0倍</td>
+      <td class="passive-id">firstStrike</td>
+      <td><span class="impl impl-easy">●易</span></td>
+    </tr>
+    <tr>
+      <td>27</td>
+      <td>血染めの短剣</td>
+      <td><span class="tier t2">Tier 2</span></td>
+      <td class="desc-good">自分のHP50%以下の時、攻撃力+25</td>
+      <td class="passive-id">bloodDagger</td>
+      <td><span class="impl impl-easy">●易</span> <span class="impl-note">atkTotal getter に HP比率チェック追加</span></td>
+    </tr>
+    <tr>
+      <td>28</td>
+      <td>狩人の眼</td>
+      <td><span class="tier t2">Tier 2</span></td>
+      <td class="desc-good">敵のHPが30%以下の時、攻撃力+20</td>
+      <td class="passive-id">hunterEye</td>
+      <td><span class="impl impl-easy">●易</span> <span class="impl-note">atkTotal getter に敵HP比率チェック追加</span></td>
+    </tr>
+    <tr>
+      <td>29</td>
+      <td>竜狩りの証</td>
+      <td><span class="tier t3">Tier 3</span></td>
+      <td class="desc-good">ボス戦でダメージ+25%</td>
+      <td class="passive-id">dragonSlayer</td>
+      <td><span class="impl impl-easy">●易</span> <span class="impl-note">e.isBoss チェックでスケール</span></td>
+    </tr>
+    <tr>
+      <td>30</td>
+      <td>炎の仮面</td>
+      <td><span class="tier t1">Tier 1</span></td>
+      <td class="desc-good">戦闘開始時に敵に20固定ダメージ</td>
+      <td class="passive-id">flameMask</td>
+      <td><span class="impl impl-easy">●易</span> <span class="impl-note">initBattle で e.hp -= 20</span></td>
+    </tr>
+  </table>
+</div>
+
+<!-- ===== 5. ターン依存 ===== -->
+<div class="category">
+  <div class="category-title">⑤ ターン依存系（5案）</div>
+  <p class="category-note">既存の奇数・偶数・砂時計ラインを補完する新たなターン戦術。</p>
+  <table>
+    <tr><th>#</th><th>名前</th><th>Tier</th><th>効果</th><th>passive ID</th><th>実装</th></tr>
+    <tr>
+      <td>31</td>
+      <td>初撃の鎧</td>
+      <td><span class="tier t1">Tier 1</span></td>
+      <td class="desc-good">1ターン目に防御力+30</td>
+      <td class="passive-id">firstGuard</td>
+      <td><span class="impl impl-easy">●易</span></td>
+    </tr>
+    <tr>
+      <td>32</td>
+      <td>怒りの石</td>
+      <td><span class="tier t2">Tier 2</span></td>
+      <td class="desc-good">被ダメージのたびに攻撃力+5（最大+25、その戦闘中）</td>
+      <td class="passive-id">wrathStone</td>
+      <td><span class="impl impl-easy">●易</span> <span class="impl-note">applyDmgToPlayer の中で p.wrathBonus += 5</span></td>
+    </tr>
+    <tr>
+      <td>33</td>
+      <td>連戦の証</td>
+      <td><span class="tier t2">Tier 2</span></td>
+      <td class="desc-good">同じ階層の戦闘ごとに防御力+4（最大+20）</td>
+      <td class="passive-id">warPath</td>
+      <td><span class="impl impl-easy">●易</span> <span class="impl-note">expMedal の防御版</span></td>
+    </tr>
+    <tr>
+      <td>34</td>
+      <td>偶数の刃</td>
+      <td><span class="tier t2">Tier 2</span></td>
+      <td class="desc-good">偶数ターンの攻撃が1.4倍</td>
+      <td class="passive-id">evenBlade</td>
+      <td><span class="impl impl-easy">●易</span> <span class="impl-note">oddCharm の偶数版</span></td>
+    </tr>
+    <tr>
+      <td>35</td>
+      <td>精鋭の証</td>
+      <td><span class="tier t2">Tier 2</span></td>
+      <td class="desc-good">3ターン以内に勝利すると次の戦闘で攻撃力+20</td>
+      <td class="passive-id">eliteProof</td>
+      <td><span class="impl impl-easy">●易</span> <span class="impl-note">silenceMask と同様の仕組み</span></td>
+    </tr>
+  </table>
+</div>
+
+<!-- ===== 6. ゴールド・経済 ===== -->
+<div class="category">
+  <div class="category-title">⑥ ゴールド・経済系（4案）</div>
+  <p class="category-note">ショップ・購入戦略に影響する。merchantRing と組み合わせると雪だるま式に。</p>
+  <table>
+    <tr><th>#</th><th>名前</th><th>Tier</th><th>効果</th><th>passive ID</th><th>実装</th></tr>
+    <tr>
+      <td>36</td>
+      <td>錬金術師の指輪</td>
+      <td><span class="tier t1">Tier 1</span></td>
+      <td class="desc-good">戦闘勝利後にゴールド+25G固定</td>
+      <td class="passive-id">alchemistRing</td>
+      <td><span class="impl impl-easy">●易</span> <span class="impl-note">checkWin の gold 計算に +25</span></td>
+    </tr>
+    <tr>
+      <td>37</td>
+      <td>盗賊の指輪</td>
+      <td><span class="tier t2">Tier 2</span></td>
+      <td class="desc-good">5ターン以内に勝利するとゴールド+50%</td>
+      <td class="passive-id">thiefRing</td>
+      <td><span class="impl impl-easy">●易</span></td>
+    </tr>
+    <tr>
+      <td>38</td>
+      <td>宝石商の眼</td>
+      <td><span class="tier t2">Tier 2</span></td>
+      <td class="desc-good">レリック購入費-15%</td>
+      <td class="passive-id">gemEye</td>
+      <td><span class="impl impl-easy">●易</span> <span class="impl-note">shop.js の price 計算に 0.85 をかける</span></td>
+    </tr>
+    <tr>
+      <td>39</td>
+      <td>賭博師の骰子</td>
+      <td><span class="tier t1">Tier 1</span></td>
+      <td><span class="desc-good">戦闘開始時50%の確率で攻撃力+35</span> / <span class="desc-bad">50%の確率で攻撃力-5 <span class="demerit-mark">★</span></span></td>
+      <td class="passive-id">gamblerDice</td>
+      <td><span class="impl impl-easy">●易</span> <span class="impl-note">chaosStone と同様の仕組み</span></td>
+    </tr>
+  </table>
+</div>
+
+<!-- ===== 7. デメリット付き強力系 ===== -->
+<div class="category">
+  <div class="category-title">⑦ デメリット付き強力系（6案）<span class="demerit-mark"> ★</span></div>
+  <p class="category-note">リスクリワードが高い上級者向けレリック。呪われた兜・狂戦士の証のラインを拡張。</p>
+  <table>
+    <tr><th>#</th><th>名前</th><th>Tier</th><th>効果</th><th>passive ID</th><th>実装</th></tr>
+    <tr>
+      <td>40</td>
+      <td>狂気の石板</td>
+      <td><span class="tier t2">Tier 2</span></td>
+      <td><span class="desc-good">攻撃力+40</span> / <span class="desc-bad">毎ターン開始時に自分が5ダメージ <span class="demerit-mark">★</span></span></td>
+      <td class="passive-id">madnessTablet</td>
+      <td><span class="impl impl-easy">●易</span> <span class="impl-note">turnDmg の仕組みと同様</span></td>
+    </tr>
+    <tr>
+      <td>41</td>
+      <td>魂食いの短剣</td>
+      <td><span class="tier t2">Tier 2</span></td>
+      <td><span class="desc-good">攻撃力+35</span> / <span class="desc-bad">防御力-20 <span class="demerit-mark">★</span></span></td>
+      <td class="passive-id">soulEater</td>
+      <td><span class="impl impl-easy">●易</span> <span class="impl-note">defenseBonus: -20 で実現</span></td>
+    </tr>
+    <tr>
+      <td>42</td>
+      <td>呪われた鎧</td>
+      <td><span class="tier t2">Tier 2</span></td>
+      <td><span class="desc-good">防御力+30</span> / <span class="desc-bad">最大HP-40 <span class="demerit-mark">★</span></span></td>
+      <td class="passive-id">—（cursedArmor：defenseBonus+30, hpBonus-40）</td>
+      <td><span class="impl impl-easy">●易</span></td>
+    </tr>
+    <tr>
+      <td>43</td>
+      <td>血の石板</td>
+      <td><span class="tier t3">Tier 3</span></td>
+      <td><span class="desc-good">攻撃力+20 / スキル威力+20%</span> / <span class="desc-bad">HPが毎戦闘5ずつ永久に減少 <span class="demerit-mark">★</span></span></td>
+      <td class="passive-id">bloodTablet</td>
+      <td><span class="impl impl-medium">●中</span> <span class="impl-note">checkWin で p.hp -= 5（永続）</span></td>
+    </tr>
+    <tr>
+      <td>44</td>
+      <td>空腹の悪魔</td>
+      <td><span class="tier t3">Tier 3</span></td>
+      <td><span class="desc-good">攻撃力+50</span> / <span class="desc-bad">敵ターンごとにゴールド5G減少 <span class="demerit-mark">★</span></span></td>
+      <td class="passive-id">hungerDemon</td>
+      <td><span class="impl impl-easy">●易</span> <span class="impl-note">doEnemyTurn の最初に gold -= 5</span></td>
+    </tr>
+    <tr>
+      <td>45</td>
+      <td>自傷の腕輪</td>
+      <td><span class="tier t2">Tier 2</span></td>
+      <td><span class="desc-good">攻撃力+25</span> / <span class="desc-bad">通常攻撃のたびに自分が3ダメージ <span class="demerit-mark">★</span></span></td>
+      <td class="passive-id">selfHarm</td>
+      <td><span class="impl impl-easy">●易</span> <span class="impl-note">doAttack の末尾に p.hp -= 3</span></td>
+    </tr>
+  </table>
+</div>
+
+<!-- ===== 8. ユニーク・特殊 ===== -->
+<div class="category">
+  <div class="category-title">⑧ ユニーク・特殊系（5案）</div>
+  <p class="category-note">他のレリックとのシナジーや構築を根本から変えるもの。ゲームの深みを増す。</p>
+  <table>
+    <tr><th>#</th><th>名前</th><th>Tier</th><th>効果</th><th>passive ID</th><th>実装</th></tr>
+    <tr>
+      <td>46</td>
+      <td>孤独の魂</td>
+      <td><span class="tier t3">Tier 3</span></td>
+      <td class="desc-good">所持レリックがこれ1個だけの場合、全ダメージ+50%</td>
+      <td class="passive-id">loneSoul</td>
+      <td><span class="impl impl-easy">●易</span> <span class="impl-note">relics.length === 1 チェック</span></td>
+    </tr>
+    <tr>
+      <td>47</td>
+      <td>剛力の証明</td>
+      <td><span class="tier t2">Tier 2</span></td>
+      <td class="desc-good">所持レリックが3個以下の時、攻撃力+30</td>
+      <td class="passive-id">strongProof</td>
+      <td><span class="impl impl-easy">●易</span> <span class="impl-note">greedOrb の逆バージョン</span></td>
+    </tr>
+    <tr>
+      <td>48</td>
+      <td>逆境の炎</td>
+      <td><span class="tier t2">Tier 2</span></td>
+      <td class="desc-good">被ダメージを受けるたびに次の攻撃+12%（攻撃すると解除）</td>
+      <td class="passive-id">adversityFlame</td>
+      <td><span class="impl impl-medium">●中</span> <span class="impl-note">被弾カウンタを蓄積し doAttack で消費</span></td>
+    </tr>
+    <tr>
+      <td>49</td>
+      <td>模倣の鏡</td>
+      <td><span class="tier t2">Tier 2</span></td>
+      <td class="desc-good">敵の攻撃力の10%を自分の攻撃力ボーナスとして加算</td>
+      <td class="passive-id">mimicMirror</td>
+      <td><span class="impl impl-easy">●易</span> <span class="impl-note">atkTotal getter で + floor(e.attack * 0.1)</span></td>
+    </tr>
+    <tr>
+      <td>50</td>
+      <td>変幻の石</td>
+      <td><span class="tier t3">Tier 3</span></td>
+      <td class="desc-good">各戦闘開始時にランダムで強力なボーナス（攻撃力+40 / 魔法攻撃力+40 / 防御力+30 / 最大HP+50 / 会心率+25% / 全ダメ+20% の6種）</td>
+      <td class="passive-id">shapeshifter</td>
+      <td><span class="impl impl-medium">●中</span> <span class="impl-note">chaosStone の6択拡張版</span></td>
+    </tr>
+  </table>
+</div>
+
+<!-- ===== サマリー ===== -->
+<div class="category">
+  <div class="category-title">📊 カテゴリ別サマリー</div>
+  <table>
+    <tr>
+      <th>カテゴリ</th><th>案数</th><th>易</th><th>中</th><th>難</th><th>デメリット付き</th>
+    </tr>
+    <tr><td>① シンプルステータス</td><td>8</td><td>8</td><td>0</td><td>0</td><td>0</td></tr>
+    <tr><td>② HP回復・生存</td><td>7</td><td>5</td><td>2</td><td>0</td><td>0</td></tr>
+    <tr><td>③ MP・スキル強化</td><td>7</td><td>4</td><td>3</td><td>0</td><td>2</td></tr>
+    <tr><td>④ 攻撃強化パッシブ</td><td>8</td><td>8</td><td>0</td><td>0</td><td>0</td></tr>
+    <tr><td>⑤ ターン依存</td><td>5</td><td>5</td><td>0</td><td>0</td><td>0</td></tr>
+    <tr><td>⑥ ゴールド・経済</td><td>4</td><td>4</td><td>0</td><td>0</td><td>1</td></tr>
+    <tr><td>⑦ デメリット付き強力系</td><td>6</td><td>4</td><td>2</td><td>0</td><td>6</td></tr>
+    <tr><td>⑧ ユニーク・特殊</td><td>5</td><td>3</td><td>2</td><td>0</td><td>0</td></tr>
+    <tr style="font-weight:bold; color:#aaddff;">
+      <td>合計</td><td>50</td><td>41</td><td>9</td><td>0</td><td>9</td>
+    </tr>
+  </table>
+</div>
+
+<p style="text-align:center; color:#445; font-size:0.75rem; margin-top:20px;">
+  ※ 実装注記はあくまで参考。実際のコードと照らし合わせて調整してください。
+</p>
+
+</body>
+</html>

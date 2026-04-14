@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>DUNGEON QUEST — レリック案（特殊効果）</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Hiragino Kaku Gothic ProN', 'Meiryo', sans-serif;
+      font-size: 13px;
+      line-height: 1.7;
+      color: #1a1a2e;
+      background: #fff;
+      padding: 36px 48px;
+    }
+
+    .doc-header {
+      border-bottom: 3px solid #1a1a2e;
+      padding-bottom: 12px;
+      margin-bottom: 28px;
+    }
+    .doc-header h1 { font-size: 22px; letter-spacing: 0.05em; }
+    .doc-header .subtitle { font-size: 13px; color: #555; margin-top: 4px; }
+
+    h2 {
+      font-size: 15px;
+      border-left: 5px solid #3355aa;
+      padding-left: 10px;
+      margin: 32px 0 12px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 16px;
+      font-size: 12.5px;
+    }
+    th {
+      background: #1a1a2e;
+      color: #fff;
+      padding: 7px 10px;
+      text-align: left;
+      font-weight: bold;
+    }
+    td {
+      padding: 6px 10px;
+      border-bottom: 1px solid #ddd;
+      vertical-align: top;
+    }
+    tr:nth-child(even) td { background: #f5f7ff; }
+
+    .tag {
+      display: inline-block;
+      padding: 1px 8px;
+      border-radius: 3px;
+      font-size: 11px;
+      font-weight: bold;
+      white-space: nowrap;
+    }
+    .tag-easy   { background: #ddffd8; color: #226622; border: 1px solid #99cc88; }
+    .tag-medium { background: #fff0cc; color: #885500; border: 1px solid #ddaa44; }
+    .tag-hard   { background: #ffd8d8; color: #880000; border: 1px solid #dd8888; }
+
+    .note {
+      background: #f5f7ff;
+      border-left: 4px solid #3355aa;
+      padding: 10px 14px;
+      margin: 16px 0;
+      font-size: 12px;
+      color: #444;
+    }
+
+    @media print {
+      body { padding: 20px 30px; }
+      h2 { break-before: auto; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="doc-header">
+  <h1>DUNGEON QUEST ― レリック案（特殊効果）</h1>
+  <div class="subtitle">作成日：2026-04-08 ／ 担当A 提案・メンバー共有用</div>
+</div>
+
+<div class="note">
+  実装難度の目安：
+  <span class="tag tag-easy">簡単</span> GS/battle.jsに数行追加レベル
+  <span class="tag tag-medium">中程度</span> バトルループへの組み込みが必要
+  <span class="tag tag-hard">難しめ</span> 新しいフラグ・UIへの表示変更が必要
+</div>
+
+<!-- ===== 戦闘トリガー系 ===== -->
+<h2>⚔️ 戦闘トリガー系</h2>
+<table>
+  <thead>
+    <tr><th>レリック名</th><th>効果</th><th>難度</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>復讐の刃</td><td>防御コマンド使用後の次の攻撃が1.5倍</td><td><span class="tag tag-medium">中程度</span></td></tr>
+    <tr><td>血染めの爪</td><td>自分のHP残量が50%以下のとき攻撃+20</td><td><span class="tag tag-easy">簡単</span></td></tr>
+    <tr><td>闘争本能</td><td>連続攻撃するたびにATK+3（この戦闘中、最大+15）</td><td><span class="tag tag-medium">中程度</span></td></tr>
+    <tr><td>反撃の盾</td><td>被ダメージ後の次ターン、攻撃力+15</td><td><span class="tag tag-medium">中程度</span></td></tr>
+    <tr><td>処刑人の斧</td><td>敵HPが30%以下のとき攻撃ダメージ+50%</td><td><span class="tag tag-easy">簡単</span></td></tr>
+    <tr><td>急所の針</td><td>クリティカル時に追加で10固定ダメージ</td><td><span class="tag tag-easy">簡単</span></td></tr>
+    <tr><td>連撃のリング</td><td>通常攻撃が10%の確率で2回ヒット</td><td><span class="tag tag-medium">中程度</span></td></tr>
+    <tr><td>不屈の魂</td><td>戦闘開始時HP30%以下の場合、DEF+20</td><td><span class="tag tag-easy">簡単</span></td></tr>
+    <tr><td>初撃の剣</td><td>戦闘1ターン目の攻撃が2倍</td><td><span class="tag tag-easy">簡単</span></td></tr>
+    <tr><td>持久の旗</td><td>5ターン以上生き残った場合ATK+30（その戦闘中）</td><td><span class="tag tag-medium">中程度</span></td></tr>
+  </tbody>
+</table>
+
+<!-- ===== MP・スキル系 ===== -->
+<h2>✨ MP・スキル系</h2>
+<table>
+  <thead>
+    <tr><th>レリック名</th><th>効果</th><th>難度</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>魔法の触媒</td><td>魔法スキルのダメージ+20%</td><td><span class="tag tag-easy">簡単</span></td></tr>
+    <tr><td>節約の宝珠</td><td>スキルのMP消費-2（最低1）</td><td><span class="tag tag-easy">簡単</span></td></tr>
+    <tr><td>怒りの炎石</td><td>MPが0のとき通常攻撃+20</td><td><span class="tag tag-easy">簡単</span></td></tr>
+    <tr><td>過負荷の核</td><td>HP-20と引き換えにMP+30（戦闘開始時）</td><td><span class="tag tag-easy">簡単</span></td></tr>
+    <tr><td>魔力吸収のお守り</td><td>スキル使用後にHP+5回復</td><td><span class="tag tag-easy">簡単</span></td></tr>
+    <tr><td>沈黙の仮面</td><td>スキルを一切使わない戦闘に勝つと次の戦闘でATK+20</td><td><span class="tag tag-medium">中程度</span></td></tr>
+    <tr><td>無限の杯</td><td>MaxMP+30、戦闘開始時にMP全回復</td><td><span class="tag tag-easy">簡単</span></td></tr>
+  </tbody>
+</table>
+
+<!-- ===== Gold・経済系 ===== -->
+<h2>💰 Gold・経済系</h2>
+<table>
+  <thead>
+    <tr><th>レリック名</th><th>効果</th><th>難度</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>商人の指輪</td><td>戦闘勝利時のゴールド+20%</td><td><span class="tag tag-easy">簡単</span></td></tr>
+    <tr><td>金貨の鎧</td><td>所持Gold 100Gにつき防御+1（最大+20）</td><td><span class="tag tag-easy">簡単</span></td></tr>
+    <tr><td>賭博師のコイン</td><td>戦闘開始時50%でATK+20、50%でATK-10</td><td><span class="tag tag-easy">簡単</span></td></tr>
+    <tr><td>借金の証書</td><td>即座にGold+200、以降の戦闘報酬-30%</td><td><span class="tag tag-medium">中程度</span></td></tr>
+    <tr><td>錬金術師の坩堝</td><td>使用アイテムの効果+30%</td><td><span class="tag tag-easy">簡単</span></td></tr>
+    <tr><td>ケチな悪魔</td><td>階層移動時にGold-50、DEF+15</td><td><span class="tag tag-medium">中程度</span></td></tr>
+  </tbody>
+</table>
+
+<!-- ===== 回復・生存系 ===== -->
+<h2>💚 回復・生存系</h2>
+<table>
+  <thead>
+    <tr><th>レリック名</th><th>効果</th><th>難度</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>再生の苔</td><td>毎ターン終了時HP+5回復</td><td><span class="tag tag-easy">簡単</span></td></tr>
+    <tr><td>応急処置袋</td><td>戦闘終了後にHP+15回復</td><td><span class="tag tag-easy">簡単</span></td></tr>
+    <tr><td>不死の仮面</td><td>1戦闘に1度だけ致死ダメージを受けてもHP1で耐える（蘇生草と別枠）</td><td><span class="tag tag-medium">中程度</span></td></tr>
+    <tr><td>吸血の牙</td><td>通常攻撃でダメージの15%をHP吸収</td><td><span class="tag tag-easy">簡単</span></td></tr>
+    <tr><td>傷の功績</td><td>被ダメージ時、次ターンのATK+5（最大+20、戦闘終了でリセット）</td><td><span class="tag tag-medium">中程度</span></td></tr>
+    <tr><td>忍耐の結晶</td><td>防御コマンド使用回数×5のHPを戦闘後回復</td><td><span class="tag tag-medium">中程度</span></td></tr>
+  </tbody>
+</table>
+
+<!-- ===== ターン・時間系 ===== -->
+<h2>⏳ ターン・時間系</h2>
+<table>
+  <thead>
+    <tr><th>レリック名</th><th>効果</th><th>難度</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>奇数のお守り</td><td>奇数ターンの攻撃が1.3倍</td><td><span class="tag tag-easy">簡単</span></td></tr>
+    <tr><td>偶数の紋章</td><td>偶数ターンに防御力+15</td><td><span class="tag tag-easy">簡単</span></td></tr>
+    <tr><td>砂時計</td><td>3ターン目以降、全攻撃が1.2倍</td><td><span class="tag tag-easy">簡単</span></td></tr>
+    <tr><td>カウントダウン石</td><td>戦闘開始から3ターン後に自動発動、敵に80固定ダメージ</td><td><span class="tag tag-medium">中程度</span></td></tr>
+  </tbody>
+</table>
+
+<!-- ===== デメリット付き高性能系 ===== -->
+<h2>💀 リスク＆リターン系（デメリット付き高性能）</h2>
+<table>
+  <thead>
+    <tr><th>レリック名</th><th>効果</th><th>難度</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>悪魔の契約</td><td>ATK+40、毎戦闘開始時HP-15</td><td><span class="tag tag-easy">簡単</span></td></tr>
+    <tr><td>呪われた兜</td><td>DEF+25、スキル使用不可</td><td><span class="tag tag-easy">簡単</span></td></tr>
+    <tr><td>狂戦士の証</td><td>ATK+30、防御コマンドが使えなくなる</td><td><span class="tag tag-medium">中程度</span></td></tr>
+    <tr><td>血の誓い</td><td>MaxHP-30、ATK+25・DEF+15</td><td><span class="tag tag-easy">簡単</span></td></tr>
+    <tr><td>魔人の眼</td><td>魔法スキル威力+50%、物理攻撃-30%</td><td><span class="tag tag-easy">簡単</span></td></tr>
+    <tr><td>過食の指輪</td><td>アイテム効果2倍、スキル使用不可</td><td><span class="tag tag-easy">簡単</span></td></tr>
+  </tbody>
+</table>
+
+<!-- ===== ユニーク・特殊系 ===== -->
+<h2>🌟 ユニーク・特殊系</h2>
+<table>
+  <thead>
+    <tr><th>レリック名</th><th>効果</th><th>難度</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>鏡の盾</td><td>1戦闘に1度、敵の攻撃ダメージをそのまま敵に返す</td><td><span class="tag tag-hard">難しめ</span></td></tr>
+    <tr><td>予言の書</td><td>戦闘開始時に敵のATK・DEFを表示</td><td><span class="tag tag-medium">中程度</span></td></tr>
+    <tr><td>混沌の石</td><td>戦闘開始時にATK/DEF/HP/MPのいずれかランダムで+20</td><td><span class="tag tag-easy">簡単</span></td></tr>
+    <tr><td>経験の勲章</td><td>同じ階層での戦闘回数×3のATKボーナス（階層移動でリセット）</td><td><span class="tag tag-easy">簡単</span></td></tr>
+    <tr><td>貪欲の宝珠</td><td>所持レリック1個ごとにATK+3</td><td><span class="tag tag-easy">簡単</span></td></tr>
+    <tr><td>守護天使の羽</td><td>残りHPが1桁のとき攻撃がクリティカル確定</td><td><span class="tag tag-easy">簡単</span></td></tr>
+    <tr><td>時止めの砂</td><td>1戦闘に1度だけ敵の行動をスキップできる</td><td><span class="tag tag-hard">難しめ</span></td></tr>
+    <tr><td>幸運のウサギ足</td><td>クリティカル率+15%</td><td><span class="tag tag-easy">簡単</span></td></tr>
+    <tr><td>試練の石板</td><td>防御コマンドを一切使わずに勝利すると次の戦闘でATK+20</td><td><span class="tag tag-medium">中程度</span></td></tr>
+    <tr><td>壊れた羅針盤</td><td>階段の出現確率が上がる</td><td><span class="tag tag-hard">難しめ</span></td></tr>
+  </tbody>
+</table>
+
+<div class="note" style="margin-top: 32px;">
+  <strong>実装の進め方（提案）</strong><br>
+  ① まず <span class="tag tag-easy">簡単</span> なものを relics.js に追加し、passive フラグ（例: <code>passive: 'lifesteal'</code>）で種類を識別<br>
+  ② battle.js の doAttack() / doEnemyTurn() / checkWin() にパッシブチェックを追加<br>
+  ③ <span class="tag tag-medium">中程度</span> 以上のものは GS.player に新しい状態フィールドを追加して管理
+</div>
+
+</body>
+</html>

@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>レリック・スキル一覧 — DUNGEON QUEST</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: #050508;
+      color: #ddd8c0;
+      font-family: 'Courier New', Courier, monospace;
+      padding: 32px 24px;
+    }
+    h1 {
+      color: #aaaaff;
+      font-size: 22px;
+      text-align: center;
+      margin-bottom: 6px;
+      letter-spacing: 4px;
+    }
+    .subtitle {
+      text-align: center;
+      color: #555577;
+      font-size: 12px;
+      margin-bottom: 40px;
+    }
+
+    /* セクション */
+    .section { margin-bottom: 40px; }
+    .section-title {
+      font-size: 15px;
+      color: #7777cc;
+      border-bottom: 1px solid #2a2a55;
+      padding-bottom: 6px;
+      margin-bottom: 12px;
+      letter-spacing: 2px;
+    }
+
+    /* テーブル共通 */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+    }
+    th {
+      background: #111128;
+      color: #8888aa;
+      padding: 6px 10px;
+      text-align: left;
+      border-bottom: 1px solid #2a2a55;
+      font-weight: normal;
+      white-space: nowrap;
+    }
+    td {
+      padding: 7px 10px;
+      border-bottom: 1px solid #1a1a30;
+      vertical-align: middle;
+    }
+    tr:hover td { background: #0f0f22; }
+
+    /* Tier バッジ */
+    .tier {
+      display: inline-block;
+      padding: 1px 6px;
+      border-radius: 2px;
+      font-size: 11px;
+      font-weight: bold;
+    }
+    .tier-1 { background: #1a2a1a; color: #66cc66; border: 1px solid #336633; }
+    .tier-2 { background: #1a1a2a; color: #6688ff; border: 1px solid #334488; }
+    .tier-3 { background: #2a1a1a; color: #ff8844; border: 1px solid #884422; }
+
+    /* 価格 */
+    .price { color: #ffcc44; white-space: nowrap; }
+
+    /* 効果テキスト */
+    .desc { color: #aaaaaa; }
+    .desc em { color: #ffaaaa; font-style: normal; } /* デメリット */
+    .desc strong { color: #aaffaa; font-style: normal; } /* 魔法 */
+
+    /* MP コスト */
+    .mp { color: #4488ff; white-space: nowrap; }
+
+    /* スキル種別バッジ */
+    .badge {
+      display: inline-block;
+      padding: 1px 6px;
+      border-radius: 2px;
+      font-size: 10px;
+      white-space: nowrap;
+    }
+    .badge-phys   { background: #1e1200; color: #cc8833; border: 1px solid #553300; }
+    .badge-magic  { background: #100020; color: #aa55ff; border: 1px solid #441166; }
+    .badge-heal   { background: #001a10; color: #44cc88; border: 1px solid #115533; }
+    .badge-buff   { background: #001a1a; color: #44bbcc; border: 1px solid #115566; }
+    .badge-fixed  { background: #1a1a00; color: #cccc44; border: 1px solid #555500; }
+    .badge-special{ background: #1a0a0a; color: #ff6666; border: 1px solid #661111; }
+
+    /* 初期スキルマーク */
+    .init-badge {
+      display: inline-block;
+      padding: 1px 5px;
+      font-size: 10px;
+      color: #ffcc44;
+      border: 1px solid #665500;
+      background: #1a1400;
+      border-radius: 2px;
+      margin-left: 4px;
+    }
+  </style>
+</head>
+<body>
+
+<h1>DUNGEON QUEST</h1>
+<p class="subtitle">レリック &amp; スキル 一覧表</p>
+
+<!-- ============================================================ -->
+<!--  RELICS                                                       -->
+<!-- ============================================================ -->
+
+<div class="section">
+  <div class="section-title">◆ レリック ― ステータス強化系</div>
+  <table>
+    <thead>
+      <tr>
+        <th>名前</th><th>Tier</th><th>効果</th><th>価格</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>鉄の剣</td>        <td><span class="tier tier-1">T1</span></td><td class="desc">攻撃力+8</td>                              <td class="price">40G</td></tr>
+      <tr><td>鋼の剣</td>        <td><span class="tier tier-2">T2</span></td><td class="desc">攻撃力+18</td>                             <td class="price">90G</td></tr>
+      <tr><td>炎の剣</td>        <td><span class="tier tier-3">T3</span></td><td class="desc">攻撃力+28</td>                             <td class="price">150G</td></tr>
+      <tr><td>革の鎧</td>        <td><span class="tier tier-1">T1</span></td><td class="desc">防御力+6</td>                              <td class="price">35G</td></tr>
+      <tr><td>鉄の鎧</td>        <td><span class="tier tier-2">T2</span></td><td class="desc">防御力+18</td>                             <td class="price">95G</td></tr>
+      <tr><td>生命の指輪</td>    <td><span class="tier tier-1">T1</span></td><td class="desc">最大HP+35</td>                             <td class="price">45G</td></tr>
+      <tr><td>魔法のローブ</td>  <td><span class="tier tier-2">T2</span></td><td class="desc">防御力+8 / 最大MP+20</td>                  <td class="price">80G</td></tr>
+      <tr><td>竜鱗の欠片</td>    <td><span class="tier tier-3">T3</span></td><td class="desc">攻撃力+12 / 防御力+12</td>                 <td class="price">120G</td></tr>
+      <tr><td>血の誓い</td>      <td><span class="tier tier-2">T2</span></td><td class="desc">攻撃力+25 / 防御力+15 / <em>最大HP-30</em></td><td class="price">95G</td></tr>
+      <tr><td>魔導の杖</td>      <td><span class="tier tier-1">T1</span></td><td class="desc"><strong>魔法攻撃力+10</strong></td>         <td class="price">50G</td></tr>
+      <tr><td>魔力の結晶</td>    <td><span class="tier tier-2">T2</span></td><td class="desc"><strong>魔法攻撃力+22</strong></td>         <td class="price">110G</td></tr>
+      <tr><td>魔力の宝珠</td>    <td><span class="tier tier-1">T1</span></td><td class="desc">最大MP+30</td>                             <td class="price">50G</td></tr>
+      <tr><td>エーテルストーン</td><td><span class="tier tier-3">T3</span></td><td class="desc">最大MP+60</td>                           <td class="price">130G</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="section">
+  <div class="section-title">◆ レリック ― クリティカル・Gold</div>
+  <table>
+    <thead>
+      <tr><th>名前</th><th>Tier</th><th>効果</th><th>価格</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>幸運のウサギ足</td><td><span class="tier tier-1">T1</span></td><td class="desc">クリティカル率+15%</td>             <td class="price">70G</td></tr>
+      <tr><td>商人の指輪</td>    <td><span class="tier tier-1">T1</span></td><td class="desc">戦闘勝利時ゴールド+20%</td>          <td class="price">65G</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="section">
+  <div class="section-title">◆ レリック ― スキル・MP</div>
+  <table>
+    <thead>
+      <tr><th>名前</th><th>Tier</th><th>効果</th><th>価格</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>節約の宝珠</td>  <td><span class="tier tier-1">T1</span></td><td class="desc">スキルのMP消費-2（最低1）</td>                               <td class="price">60G</td></tr>
+      <tr><td>魔法の触媒</td>  <td><span class="tier tier-1">T1</span></td><td class="desc"><strong>魔法スキルのダメージ+20%</strong></td>               <td class="price">70G</td></tr>
+      <tr><td>沈黙の仮面</td>  <td><span class="tier tier-2">T2</span></td><td class="desc">スキルを使わずに勝利すると次の戦闘で攻撃力+20</td>           <td class="price">85G</td></tr>
+      <tr><td>呪われた兜</td>  <td><span class="tier tier-2">T2</span></td><td class="desc">通常攻撃2連打 / <em>スキル使用不可</em></td>                  <td class="price">80G</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="section">
+  <div class="section-title">◆ レリック ― 攻撃強化</div>
+  <table>
+    <thead>
+      <tr><th>名前</th><th>Tier</th><th>効果</th><th>価格</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>貪欲の宝珠</td>    <td><span class="tier tier-1">T1</span></td><td class="desc">所持レリック1個ごとに攻撃力+3</td>                    <td class="price">55G</td></tr>
+      <tr><td>経験の勲章</td>    <td><span class="tier tier-1">T1</span></td><td class="desc">同じ階層の戦闘回数×3の攻撃力ボーナス</td>             <td class="price">55G</td></tr>
+      <tr><td>吸血の牙</td>      <td><span class="tier tier-2">T2</span></td><td class="desc">通常攻撃でダメージの15%をHP吸収</td>                  <td class="price">110G</td></tr>
+      <tr><td>復讐の刃</td>      <td><span class="tier tier-2">T2</span></td><td class="desc">防御コマンド使用後の次の攻撃が1.5倍</td>              <td class="price">100G</td></tr>
+      <tr><td>連撃のリング</td>  <td><span class="tier tier-2">T2</span></td><td class="desc">通常攻撃が10%の確率で2回ヒット（独立crit判定）</td>    <td class="price">120G</td></tr>
+      <tr><td>狂戦士の証</td>    <td><span class="tier tier-2">T2</span></td><td class="desc">攻撃力+30 / <em>防御コマンド使用不可</em></td>          <td class="price">90G</td></tr>
+      <tr><td>魔人の眼</td>      <td><span class="tier tier-3">T3</span></td><td class="desc"><strong>魔法スキル威力+50%</strong> / <em>物理攻撃-30%</em></td><td class="price">150G</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="section">
+  <div class="section-title">◆ レリック ― ターン依存</div>
+  <table>
+    <thead>
+      <tr><th>名前</th><th>Tier</th><th>効果</th><th>発動条件</th><th>価格</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>奇数のお守り</td><td><span class="tier tier-2">T2</span></td><td class="desc">攻撃が1.3倍</td>           <td class="desc">奇数ターン</td>        <td class="price">90G</td></tr>
+      <tr><td>偶数の紋章</td>  <td><span class="tier tier-1">T1</span></td><td class="desc">防御力+15</td>            <td class="desc">偶数ターン（敵攻撃時）</td><td class="price">75G</td></tr>
+      <tr><td>砂時計</td>      <td><span class="tier tier-2">T2</span></td><td class="desc">全攻撃が1.2倍</td>        <td class="desc">3ターン目以降</td>       <td class="price">95G</td></tr>
+      <tr><td>持久の旗</td>    <td><span class="tier tier-2">T2</span></td><td class="desc">攻撃力+30（戦闘中）</td> <td class="desc">5ターン以上生存</td>     <td class="price">100G</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="section">
+  <div class="section-title">◆ レリック ― ランダム・特殊</div>
+  <table>
+    <thead>
+      <tr><th>名前</th><th>Tier</th><th>効果</th><th>価格</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>混沌の石</td><td><span class="tier tier-1">T1</span></td><td class="desc">戦闘開始時に攻撃力 / 防御力 / 会心率のいずれかランダムで+20</td><td class="price">45G</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ============================================================ -->
+<!--  SKILLS                                                       -->
+<!-- ============================================================ -->
+
+<div class="section">
+  <div class="section-title">◆ スキル一覧</div>
+  <table>
+    <thead>
+      <tr><th>名前</th><th>種別</th><th>MP</th><th>効果</th><th>価格</th></tr>
+    </thead>
+    <tbody>
+      <!-- 初期 -->
+      <tr>
+        <td>スラッシュ <span class="init-badge">初期</span></td>
+        <td><span class="badge badge-phys">物理</span></td>
+        <td class="mp">5</td>
+        <td class="desc">物理×1.6</td>
+        <td class="desc">―</td>
+      </tr>
+      <!-- 物理系 -->
+      <tr>
+        <td>突進</td>
+        <td><span class="badge badge-phys">物理</span></td>
+        <td class="mp">7</td>
+        <td class="desc">物理×1.4・クリティカル率+20%（この一撃）</td>
+        <td class="price">80G</td>
+      </tr>
+      <tr>
+        <td>捨て身の一撃</td>
+        <td><span class="badge badge-phys">物理</span></td>
+        <td class="mp">8</td>
+        <td class="desc">物理×3.0・<em>自分もHP-15</em></td>
+        <td class="price">90G</td>
+      </tr>
+      <tr>
+        <td>ダブルスラッシュ</td>
+        <td><span class="badge badge-phys">物理</span></td>
+        <td class="mp">10</td>
+        <td class="desc">物理×1.0を2回ヒット（独立crit）</td>
+        <td class="price">100G</td>
+      </tr>
+      <tr>
+        <td>二刀流</td>
+        <td><span class="badge badge-phys">物理</span></td>
+        <td class="mp">12</td>
+        <td class="desc">物理×0.8を3回ヒット（独立crit）</td>
+        <td class="price">130G</td>
+      </tr>
+      <tr>
+        <td>大斬り</td>
+        <td><span class="badge badge-phys">物理</span></td>
+        <td class="mp">14</td>
+        <td class="desc">物理×2.5（防御無視）</td>
+        <td class="price">140G</td>
+      </tr>
+      <!-- カウンター・バフ -->
+      <tr>
+        <td>見切り</td>
+        <td><span class="badge badge-special">特殊</span></td>
+        <td class="mp">4</td>
+        <td class="desc">次の敵通常攻撃を無効化・反撃で物理×1.2</td>
+        <td class="price">100G</td>
+      </tr>
+      <tr>
+        <td>アイアンウィル</td>
+        <td><span class="badge badge-buff">バフ</span></td>
+        <td class="mp">6</td>
+        <td class="desc">1ターン防御力を大幅UP</td>
+        <td class="price">90G</td>
+      </tr>
+      <!-- 魔法系 -->
+      <tr>
+        <td>ファイアボール</td>
+        <td><span class="badge badge-magic">魔法</span></td>
+        <td class="mp">8</td>
+        <td class="desc">魔法×1.8</td>
+        <td class="price">80G</td>
+      </tr>
+      <tr>
+        <td>サンダー</td>
+        <td><span class="badge badge-magic">魔法</span></td>
+        <td class="mp">13</td>
+        <td class="desc">魔法×2.2</td>
+        <td class="price">130G</td>
+      </tr>
+      <tr>
+        <td>アイスランス</td>
+        <td><span class="badge badge-magic">魔法</span></td>
+        <td class="mp">18</td>
+        <td class="desc">魔法×2.8</td>
+        <td class="price">180G</td>
+      </tr>
+      <tr>
+        <td>ソウルバースト</td>
+        <td><span class="badge badge-magic">魔法</span></td>
+        <td class="mp">20</td>
+        <td class="desc">残HPが低いほど威力上昇（魔法×1.0〜3.0）</td>
+        <td class="price">150G</td>
+      </tr>
+      <!-- 回復 -->
+      <tr>
+        <td>ヒール</td>
+        <td><span class="badge badge-heal">回復</span></td>
+        <td class="mp">10</td>
+        <td class="desc">HPを35回復</td>
+        <td class="price">110G</td>
+      </tr>
+      <!-- 固定・特殊 -->
+      <tr>
+        <td>爆裂拳</td>
+        <td><span class="badge badge-fixed">固定</span></td>
+        <td class="mp">11</td>
+        <td class="desc">敵に40固定ダメージ（防御無視）</td>
+        <td class="price">110G</td>
+      </tr>
+      <tr>
+        <td>ラストリゾート</td>
+        <td><span class="badge badge-fixed">固定</span></td>
+        <td class="mp">15〜</td>
+        <td class="desc">MP全消費・消費MP×4の固定ダメージ</td>
+        <td class="price">160G</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+</body>
+</html>

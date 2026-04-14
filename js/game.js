@@ -3,26 +3,13 @@
 // ============================================================
 //  GAME STATE  ― 全ファイルから参照される共有オブジェクト
 // ============================================================
-const CHARACTERS = {
-  warrior: {
-    hp: 120, maxHp: 120,
-    mp:  40, maxMp:  40,
-    attack: 20, defense: 14, magicAttack: 0,
-    skills: ['slash'],
-    label: '戦　士',
-    desc:  '物理特化',
-    flavor: 'HP  120 / MP   40\nATK   20 / DEF  14'
-  },
-  mage: {
-    hp:  80, maxHp:  80,
-    mp:  80, maxMp:  80,
-    attack: 8, defense: 6, magicAttack: 22,
-    skills: ['fireball'],
-    label: '魔法使い',
-    desc:  '魔法特化',
-    flavor: 'HP   80 / MP   80\n魔ATK  22 / DEF   6'
-  }
-};
+// ============================================================
+//  キャラクターデータ組み立て（warrior.js / mage.js / relics.js から）
+// ============================================================
+const CHARACTERS  = { warrior: WARRIOR.character, mage: MAGE.character };
+const SKILLS      = { ...WARRIOR.skills,      ...MAGE.skills      };
+const SHOP_SKILLS = { ...WARRIOR.shopSkills,  ...MAGE.shopSkills  };
+const RELICS      = { ...WARRIOR.relics,      ...MAGE.relics,     ...SHARED_RELICS };
 
 const GS = {
   scene: 'title',
@@ -456,8 +443,7 @@ function _updateDebugBadge() {
 document.addEventListener('DOMContentLoaded', () => {
 
   // Title
-  document.getElementById('btn-start').onclick    = () => { resetGame('warrior'); initFloorSelect(); };
-  document.getElementById('btn-charselect').onclick = () => initCharSelect();
+  document.getElementById('btn-start').onclick = () => initCharSelect();
   document.getElementById('btn-charselect-back').onclick = () => initTitle();
   document.querySelectorAll('.btn-char-pick').forEach(btn => {
     btn.onclick = () => { resetGame(btn.dataset.char); initFloorSelect(); };
