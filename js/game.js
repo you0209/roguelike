@@ -339,6 +339,8 @@ function calcScore() {
 // ============================================================
 //  HELPERS  ― 全ファイルから使用
 // ============================================================
+function pName() { return CHARACTERS[GS.charClass]?.label ?? '勇者'; }
+
 function pct(cur, max) {
   return Math.max(0, Math.min(100, (cur / max) * 100)).toFixed(1) + '%';
 }

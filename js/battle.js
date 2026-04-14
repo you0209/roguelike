@@ -84,6 +84,7 @@ function initBattle() {
     GS.floor === 7 ? '💀 ボス戦！' : `第${GS.floor}階層`;
   document.getElementById('battle-gold').textContent = `G: ${GS.player.gold}`;
   document.getElementById('enemy-name').textContent  = e.name + (e.isBoss ? ' 👑' : '');
+  document.getElementById('battle-player-name').textContent = pName();
 
   addLog(`${e.name}が現れた！`, 'log-system');
 
@@ -220,7 +221,7 @@ function doAttack() {
   const critPart    = isCrit ? '会心の一撃！　' : '';
   const revengePart = wasRevenge ? '復讐の刃！　' : '';
   const shieldPart  = wasShield  ? '盾返し！　'   : '';
-  addLog(`${revengePart}${shieldPart}${critPart}勇者の攻撃！　${e.name}に ${dmg} ダメージ！`, isCrit ? 'log-special' : 'log-damage');
+  addLog(`${revengePart}${shieldPart}${critPart}${pName()}の攻撃！　${e.name}に ${dmg} ダメージ！`, isCrit ? 'log-special' : 'log-damage');
   flash.enemy = 10;
 
   // 雷の紋章（会心時+15固定）
@@ -320,7 +321,7 @@ function doDefend() {
     GS.player.rebellionAtkBonus = Math.min(32, GS.player.rebellionAtkBonus + 8);
     addLog(`反骨の魂！　攻撃力+8（累計+${GS.player.rebellionAtkBonus}）`, 'log-special');
   }
-  addLog('勇者は防御態勢をとった！　ダメージを大幅軽減。', 'log-system');
+  addLog(`${pName()}は防御態勢をとった！　ダメージを大幅軽減。`, 'log-system');
   updateBattleUI();
   afterPlayerAction();
 }
@@ -672,7 +673,7 @@ function checkLose() {
     return false;
   }
   battleOver = true;
-  addLog('勇者は倒れた…', 'log-system');
+  addLog(`${pName()}は倒れた…`, 'log-system');
   disableCmds();
   setTimeout(() => { stopBattleAnim(); gotoGameOver(); }, 1800);
   return true;
@@ -742,7 +743,7 @@ function executeEnemySkill(skill) {
       dmg = Math.floor(dmg * skillDefMult);
     }
   }
-  applyDmgToPlayer(dmg, `${e.name}の${skill.name}！　勇者に {dmg} ダメージ！`);
+  applyDmgToPlayer(dmg, `${e.name}の${skill.name}！　${pName()}に {dmg} ダメージ！`);
   if (checkWin()) return;
   if (skill.lifesteal) {
     const healed = Math.floor(dmg * 0.3);
@@ -763,7 +764,7 @@ function doEnemyTurn() {
 
   // 毎ターン追加ダメージ（5層血の鎧効果）
   if (p.turnDmg > 0) {
-    applyDmgToPlayer(p.turnDmg, `呪いの炎！　勇者に {dmg} ダメージ！`);
+    applyDmgToPlayer(p.turnDmg, `呪いの炎！　${pName()}に {dmg} ダメージ！`);
     updateBattleUI();
     if (checkLose()) return;
   }
@@ -844,16 +845,16 @@ function doEnemyTurn() {
     let dmg = Math.max(1, Math.floor(e.attack * 1.6 - p.defense * 0.2));
     const bossDefMult = p.isDefending ? (p.relics.some(r => r.passive === 'guardShield') ? 0.25 : 0.35) : 1;
     dmg = Math.floor(dmg * bossDefMult);
-    applyDmgToPlayer(dmg, `${e.name}のドラゴンブレス！　勇者に {dmg} ダメージ！`);
+    applyDmgToPlayer(dmg, `${e.name}のドラゴンブレス！　${pName()}に {dmg} ダメージ！`);
     if (checkWin()) return;
   } else if (bossAction === 'tailSwipe') {
     let dmg = Math.max(1, Math.floor(e.attack * 1.3 - p.defense * 0.4));
     const bossDefMult = p.isDefending ? (p.relics.some(r => r.passive === 'guardShield') ? 0.25 : 0.35) : 1;
     dmg = Math.floor(dmg * bossDefMult);
-    applyDmgToPlayer(dmg, `${e.name}の尻尾攻撃！　勇者に {dmg} ダメージ！`);
+    applyDmgToPlayer(dmg, `${e.name}の尻尾攻撃！　${pName()}に {dmg} ダメージ！`);
     if (checkWin()) return;
   } else if (bossAction === 'dragonRoar') {
-    addLog(`${e.name}の咆哮！　勇者は怯んだ！`, 'log-special');
+    addLog(`${e.name}の咆哮！　${pName()}は怯んだ！`, 'log-special');
     p.roarDebuff = true;
   } else {
     // 見切り発動チェック（通常攻撃のみ有効）
@@ -874,8 +875,8 @@ function doEnemyTurn() {
       applyDmgToPlayer(
         dmg,
         p.isDefending
-          ? `${e.name}の攻撃！　防御した！　勇者に {dmg} ダメージ。`
-          : `${e.name}の攻撃！　勇者に {dmg} ダメージ！`
+          ? `${e.name}の攻撃！　防御した！　${pName()}に {dmg} ダメージ。`
+          : `${e.name}の攻撃！　${pName()}に {dmg} ダメージ！`
       );
       if (checkWin()) return;
     }
