@@ -563,3 +563,54 @@ body {
 ::-webkit-scrollbar { width: 6px; }
 ::-webkit-scrollbar-track { background: #0a0a14; }
 ::-webkit-scrollbar-thumb { background: #333355; border-radius: 3px; }
+
+/* ===== CHAR SELECT ===== */
+.charselect-cards {
+  display: flex;
+  justify-content: center;
+  gap: 24px;
+  margin: 16px 0 10px;
+}
+.charselect-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: #12122a;
+  border: 2px solid #3a3a6a;
+  border-radius: 6px;
+  padding: 14px 18px;
+  width: 200px;
+  transition: border-color 0.15s;
+}
+.charselect-card:hover { border-color: #7777cc; }
+.charselect-canvas {
+  display: block;
+  background: #0a0a18;
+  border-radius: 4px;
+  margin-bottom: 8px;
+}
+.charselect-name {
+  font-size: 16px;
+  color: #ddddff;
+  font-weight: bold;
+  margin-bottom: 6px;
+  letter-spacing: 2px;
+}
+.charselect-stats {
+  font-size: 11px;
+  color: #8888aa;
+  text-align: center;
+  line-height: 1.7;
+  margin-bottom: 4px;
+  white-space: pre;
+}
+.charselect-flavor {
+  font-size: 11px;
+  color: #aaaacc;
+  margin-bottom: 10px;
+}
+.btn-charselect-title {
+  margin-top: 8px;
+  font-size: 12px;
+  padding: 6px 22px;
+}

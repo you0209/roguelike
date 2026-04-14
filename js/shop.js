@@ -11,7 +11,7 @@ function generateLineup() {
   const ownedSkillIds = new Set(GS.player.skills);
 
   const relicPool = Object.entries(RELICS)
-    .filter(([id]) => !ownedRelicIds.has(id))
+    .filter(([id, d]) => !ownedRelicIds.has(id) && (d.charClass === GS.charClass || d.charClass === 'both'))
     .map(([id, d]) => ({ id, ...d, cat: 'relic', weight: ({ 1: 3, 2: 2, 3: 1 })[d.tier] ?? 1 }));
 
   // 確定枠: 単純ATKアップ系1個・単純DEFアップ系1個
@@ -34,7 +34,7 @@ function generateLineup() {
   // スキル: 未習得のもののみ均等抽選で4〜5個
   const skillCount = Math.random() < 0.5 ? 4 : 5;
   const skillPool  = Object.entries(SHOP_SKILLS)
-    .filter(([id]) => !ownedSkillIds.has(id))
+    .filter(([id, d]) => !ownedSkillIds.has(id) && (d.charClass === GS.charClass || d.charClass === 'both'))
     .map(([id, d]) => ({ id, ...d, cat: 'skill' }));
   GS.shopLineup.skills = pickRandom(skillPool, skillCount);
 

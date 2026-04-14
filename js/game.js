@@ -3,6 +3,27 @@
 // ============================================================
 //  GAME STATE  ― 全ファイルから参照される共有オブジェクト
 // ============================================================
+const CHARACTERS = {
+  warrior: {
+    hp: 120, maxHp: 120,
+    mp:  40, maxMp:  40,
+    attack: 20, defense: 14, magicAttack: 0,
+    skills: ['slash'],
+    label: '戦　士',
+    desc:  '物理特化',
+    flavor: 'HP  120 / MP   40\nATK   20 / DEF  14'
+  },
+  mage: {
+    hp:  80, maxHp:  80,
+    mp:  80, maxMp:  80,
+    attack: 8, defense: 6, magicAttack: 22,
+    skills: ['fireball'],
+    label: '魔法使い',
+    desc:  '魔法特化',
+    flavor: 'HP   80 / MP   80\n魔ATK  22 / DEF   6'
+  }
+};
+
 const GS = {
   scene: 'title',
   floor: 1,
@@ -10,6 +31,7 @@ const GS = {
   totalBattles: 0,
   totalGold:    0,
   debugMode: false,
+  charClass: 'warrior',
 
   player: null,
   enemy:  null,
@@ -83,7 +105,8 @@ const GS = {
   }
 };
 
-function resetGame() {
+function resetGame(charClass = 'warrior') {
+  GS.charClass      = charClass;
   GS.floor          = 1;
   GS.battleCount    = 0;
   GS.totalBattles   = 0;
@@ -95,13 +118,14 @@ function resetGame() {
   GS.forcedEnemy    = null;
   GS.stairsStep     = 0;
 
+  const ch = CHARACTERS[charClass];
   GS.player = {
-    hp: 100, maxHp: 100,
-    mp:  50, maxMp:  50,
-    attack: 15, defense: 10, magicAttack: 10,
+    hp: ch.hp, maxHp: ch.maxHp,
+    mp: ch.mp, maxMp: ch.maxMp,
+    attack: ch.attack, defense: ch.defense, magicAttack: ch.magicAttack,
     gold: 50,
     relics: [],
-    skills: ['slash'],
+    skills: [...ch.skills],
     inventory: [],
     buffDef: false,
     isDefending: false,
@@ -165,11 +189,27 @@ function showScene(name) {
   document.querySelectorAll('.scene').forEach(s => s.classList.add('hidden'));
   document.getElementById('scene-' + name).classList.remove('hidden');
   GS.scene = name;
-  const hideOn = ['title', 'gameover', 'victory'];
+  const hideOn = ['title', 'charselect', 'gameover', 'victory'];
   const floatBtn = document.getElementById('btn-status-float');
   if (floatBtn) floatBtn.classList.toggle('hidden', hideOn.includes(name));
   const feedbackBtn = document.getElementById('btn-feedback-float');
-  if (feedbackBtn) feedbackBtn.classList.toggle('visible', ['title', 'gameover', 'victory'].includes(name));
+  if (feedbackBtn) feedbackBtn.classList.toggle('visible', ['title', 'charselect', 'gameover', 'victory'].includes(name));
+}
+
+// ============================================================
+//  CHAR SELECT
+// ============================================================
+function initCharSelect() {
+  showScene('charselect');
+  Object.entries(CHARACTERS).forEach(([id, ch]) => {
+    const canvas = document.getElementById(`charselect-canvas-${id}`);
+    if (canvas) {
+      const ctx = canvas.getContext('2d');
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      if (id === 'warrior') drawPlayerWarrior(ctx, 60, 90, false, 0);
+      else                  drawPlayerMage(ctx, 60, 90, false, 0);
+    }
+  });
 }
 
 // ============================================================
@@ -416,7 +456,12 @@ function _updateDebugBadge() {
 document.addEventListener('DOMContentLoaded', () => {
 
   // Title
-  document.getElementById('btn-start').onclick = () => { resetGame(); initFloorSelect(); };
+  document.getElementById('btn-start').onclick    = () => { resetGame('warrior'); initFloorSelect(); };
+  document.getElementById('btn-charselect').onclick = () => initCharSelect();
+  document.getElementById('btn-charselect-back').onclick = () => initTitle();
+  document.querySelectorAll('.btn-char-pick').forEach(btn => {
+    btn.onclick = () => { resetGame(btn.dataset.char); initFloorSelect(); };
+  });
 
   // Debug mode toggle: タイトル画面で D キー
   document.addEventListener('keydown', e => {

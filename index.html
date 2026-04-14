@@ -16,6 +16,7 @@
         <p class="game-subtitle">〜 ダンジョンの奥に潜む龍を倒せ 〜</p>
         <canvas id="title-canvas" width="640" height="120"></canvas>
         <button id="btn-start" class="pixel-btn">は じ め る</button>
+        <button id="btn-charselect" class="pixel-btn btn-charselect-title">キャラ選択</button>
         <p class="title-hint">ローグライク × JRPG</p>
       </div>
     </div>
@@ -130,6 +131,30 @@
           <button id="btn-stairs-down" class="pixel-btn">降　り　る</button>
           <button id="btn-stairs-stay" class="pixel-btn btn-stay">留　ま　る</button>
         </div>
+      </div>
+    </div>
+
+    <!-- ========== CHAR SELECT ========== -->
+    <div id="scene-charselect" class="scene hidden">
+      <div class="center-wrap">
+        <h2 class="event-title">キャラクターを選択</h2>
+        <div class="charselect-cards">
+          <div class="charselect-card">
+            <canvas id="charselect-canvas-warrior" class="charselect-canvas" width="120" height="110"></canvas>
+            <div class="charselect-name">戦　士</div>
+            <div class="charselect-stats">HP 120 / MP  40<br>ATK  20 / DEF 14</div>
+            <div class="charselect-flavor">物理特化</div>
+            <button class="pixel-btn btn-char-pick" data-char="warrior">選　択</button>
+          </div>
+          <div class="charselect-card">
+            <canvas id="charselect-canvas-mage" class="charselect-canvas" width="120" height="110"></canvas>
+            <div class="charselect-name">魔法使い</div>
+            <div class="charselect-stats">HP  80 / MP  80<br>魔ATK 22 / DEF  6</div>
+            <div class="charselect-flavor">魔法特化</div>
+            <button class="pixel-btn btn-char-pick" data-char="mage">選　択</button>
+          </div>
+        </div>
+        <button id="btn-charselect-back" class="pixel-btn btn-stay" style="margin-top:14px">も ど る</button>
       </div>
     </div>
 

@@ -962,6 +962,11 @@ function flashCol(orig, isFlash) {
 
 // ---- PLAYER sprite ----
 function drawPlayer(ctx, cx, cy, fl, frame) {
+  if (GS.charClass === 'mage') drawPlayerMage(ctx, cx, cy, fl, frame);
+  else                         drawPlayerWarrior(ctx, cx, cy, fl, frame);
+}
+
+function drawPlayerWarrior(ctx, cx, cy, fl, frame) {
   const bob = Math.sin(frame * 0.06) * 1.5;
   const by  = cy + bob;
   const c   = (col) => flashCol(col, fl);
@@ -985,6 +990,51 @@ function drawPlayer(ctx, cx, cy, fl, frame) {
   px(ctx, cx+12, by-42,  5, 28, c('#bbbbcc'));
   px(ctx, cx+9,  by-36, 11,  5, c('#887766'));
   px(ctx, cx+13, by-46,  4,  6, c('#ddddee'));
+}
+
+function drawPlayerMage(ctx, cx, cy, fl, frame) {
+  const bob  = Math.sin(frame * 0.06) * 1.5;
+  const by   = cy + bob;
+  const glow = Math.sin(frame * 0.1) * 0.25 + 0.75;
+  const c    = (col) => flashCol(col, fl);
+
+  ctx.fillStyle = 'rgba(0,0,0,0.35)';
+  ctx.beginPath(); ctx.ellipse(cx, cy + 22, 18, 4, 0, 0, Math.PI * 2); ctx.fill();
+
+  // orb glow
+  ctx.save();
+  ctx.globalAlpha = glow * 0.5;
+  ctx.fillStyle = c('#cc88ff');
+  ctx.beginPath(); ctx.arc(cx + 18, by - 46, 9, 0, Math.PI * 2); ctx.fill();
+  ctx.restore();
+
+  // robe lower
+  px(ctx, cx-14, by-4,  12, 28, c('#5522aa'));
+  px(ctx, cx+2,  by-4,  12, 28, c('#5522aa'));
+  // robe body
+  px(ctx, cx-12, by-30, 24, 28, c('#6633bb'));
+  // robe shoulders
+  px(ctx, cx-18, by-28, 8, 14, c('#4422aa'));
+  px(ctx, cx+10, by-28, 8, 14, c('#4422aa'));
+  // left arm (staff arm)
+  px(ctx, cx-20, by-28, 8, 18, c('#6633bb'));
+  // right arm
+  px(ctx, cx+12, by-34, 8, 22, c('#6633bb'));
+  // head
+  px(ctx, cx-8,  by-48, 16, 14, c('#ffddaa'));
+  // hat brim
+  px(ctx, cx-12, by-50, 24,  4, c('#331188'));
+  // hat top
+  px(ctx, cx-8,  by-66, 16, 18, c('#331188'));
+  // hat tip star
+  px(ctx, cx-3,  by-70,  6,  5, c('#ffff88'));
+  // staff
+  px(ctx, cx+16, by-60,  4, 50, c('#886644'));
+  // orb
+  ctx.fillStyle = c('#cc88ff');
+  ctx.beginPath(); ctx.arc(cx + 18, by - 62, 6, 0, Math.PI * 2); ctx.fill();
+  ctx.fillStyle = c('#ffffff');
+  ctx.beginPath(); ctx.arc(cx + 16, by - 64, 2, 0, Math.PI * 2); ctx.fill();
 }
 
 // ---- ENEMY sprites ----
